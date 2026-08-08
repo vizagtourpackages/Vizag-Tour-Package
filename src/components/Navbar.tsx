@@ -76,29 +76,7 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center gap-3">
-            <a
-              href={`tel:${siteInfo.whatsapp}`}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                showSolid
-                  ? "text-charcoal-light hover:text-ocean"
-                  : "text-white/80 hover:text-white"
-              }`}
-            >
-              <Phone size={16} />
-              <span className="hidden xl:inline">Call Us</span>
-            </a>
-            <a
-              href={siteInfo.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-whatsapp !py-2 !px-4 !text-sm !rounded-lg"
-            >
-              <MessageCircle size={16} />
-              WhatsApp
-            </a>
-          </div>
+
 
           {/* Mobile Hamburger */}
           <button
@@ -158,24 +136,7 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-sand space-y-3">
-          <a
-            href={`tel:${siteInfo.whatsapp}`}
-            className="btn-secondary w-full !text-sm"
-          >
-            <Phone size={16} />
-            Call: {siteInfo.whatsapp}
-          </a>
-          <a
-            href={siteInfo.whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-whatsapp w-full !text-sm"
-          >
-            <MessageCircle size={16} />
-            Chat on WhatsApp
-          </a>
-        </div>
+
       </div>
     </>
   );
