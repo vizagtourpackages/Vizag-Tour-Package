@@ -10,7 +10,6 @@ import VehicleCard from "@/components/VehicleCard";
 import StatsCounter from "@/components/StatsCounter";
 import CustomizeTourForm from "@/components/CustomizeTourForm";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import SafetyTips from "@/components/SafetyTips";
 import {
   trendingPackages,
   oneDayPackages,
@@ -36,9 +35,9 @@ export default function Home() {
             title="Trending Packages"
             subtitle="Explore our most popular, handpicked itineraries designed for the perfect Vizag experience."
           />
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
+          <div className="mobile-carousel-container gap-4">
             {trendingPackages.map((pkg) => (
-              <div key={pkg.id} className="min-w-[85%] sm:min-w-[65%] snap-center flex-shrink-0 md:min-w-0 md:flex-shrink">
+              <div key={pkg.id} className="mobile-carousel-item">
                 <PackageCard pkg={pkg} />
               </div>
             ))}
@@ -120,9 +119,9 @@ export default function Home() {
             title="Our Premium Fleet"
             subtitle="Travel in comfort and style. We offer a wide range of well-maintained vehicles for all group sizes."
           />
-          <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
+          <div className="mobile-carousel-container gap-4">
             {vehicles.map((vehicle) => (
-              <div key={vehicle.id} className="min-w-[85%] sm:min-w-[65%] snap-center flex-shrink-0 md:min-w-0 md:flex-shrink">
+              <div key={vehicle.id} className="mobile-carousel-item">
                 <VehicleCard vehicle={vehicle} />
               </div>
             ))}
@@ -137,9 +136,9 @@ export default function Home() {
             title="Top Places to Visit in Vizag"
             subtitle="Discover the breathtaking beaches, ancient temples, and lush hill stations of the City of Destiny."
           />
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
+          <div className="mobile-carousel-container gap-4">
             {topPlaces.slice(0, 8).map((destination) => (
-              <div key={destination.id} className="min-w-[75%] sm:min-w-[55%] snap-center flex-shrink-0 md:min-w-0 md:flex-shrink">
+              <div key={destination.id} className="mobile-carousel-item">
                 <DestinationCard destination={destination} />
               </div>
             ))}
@@ -159,9 +158,9 @@ export default function Home() {
             title="One Day Sightseeing Packages"
             subtitle="Short on time? Explore the best of Vizag and surrounding areas in a single day."
           />
-          <div className="flex md:grid md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:mx-auto md:px-0 hide-scrollbar">
+          <div className="mobile-carousel-container gap-4 max-w-5xl mx-auto">
             {oneDayPackages.map((pkg) => (
-              <div key={pkg.id} className="min-w-[85%] sm:min-w-[65%] snap-center flex-shrink-0 md:min-w-0 md:flex-shrink">
+              <div key={pkg.id} className="mobile-carousel-item">
                 <PackageCard pkg={pkg} />
               </div>
             ))}
@@ -178,9 +177,9 @@ export default function Home() {
             subtitle="Embark on a divine pilgrimage to ancient and revered temples across Andhra Pradesh."
             light
           />
-          <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-6 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
+          <div className="mobile-carousel-container gap-4 pb-6">
             {pilgrimagePackages.map((pkg) => (
-              <div key={pkg.id} className="min-w-[85%] sm:min-w-[65%] snap-center flex-shrink-0 md:min-w-0 md:flex-shrink bg-white rounded-2xl overflow-hidden shadow-xl transform transition-transform md:hover:-translate-y-2 duration-300">
+              <div key={pkg.id} className="mobile-carousel-item bg-white rounded-2xl overflow-hidden shadow-xl transform transition-transform md:hover:-translate-y-2 duration-300">
                 <PackageCard pkg={pkg} />
               </div>
             ))}
@@ -197,9 +196,9 @@ export default function Home() {
             title="Travel Guides & Things to Do"
             subtitle="Expert tips and recommendations to make the most of your Vizag vacation."
           />
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
+          <div className="mobile-carousel-container gap-4">
             {guides.map((guide) => (
-              <div key={guide.id} className="min-w-[85%] sm:min-w-[65%] snap-center flex-shrink-0 md:min-w-0 md:flex-shrink">
+              <div key={guide.id} className="mobile-carousel-item">
                 <GuideCard guide={guide} />
               </div>
             ))}
@@ -214,9 +213,9 @@ export default function Home() {
             title="Upcoming Events in 2026"
             subtitle="Plan your trip around these exciting activities and mega events happening in Vizag."
           />
-          <div className="flex md:grid md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
+          <div className="mobile-carousel-container gap-4">
             {events.map((event) => (
-              <div key={event.id} className="min-w-[85%] sm:min-w-[65%] snap-center flex-shrink-0 md:min-w-0 md:flex-shrink">
+              <div key={event.id} className="mobile-carousel-item">
                 <EventCard event={event} />
               </div>
             ))}
@@ -224,10 +223,8 @@ export default function Home() {
         </div>
       </section>
 
-      <SafetyTips />
-
       {/* Testimonials */}
-      <section className="section-padding bg-warm-white overflow-hidden">
+      <section className="section-padding bg-sand-light overflow-hidden">
         <div className="container-max">
           <SectionHeading
             title="What Our Travelers Say"

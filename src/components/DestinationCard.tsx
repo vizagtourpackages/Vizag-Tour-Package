@@ -30,17 +30,17 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
           </span>
         </div>
         
-        <div className="p-5 flex flex-col flex-1">
-          <h3 className="font-heading text-xl text-charcoal mb-2 group-hover:text-ocean transition-colors flex items-start justify-between gap-2">
-            <span>{destination.name}</span>
+        <div className="p-4 sm:p-5 flex flex-col flex-1 min-w-0">
+          <h3 className="font-heading text-lg sm:text-xl text-charcoal mb-2 group-hover:text-ocean transition-colors flex items-start justify-between gap-2 min-w-0">
+            <span className="break-words min-w-0">{destination.name}</span>
             <ArrowRight size={18} className="text-ocean opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all shrink-0 mt-1" />
           </h3>
-          <p className="text-sm text-charcoal-light/70 line-clamp-3 mb-4 flex-1">
+          <p className="text-sm text-charcoal-light/70 line-clamp-3 mb-4 flex-1 break-words">
             {destination.description}
           </p>
           <div className="flex items-center gap-1.5 text-xs font-medium text-teal mt-auto pt-4 border-t border-sand">
-            <MapPin size={14} />
-            <span>Visakhapatnam District</span>
+            <MapPin size={14} className="shrink-0" />
+            <span className="truncate">Visakhapatnam District</span>
           </div>
         </div>
       </div>

@@ -85,14 +85,14 @@ export default function TestimonialsSection() {
       {/* Carousel Container */}
       <div
         ref={containerRef}
-        className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 -mx-4 px-4 sm:mx-0 sm:px-0"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none", scrollPadding: "0 1rem" }}
       >
         <div className="flex gap-4 sm:gap-6 w-max">
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="w-[85vw] sm:w-[350px] lg:w-[400px] snap-center sm:snap-start shrink-0"
+              className="w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[350px] sm:max-w-none lg:w-[400px] snap-start shrink-0"
             >
               <TestimonialCard testimonial={testimonial} />
             </div>
