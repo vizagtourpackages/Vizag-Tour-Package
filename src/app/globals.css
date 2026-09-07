@@ -63,6 +63,8 @@
 /* --- Base Styles --- */
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
@@ -71,6 +73,9 @@ body {
   color: var(--color-charcoal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+  max-width: 100%;
+  position: relative;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -107,6 +112,60 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-base {
   @apply bg-white rounded-2xl shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* --- Shared Mobile Carousel Layout --- */
+.mobile-carousel-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 1rem;
+  scroll-behavior: smooth;
+  padding-bottom: 1rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.mobile-carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-carousel-item {
+  width: calc(100vw - 2rem);
+  max-width: calc(100vw - 2rem);
+  min-width: calc(100vw - 2rem);
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .mobile-carousel-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+  .mobile-carousel-item {
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    flex-shrink: 1;
+    scroll-snap-align: none;
+  }
 }
 
 /* --- Glass effect --- */

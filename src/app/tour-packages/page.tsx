@@ -35,19 +35,19 @@ export default function TourPackagesPage() {
 
   return (
     <div className="bg-warm-white min-h-screen pb-24 pt-5">
-      <div className="container-max">
+      <div className="container-max px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Explore Our Tour Packages"
           subtitle="From quick day trips to immersive multi-day adventures, find the perfect Vizag itinerary."
         />
 
         {/* Categories Tabs */}
-        <div className="mb-6 flex gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
+        <div className="mb-6 flex gap-2 overflow-x-auto hide-scrollbar w-auto max-w-full pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {categories.map((cat) => (
             <button
               key={cat.label}
               onClick={() => setFilters({ ...filters, category: cat.value })}
-              className={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${filters.category === cat.value
+              className={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors shrink-0 ${filters.category === cat.value
                 ? "bg-ocean text-white"
                 : "bg-white text-charcoal border border-sand hover:border-ocean/50"
                 }`}
@@ -58,11 +58,11 @@ export default function TourPackagesPage() {
         </div>
 
         {/* Filters Row */}
-        <div className="mb-8 flex flex-row gap-4 items-center overflow-x-auto hide-scrollbar pb-2">
+        <div className="mb-8 flex flex-row gap-3 sm:gap-4 items-center overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 w-auto max-w-full">
           <select
             value={filters.duration}
             onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
-            className="min-w-[150px] flex-1 px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0"
+            className="min-w-[140px] sm:min-w-[150px] flex-1 px-3 sm:px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0 text-sm sm:text-base"
           >
             <option value="">Any Duration</option>
             {dayOptions.map((day) => (
@@ -76,7 +76,7 @@ export default function TourPackagesPage() {
             onChange={(e) =>
               setFilters({ ...filters, accommodation: e.target.value })
             }
-            className="min-w-[190px] flex-1 px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0"
+            className="min-w-[170px] sm:min-w-[190px] flex-1 px-3 sm:px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0 text-sm sm:text-base"
           >
             <option value="">Any Accommodation</option>
             {accommodationOptions.map((opt) => (
@@ -88,7 +88,7 @@ export default function TourPackagesPage() {
           <select
             value={filters.vehicle}
             onChange={(e) => setFilters({ ...filters, vehicle: e.target.value })}
-            className="min-w-[150px] flex-1 px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0"
+            className="min-w-[140px] sm:min-w-[150px] flex-1 px-3 sm:px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0 text-sm sm:text-base"
           >
             <option value="">Any Vehicle</option>
             {vehicleOptions.map((opt) => (
@@ -122,7 +122,7 @@ export default function TourPackagesPage() {
 
         {/* Package Grid */}
         {filteredPackages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full min-w-0">
             {filteredPackages.map((pkg) => (
               <PackageCard key={pkg.id} pkg={pkg} />
             ))}

@@ -28,14 +28,14 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
         </div>
       </div>
       
-      <div className="p-6 pt-8">
-        <div className="flex items-end justify-between mb-3">
-          <h3 className="font-heading text-xl text-charcoal">{vehicle.type}</h3>
-          <span className="text-sm font-semibold text-ocean bg-ocean/10 px-2 py-1 rounded-md">
+      <div className="p-5 sm:p-6 pt-7 sm:pt-8 min-w-0">
+        <div className="flex items-center justify-between gap-2 mb-3 min-w-0">
+          <h3 className="font-heading text-lg sm:text-xl text-charcoal break-words min-w-0">{vehicle.type}</h3>
+          <span className="text-xs sm:text-sm font-semibold text-ocean bg-ocean/10 px-2.5 py-1 rounded-md shrink-0">
             {vehicle.capacity}
           </span>
         </div>
-        <p className="text-sm text-charcoal-light/70 leading-relaxed">
+        <p className="text-sm text-charcoal-light/70 leading-relaxed break-words">
           {vehicle.description}
         </p>
       </div>

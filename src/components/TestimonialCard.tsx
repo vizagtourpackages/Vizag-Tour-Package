@@ -7,7 +7,7 @@ interface TestimonialCardProps {
 
 export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
-    <div className="card-base p-6 h-full flex flex-col bg-white">
+    <div className="card-base p-5 sm:p-6 h-full flex flex-col bg-white min-w-0">
       <div className="flex gap-1 mb-4">
         {[...Array(5)].map((_, i) => (
           <Star
@@ -21,7 +21,7 @@ export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
           />
         ))}
       </div>
-      <p className="text-charcoal-light italic mb-6 flex-1 text-sm leading-relaxed">
+      <p className="text-charcoal-light italic mb-6 flex-1 text-sm leading-relaxed break-words">
         &quot;{testimonial.snippet}&quot;
       </p>
       <div className="flex items-center gap-3">

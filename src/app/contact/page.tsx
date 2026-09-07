@@ -32,47 +32,47 @@ export default function ContactPage() {
           {/* Contact Info & Map */}
           <div className="lg:w-1/2 space-y-8">
             {/* Info Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-2xl shadow-card border border-sand">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 min-w-0">
+              <div className="card-base p-5 sm:p-6 border border-sand min-w-0">
                 <Phone className="text-ocean mb-4" size={28} />
                 <h3 className="font-semibold text-charcoal mb-2">Call Us</h3>
-                <div className="space-y-1">
-                  <a href={`tel:${siteInfo.whatsapp}`} className="block text-charcoal-light hover:text-ocean transition-colors">
+                <div className="space-y-1 min-w-0">
+                  <a href={`tel:${siteInfo.whatsapp}`} className="block text-charcoal-light hover:text-ocean transition-colors break-words">
                     +91 {siteInfo.whatsapp.replace('+91', '')}
                   </a>
-                  <a href={`tel:${siteInfo.landline}`} className="block text-charcoal-light hover:text-ocean transition-colors">
+                  <a href={`tel:${siteInfo.landline}`} className="block text-charcoal-light hover:text-ocean transition-colors break-words">
                     {siteInfo.landline}
                   </a>
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-card border border-sand">
+              <div className="card-base p-5 sm:p-6 border border-sand min-w-0">
                 <MessageCircle className="text-green-500 mb-4" size={28} />
                 <h3 className="font-semibold text-charcoal mb-2">WhatsApp</h3>
-                <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="text-charcoal-light hover:text-green-500 transition-colors">
+                <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="text-charcoal-light hover:text-green-500 transition-colors block break-words">
                   Chat with us directly
                 </a>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-card border border-sand">
+              <div className="card-base p-5 sm:p-6 border border-sand min-w-0">
                 <Mail className="text-coral mb-4" size={28} />
                 <h3 className="font-semibold text-charcoal mb-2">Email</h3>
-                <a href={`mailto:${siteInfo.email}`} className="text-charcoal-light hover:text-coral transition-colors break-all">
+                <a href={`mailto:${siteInfo.email}`} className="text-charcoal-light hover:text-coral transition-colors break-all block">
                   {siteInfo.email}
                 </a>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-card border border-sand">
+              <div className="card-base p-5 sm:p-6 border border-sand min-w-0">
                 <MapPin className="text-teal mb-4" size={28} />
                 <h3 className="font-semibold text-charcoal mb-2">Office Address</h3>
-                <p className="text-charcoal-light">
+                <p className="text-charcoal-light break-words">
                   {siteInfo.address}
                 </p>
               </div>
             </div>
 
             {/* Map Placeholder */}
-            <div className="bg-white p-2 rounded-2xl shadow-card border border-sand h-64 relative overflow-hidden flex items-center justify-center">
+            <div className="bg-white p-2 rounded-2xl shadow-card border border-sand h-64 relative overflow-hidden flex items-center justify-center min-w-0">
               <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%230c7b93\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
               <div className="text-center z-10 relative">
                 <MapPin size={32} className="text-charcoal mx-auto mb-2 opacity-50" />
@@ -83,8 +83,8 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="lg:w-1/2">
-            <div className="bg-white rounded-2xl p-8 sm:p-10 shadow-card border border-sand">
+          <div className="lg:w-1/2 min-w-0">
+            <div className="card-base p-5 sm:p-8 lg:p-10 border border-sand min-w-0">
               <h3 className="text-2xl font-heading text-charcoal mb-6">Send us a Message</h3>
 
               {status === "success" ? (
@@ -96,7 +96,7 @@ export default function ContactPage() {
                   <p className="text-charcoal-light">We&apos;ll get back to you as soon as possible.</p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 min-w-0">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-charcoal mb-2">Your Name</label>
                     <input
@@ -107,7 +107,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 min-w-0">
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">Email Address</label>
                       <input

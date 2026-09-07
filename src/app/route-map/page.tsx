@@ -65,10 +65,10 @@ export default function RouteMapPage() {
         </div>
 
         {/* Route Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full min-w-0">
           {routes.map((route, idx) => (
-            <div key={idx} className="card-base flex flex-col sm:flex-row bg-white overflow-hidden">
-              <div className="sm:w-1/3">
+            <div key={idx} className="card-base flex flex-col sm:flex-row bg-white overflow-hidden min-w-0">
+              <div className="sm:w-1/3 shrink-0">
                 <PlaceholderImage
                   gradient={route.gradient}
                   alt={`${route.from} to ${route.to}`}
@@ -76,29 +76,29 @@ export default function RouteMapPage() {
                   icon={<Navigation size={32} />}
                 />
               </div>
-              <div className="p-6 sm:w-2/3 flex flex-col justify-center">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="font-semibold text-charcoal">{route.from}</div>
-                  <div className="flex-1 h-px bg-sand border-t border-dashed border-charcoal/20 relative">
+              <div className="p-5 sm:p-6 sm:w-2/3 flex flex-col justify-center min-w-0">
+                <div className="flex items-center gap-2 sm:gap-3 mb-4 min-w-0">
+                  <div className="font-semibold text-charcoal text-sm sm:text-base break-words min-w-0">{route.from}</div>
+                  <div className="flex-1 min-w-[20px] h-px bg-sand border-t border-dashed border-charcoal/20 relative">
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-2 h-2 rounded-full bg-coral"></div>
                   </div>
-                  <div className="font-semibold text-charcoal">{route.to}</div>
+                  <div className="font-semibold text-charcoal text-sm sm:text-base break-words min-w-0 text-right">{route.to}</div>
                 </div>
 
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-charcoal-light">Distance</span>
-                    <span className="font-medium text-charcoal">{route.distance}</span>
+                <div className="space-y-2 mb-4 min-w-0">
+                  <div className="flex justify-between text-sm gap-2">
+                    <span className="text-charcoal-light shrink-0">Distance</span>
+                    <span className="font-medium text-charcoal text-right">{route.distance}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-charcoal-light">Est. Time</span>
-                    <span className="font-medium text-charcoal">{route.time}</span>
+                  <div className="flex justify-between text-sm gap-2">
+                    <span className="text-charcoal-light shrink-0">Est. Time</span>
+                    <span className="font-medium text-charcoal text-right">{route.time}</span>
                   </div>
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-sand">
+                <div className="mt-auto pt-4 border-t border-sand min-w-0">
                   <span className="text-xs text-charcoal-light uppercase tracking-wider font-semibold block mb-1">Route / Via</span>
-                  <p className="text-sm text-charcoal font-medium">{route.via}</p>
+                  <p className="text-sm text-charcoal font-medium break-words">{route.via}</p>
                 </div>
               </div>
             </div>

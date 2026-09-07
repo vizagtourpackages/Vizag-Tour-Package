@@ -23,16 +23,16 @@ export default function GuideCard({ guide }: GuideCardProps) {
         </div>
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-heading text-lg text-charcoal mb-4 leading-snug group-hover:text-ocean transition-colors">
+      <div className="p-4 sm:p-5 flex flex-col flex-1 min-w-0">
+        <h3 className="font-heading text-lg text-charcoal mb-4 leading-snug group-hover:text-ocean transition-colors break-words">
           {guide.title}
         </h3>
 
-        <ul className="space-y-2 mb-6 flex-1">
+        <ul className="space-y-2 mb-6 flex-1 min-w-0">
           {guide.highlights.map((highlight, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm text-charcoal-light/80">
+            <li key={idx} className="flex items-start gap-2 text-sm text-charcoal-light/80 min-w-0">
               <CheckCircle2 size={16} className="text-teal shrink-0 mt-0.5" />
-              <span className="leading-tight">{highlight}</span>
+              <span className="leading-tight break-words min-w-0">{highlight}</span>
             </li>
           ))}
         </ul>
@@ -41,7 +41,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
           href="/contact"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-ocean group-hover:text-ocean-dark transition-colors mt-auto"
         >
-          Plan Your Trip <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+          Plan Your Trip <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform shrink-0" />
         </Link>
       </div>
     </div>
