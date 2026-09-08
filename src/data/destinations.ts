@@ -4,136 +4,66 @@ export interface Destination {
   description: string;
   category: string;
   imageGradient: string;
+  price?: string;
+  distance?: string;
+  duration?: string;
 }
 
 export const topPlaces: Destination[] = [
   {
-    id: "rushikonda-beach",
-    name: "Rushikonda Beach",
+    id: "vizag-local-temples",
+    name: "Vizag Local Temples",
     description:
-      "Blue Flag certified eco-friendly beach; paramotoring, speed boating, scuba diving in the Bay of Bengal.",
-    category: "Beach",
-    imageGradient: "from-cyan-400 to-blue-600",
-  },
-  {
-    id: "sagar-nagar-viewpoint",
-    name: "Sagar Nagar Viewpoint",
-    description:
-      "Roadside spot with panoramic hill and beach views, great for sunset photography.",
-    category: "Viewpoint",
-    imageGradient: "from-orange-300 to-rose-500",
-  },
-  {
-    id: "zoo-park",
-    name: "Zoo Park (Indira Gandhi Zoological Park)",
-    description:
-      "Elevated views over India's largest east coast zoo with diverse wildlife.",
-    category: "Wildlife",
-    imageGradient: "from-green-400 to-emerald-600",
-  },
-  {
-    id: "simhachalam-temple",
-    name: "Simhachalam Temple",
-    description:
-      "11th-century Varaha Narasimha Swamy temple on a scenic hill; known for 'Giri Pradakshina'.",
-    category: "Temple",
+      "Simhachalam, Kanaka Maha Lakshmi, Sampath Vinayagar, ISKCON, Kailasagiri, TTD & Kali Temple",
+    category: "Pilgrimage",
     imageGradient: "from-amber-400 to-orange-600",
+    price: "₹3,000",
+    distance: "100 km",
+    duration: "10 hours",
   },
   {
-    id: "tenneti-park",
-    name: "Tenneti Park",
+    id: "annavaram",
+    name: "Annavaram",
     description:
-      "Panoramic beach views along Beach Road; iconic abandoned MV Maa ship being developed into a restaurant.",
-    category: "Park",
-    imageGradient: "from-sky-400 to-indigo-500",
-  },
-  {
-    id: "kailasagiri",
-    name: "Kailasagiri Hills",
-    description:
-      "Hilltop views, glass skywalk bridge, zip line, cycling, toy train — a must-visit hilltop park.",
-    category: "Hill Station",
-    imageGradient: "from-teal-400 to-green-600",
-  },
-  {
-    id: "vuda-park",
-    name: "Vuda Park",
-    description:
-      "Urban green space popular for skating, playgrounds, and family recreation.",
-    category: "Park",
-    imageGradient: "from-lime-400 to-green-500",
-  },
-  {
-    id: "aircraft-museum",
-    name: "Aircraft Museum",
-    description:
-      "Open-air collection of decommissioned IAF aircraft and helicopters.",
-    category: "Museum",
-    imageGradient: "from-slate-400 to-zinc-600",
-  },
-  {
-    id: "submarine-museum",
-    name: "Submarine Museum (INS Kursura)",
-    description:
-      "Preserved 1969 Soviet Foxtrot-class submarine, 1971 Indo-Pak war veteran, museum since 2002.",
-    category: "Museum",
-    imageGradient: "from-blue-500 to-slate-700",
-  },
-  {
-    id: "rk-beach",
-    name: "R.K. Beach",
-    description:
-      "Vizag's oldest and most popular shoreline; hosts festivals and city events year-round.",
-    category: "Beach",
-    imageGradient: "from-sky-300 to-blue-500",
-  },
-  {
-    id: "thotlakonda",
-    name: "Thotlakonda Sanctuary",
-    description:
-      "Protected forest, biodiversity hotspot with leopards, deer, wild boars, and rare reptiles.",
-    category: "Wildlife",
-    imageGradient: "from-emerald-500 to-green-700",
-  },
-  {
-    id: "vizag-port",
-    name: "Vizag Port and Harbour",
-    description:
-      "India's largest, busiest port by cargo volume; scenic harbour cruise tours available.",
-    category: "Landmark",
-    imageGradient: "from-indigo-400 to-blue-700",
-  },
-  {
-    id: "dolphins-nose",
-    name: "Dolphin's Nose",
-    description:
-      "358m rocky headland with historic lighthouse; 360° views of city, port, and Yarada Beach.",
-    category: "Viewpoint",
-    imageGradient: "from-teal-500 to-cyan-700",
-  },
-  {
-    id: "yarada-beach",
-    name: "Yarada Beach",
-    description:
-      "Secluded, peaceful golden-sand beach surrounded by hills (swimming risky due to currents).",
-    category: "Beach",
-    imageGradient: "from-yellow-300 to-amber-500",
-  },
-  {
-    id: "ross-hill-church",
-    name: "Ross Hill Church",
-    description:
-      "Circa 1867, houses Christian, Hindu & Muslim worship spaces on one hilltop — a symbol of unity.",
-    category: "Heritage",
+      "Sri Veera Venkata Satyanarayana Swamy Temple is a Hindu-Vaishnavite temple located in Annavaram",
+    category: "Pilgrimage",
     imageGradient: "from-rose-400 to-pink-600",
+    price: "₹4,500",
+    distance: "260 km",
+    duration: "8–9 hours",
   },
   {
-    id: "bheemili-beach",
-    name: "Bheemili Beach",
+    id: "srikakulam",
+    name: "Srikakulam",
     description:
-      "One of Vizag's oldest beaches, Dutch-era cemetery, new promenade, and fishing harbour.",
-    category: "Beach",
-    imageGradient: "from-cyan-300 to-teal-500",
+      "Srikakulam is known for its temples, with the Srikurmam Temple and Arasavalli Sun God Temple",
+    category: "Pilgrimage",
+    imageGradient: "from-teal-400 to-emerald-600",
+    price: "₹4,500",
+    distance: "260 km",
+    duration: "8–9 hours",
+  },
+  {
+    id: "vijayawada",
+    name: "Vijayawada",
+    description:
+      "Situated in the heart of the Vijayawada city, Kanaka Durga temple is located on the Indrakeeladri hill, on the banks of the River Krishna.",
+    category: "Pilgrimage",
+    imageGradient: "from-blue-400 to-indigo-600",
+    price: "₹11,500",
+    distance: "750 km",
+    duration: "14–16 hours",
+  },
+  {
+    id: "tirupati",
+    name: "Tirupati",
+    description:
+      "Tirumala is the richest pilgrimage centre in the world",
+    category: "Pilgrimage",
+    imageGradient: "from-yellow-400 to-amber-600",
+    price: "₹24,000",
+    distance: "1600 km",
+    duration: "36 hours",
   },
 ];
 

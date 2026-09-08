@@ -1,38 +1,57 @@
 export interface Vehicle {
   id: string;
-  type: string;
-  capacity: string;
-  description: string;
-  icon: "Car" | "Truck" | "Bus";
-  imageGradient: string;
+  model: string;
+  pricePerKm: string;
+  pax: number;
+  amenities: string[];
+  image: string;
+  minKmNote: string;
 }
 
 export const vehicles: Vehicle[] = [
   {
-    id: "v1",
-    type: "Sedans",
-    capacity: "4-seater",
-    description:
-      "Perfect for couples and compact travel to hill stations. Comfortable and fuel-efficient for shorter trips.",
-    icon: "Car",
-    imageGradient: "from-slate-400 to-zinc-600",
+    id: "swift-dzire",
+    model: "Swift Dzire",
+    pricePerKm: "₹14",
+    pax: 4,
+    amenities: ["AC", "Music System"],
+    image: "/images/fleet/swift-dzire.jpg",
+    minKmNote: "Applies for min 300 km during outstation round trip",
   },
   {
-    id: "v2",
-    type: "SUVs",
-    capacity: "6–7 seater",
-    description:
-      "Ideal for hill stations and long journeys. Spacious with enough room for luggage and comfortable seating for families.",
-    icon: "Truck",
-    imageGradient: "from-blue-400 to-indigo-600",
+    id: "ertiga",
+    model: "Ertiga",
+    pricePerKm: "₹18",
+    pax: 6,
+    amenities: ["AC", "Music System"],
+    image: "/images/fleet/ertiga.jpg",
+    minKmNote: "Applies for min 300 km during outstation round trip",
   },
   {
-    id: "v3",
-    type: "Tempo Travellers",
-    capacity: "12–19 seater",
-    description:
-      "Perfect for group tour packages and corporate events. Ample space for large groups with push-back seats.",
-    icon: "Bus",
-    imageGradient: "from-emerald-400 to-teal-600",
+    id: "toyota-glanza",
+    model: "Toyota Glanza",
+    pricePerKm: "₹14",
+    pax: 4,
+    amenities: ["AC", "Music System"],
+    image: "/images/fleet/toyota-glanza.jpg",
+    minKmNote: "Applies for min 300 km during outstation round trip",
+  },
+  {
+    id: "innova-crysta",
+    model: "Innova Crysta",
+    pricePerKm: "₹20",
+    pax: 7,
+    amenities: ["AC", "Bottle Water"],
+    image: "/images/fleet/innova.jpg",
+    minKmNote: "Applies for min 300 km during outstation round trip",
+  },
+  {
+    id: "tempo-traveller",
+    model: "Tempo Traveller",
+    pricePerKm: "₹25",
+    pax: 12,
+    amenities: ["AC", "Push-back Seats"],
+    image: "/images/fleet/tempo-traveller.jpg",
+    minKmNote: "Applies for min 300 km during outstation round trip",
   },
 ];

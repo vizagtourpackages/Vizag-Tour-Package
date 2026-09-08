@@ -1,43 +1,153 @@
-import { Car, Truck, Bus } from "lucide-react";
-import PlaceholderImage from "./PlaceholderImage";
-import type { Vehicle } from "@/data/vehicles";
+"use client";
 
-const iconMap = {
-  Car,
-  Truck,
-  Bus,
-};
+import { useState, useRef } from "react";
+import Image from "next/image";
+import { ChevronRight, ChevronLeft, User } from "lucide-react";
+import type { Vehicle } from "@/data/vehicles";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
 }
 
-export default function VehicleCard({ vehicle }: VehicleCardProps) {
-  const Icon = iconMap[vehicle.icon];
-
+function VehicleCard({ vehicle }: VehicleCardProps) {
   return (
-    <div className="card-base group overflow-hidden bg-white">
-      <div className="relative overflow-hidden">
-        <PlaceholderImage
-          gradient={vehicle.imageGradient}
-          alt={vehicle.type}
-          className="h-48 w-full transform transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute -bottom-6 right-6 w-12 h-12 rounded-xl bg-white shadow-lg flex items-center justify-center transform group-hover:-translate-y-2 transition-transform duration-300">
-          <Icon size={24} className="text-ocean" />
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden">
+      {/* Model name pill */}
+      <div className="p-5 pb-0">
+        <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 px-3 py-1.5 rounded-full uppercase tracking-wide">
+          {vehicle.model}
+        </span>
+      </div>
+
+      {/* Price + Pax row */}
+      <div className="px-5 pt-4 flex items-center justify-between">
+        <div className="text-2xl font-extrabold text-charcoal">
+          {vehicle.pricePerKm} <span className="text-sm font-medium text-charcoal/60">per km</span>
+        </div>
+        <span className="flex items-center gap-1.5 text-xs font-semibold text-charcoal/70 bg-gray-100 px-3 py-1.5 rounded-full">
+          <User size={14} />
+          {vehicle.pax} Pax
+        </span>
+      </div>
+
+      {/* Min km note */}
+      <div className="px-5 pt-2">
+        <p className="text-[11px] text-charcoal/40 leading-snug">{vehicle.minKmNote}</p>
+      </div>
+
+      {/* Car image */}
+      <div className="px-4 py-3">
+        <div className="w-full aspect-[5/3] relative bg-gray-50 rounded-xl overflow-hidden">
+          <Image
+            src={vehicle.image}
+            alt={vehicle.model}
+            fill
+            sizes="(max-width: 768px) 90vw, 25vw"
+            className="object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = "none";
+              if (target.parentElement) {
+                target.parentElement.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm font-medium">${vehicle.model}</div>`;
+              }
+            }}
+          />
         </div>
       </div>
-      
-      <div className="p-5 sm:p-6 pt-7 sm:pt-8 min-w-0">
-        <div className="flex items-center justify-between gap-2 mb-3 min-w-0">
-          <h3 className="font-heading text-lg sm:text-xl text-charcoal break-words min-w-0">{vehicle.type}</h3>
-          <span className="text-xs sm:text-sm font-semibold text-ocean bg-ocean/10 px-2.5 py-1 rounded-md shrink-0">
-            {vehicle.capacity}
+
+      {/* Amenity tags */}
+      <div className="px-5 pb-5 flex gap-2 flex-wrap">
+        {vehicle.amenities.map((amenity, idx) => (
+          <span
+            key={idx}
+            className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full"
+          >
+            {amenity}
           </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface FleetSectionProps {
+  vehicles: Vehicle[];
+}
+
+export default function FleetSection({ vehicles }: FleetSectionProps) {
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (!containerRef.current) return;
+    const cardWidth = containerRef.current.scrollWidth / vehicles.length;
+    const scrollAmount = direction === "right" ? cardWidth : -cardWidth;
+    containerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  };
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    setScrollPosition(containerRef.current.scrollLeft);
+  };
+
+  const canScrollLeft = scrollPosition > 10;
+  const canScrollRight = containerRef.current
+    ? scrollPosition < containerRef.current.scrollWidth - containerRef.current.clientWidth - 10
+    : true;
+
+  return (
+    <div className="relative">
+      {/* Navigation arrows */}
+      {canScrollLeft && (
+        <button
+          onClick={() => scroll("left")}
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors hidden md:flex"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft size={20} className="text-charcoal" />
+        </button>
+      )}
+      {canScrollRight && (
+        <button
+          onClick={() => scroll("right")}
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors hidden md:flex"
+          aria-label="Scroll right"
+        >
+          <ChevronRight size={20} className="text-charcoal" />
+        </button>
+      )}
+
+      {/* Cards container */}
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="flex gap-5 overflow-x-auto scroll-smooth pb-2 snap-x snap-mandatory scrollbar-hide"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {vehicles.map((vehicle) => (
+          <div
+            key={vehicle.id}
+            className="min-w-[260px] w-[calc(25%-15px)] flex-shrink-0 snap-start"
+          >
+            <VehicleCard vehicle={vehicle} />
+          </div>
+        ))}
+      </div>
+
+      {/* Safety Guaranteed Banner */}
+      <div className="mt-10 bg-emerald-50 border border-emerald-200 rounded-2xl px-6 py-5 flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
         </div>
-        <p className="text-sm text-charcoal-light/70 leading-relaxed break-words">
-          {vehicle.description}
-        </p>
+        <div>
+          <h4 className="font-bold text-emerald-900 text-base">Safety Guaranteed</h4>
+          <p className="text-emerald-700/80 text-sm mt-0.5">
+            All vehicles are regularly sanitized and maintained for your safety and comfort.
+          </p>
+        </div>
       </div>
     </div>
   );

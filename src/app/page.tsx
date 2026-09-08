@@ -6,14 +6,14 @@ import PackageCard from "@/components/PackageCard";
 import DestinationCard from "@/components/DestinationCard";
 import GuideCard from "@/components/GuideCard";
 import EventCard from "@/components/EventCard";
-import VehicleCard from "@/components/VehicleCard";
-import StatsCounter from "@/components/StatsCounter";
+import FleetSection from "@/components/VehicleCard";
+import MobileTrustBanner from "@/components/MobileTrustBanner";
 import CustomizeTourForm from "@/components/CustomizeTourForm";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import ScrollCarousel from "@/components/ScrollCarousel";
 import {
   trendingPackages,
   oneDayPackages,
-  pilgrimagePackages,
 } from "@/data/packages";
 import { topPlaces } from "@/data/destinations";
 import { guides } from "@/data/guides";
@@ -24,6 +24,9 @@ export default function Home() {
   return (
     <>
       <HeroSection />
+
+      {/* Mobile Trust Banner */}
+      <MobileTrustBanner />
 
       {/* Trending Packages */}
       <section className="section-padding bg-sand-light relative overflow-hidden">
@@ -115,37 +118,36 @@ export default function Home() {
       {/* Fleet / Vehicles */}
       <section className="section-padding bg-warm-white">
         <div className="container-max">
+          <div className="text-center mb-2">
+            <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 border border-ocean/20 px-4 py-1.5 rounded-full uppercase tracking-widest mb-4">
+              Fleet
+            </span>
+          </div>
           <SectionHeading
             title="Our Premium Fleet"
-            subtitle="Travel in comfort and style. We offer a wide range of well-maintained vehicles for all group sizes."
+            subtitle="Choose from our well-maintained fleet of vehicles, each equipped with professional drivers and modern amenities."
           />
-          <div className="mobile-carousel-container gap-4">
-            {vehicles.map((vehicle) => (
-              <div key={vehicle.id} className="mobile-carousel-item">
-                <VehicleCard vehicle={vehicle} />
-              </div>
-            ))}
-          </div>
+          <FleetSection vehicles={vehicles} />
         </div>
       </section>
 
-      {/* Top Tourist Places */}
+      {/* Top Destinations */}
       <section className="section-padding bg-sand-light">
         <div className="container-max">
           <SectionHeading
-            title="Top Places to Visit in Vizag"
-            subtitle="Discover the breathtaking beaches, ancient temples, and lush hill stations of the City of Destiny."
+            title="Top Destinations from Vizag"
+            subtitle="Popular outstation routes with transparent pricing. Book a comfortable cab for temple tours, pilgrimages, and city trips."
           />
-          <div className="mobile-carousel-container gap-4">
-            {topPlaces.slice(0, 8).map((destination) => (
-              <div key={destination.id} className="mobile-carousel-item">
+          <ScrollCarousel>
+            {topPlaces.map((destination) => (
+              <div key={destination.id} className="min-w-[280px] w-[calc(25%-15px)] flex-shrink-0 snap-start">
                 <DestinationCard destination={destination} />
               </div>
             ))}
-          </div>
+          </ScrollCarousel>
           <div className="mt-12 text-center">
             <Link href="/route-map" className="btn-secondary">
-              View Route Map <ArrowRight size={18} />
+              View All Routes <ArrowRight size={18} />
             </Link>
           </div>
         </div>
@@ -167,28 +169,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Pilgrimage Packages */}
-      <section className="section-padding bg-ocean relative">
-        <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CiAgPHBhdGggZD0iTTIwIDAgTDIwIDQwIE0wIDIwIEw0MCAyMCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPg==')] mix-blend-overlay"></div>
-        <div className="container-max relative z-10">
-          <SectionHeading
-            title="Spiritual Journeys"
-            subtitle="Embark on a divine pilgrimage to ancient and revered temples across Andhra Pradesh."
-            light
-          />
-          <div className="mobile-carousel-container gap-4 pb-6">
-            {pilgrimagePackages.map((pkg) => (
-              <div key={pkg.id} className="mobile-carousel-item bg-white rounded-2xl overflow-hidden shadow-xl transform transition-transform md:hover:-translate-y-2 duration-300">
-                <PackageCard pkg={pkg} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <StatsCounter />
-
       {/* Travel Guides */}
       <section className="section-padding bg-sand-light">
         <div className="container-max">
@@ -219,6 +199,88 @@ export default function Home() {
                 <EventCard event={event} />
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="section-padding bg-white">
+        <div className="container-max">
+          {/* Badge + Heading */}
+          <div className="text-center mb-10">
+            <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 border border-ocean/20 px-4 py-1.5 rounded-full uppercase tracking-widest mb-4">
+              Why Choose Us
+            </span>
+            <h2 className="font-heading text-3xl sm:text-4xl text-charcoal mb-3">Your Trusted Travel Partner</h2>
+            <p className="text-charcoal/60 max-w-2xl mx-auto">
+              With years of experience serving Visakhapatnam, we&apos;ve built our reputation on reliability, safety, and customer satisfaction.
+            </p>
+          </div>
+
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[
+              { value: "5+", label: "Years Experience", icon: "🏆" },
+              { value: "10,000+", label: "Happy Customers", icon: "👥" },
+              { value: "50+", label: "Professional Drivers", icon: "🛡️" },
+              { value: "24/7", label: "Customer Support", icon: "📞" },
+            ].map((stat, idx) => (
+              <div key={idx} className="bg-sand-light rounded-2xl p-6 text-center border border-gray-100">
+                <div className="w-14 h-14 rounded-xl bg-ocean/10 flex items-center justify-center mx-auto mb-3 text-2xl">
+                  {stat.icon}
+                </div>
+                <div className="text-2xl sm:text-3xl font-extrabold text-charcoal mb-1">{stat.value}</div>
+                <div className="text-xs font-medium text-charcoal/50 uppercase tracking-wider">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Feature Cards 2x2 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {[
+              {
+                title: "Local Expertise",
+                description: "5+ years of dedicated service in Visakhapatnam with deep knowledge of local routes and hidden gems.",
+                icon: "📍",
+              },
+              {
+                title: "Safety First",
+                description: "All drivers are thoroughly verified with clean driving records. Regular vehicle maintenance ensures your safety.",
+                icon: "🛡️",
+              },
+              {
+                title: "Transparent Pricing",
+                description: "Clear, upfront pricing with no hidden charges. What you see is what you pay — always.",
+                icon: "💳",
+              },
+              {
+                title: "24/7 Availability",
+                description: "Round-the-clock service for all your transportation needs. We're here whenever you need us.",
+                icon: "⏰",
+              },
+            ].map((feature, idx) => (
+              <div key={idx} className="flex items-start gap-4 bg-sand-light rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-ocean/10 flex items-center justify-center shrink-0 text-xl">
+                  {feature.icon}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-charcoal mb-1">{feature.title}</h3>
+                  <p className="text-sm text-charcoal/60 leading-relaxed">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Banner */}
+          <div className="bg-sand-light rounded-2xl p-8 text-center border border-gray-100">
+            <h3 className="font-heading text-xl sm:text-2xl text-charcoal mb-2">Ready to Experience the Difference?</h3>
+            <p className="text-charcoal/60 text-sm mb-5 max-w-lg mx-auto">
+              Join thousands of satisfied customers who trust us for their transportation needs.
+            </p>
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <a href="/contact" className="btn-primary">Book Online</a>
+              <span className="text-charcoal/50 text-sm">or call <a href="tel:+919966363662" className="font-semibold text-charcoal hover:text-ocean transition-colors">+91 9966363662</a></span>
+            </div>
           </div>
         </div>
       </section>
