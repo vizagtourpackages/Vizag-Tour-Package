@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Car, Plane, MapPin, Building, Heart, Map as MapIcon } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 import SectionHeading from "@/components/SectionHeading";
 import PackageCard from "@/components/PackageCard";
@@ -19,6 +19,8 @@ import { topPlaces } from "@/data/destinations";
 import { guides } from "@/data/guides";
 import { events } from "@/data/events";
 import { vehicles } from "@/data/vehicles";
+import { hotels } from "@/data/hotels";
+import HotelCard from "@/components/HotelCard";
 
 export default function Home() {
   return (
@@ -27,6 +29,128 @@ export default function Home() {
 
       {/* Mobile Trust Banner */}
       <MobileTrustBanner />
+
+      {/* Our Services */}
+      <section className="section-padding bg-white relative overflow-hidden">
+        {/* Background decorative blob */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-ocean/5 blur-[120px]"></div>
+        </div>
+
+        <div className="container-max">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 text-sm font-bold text-ocean bg-ocean/5 border border-ocean/10 px-5 py-2 rounded-full uppercase tracking-widest mb-4">
+              <span className="w-2 h-2 rounded-full bg-ocean animate-pulse"></span>
+              Our Services
+            </span>
+            <h2 className="font-heading text-4xl sm:text-5xl text-charcoal mb-4">What We Offer</h2>
+            <p className="text-charcoal/60 max-w-2xl mx-auto text-lg">
+              Experience the best of Visakhapatnam with our premium, reliable, and comfortable travel services.
+            </p>
+          </div>
+
+          <ScrollCarousel>
+            {[
+              {
+                title: "Local Taxi Service in Vizag",
+                description: "24/7 local taxi service in Visakhapatnam for city rides, shopping, office travel, railway station and hospital visits.",
+                icon: <Car size={24} strokeWidth={1.5} />,
+              },
+              {
+                title: "Airport Taxi Service",
+                description: "Reliable Vizag Airport taxi with on-time pickup & drop, flight tracking and affordable fares.",
+                icon: <Plane size={24} strokeWidth={1.5} />,
+              },
+              {
+                title: "Outstation Taxi Service",
+                description: "One-way & round-trip outstation taxi from Vizag to Araku, Tirupati, Vijayawada, Hyderabad and more.",
+                icon: <MapPin size={24} strokeWidth={1.5} />,
+              },
+              {
+                title: "Corporate Taxi Service",
+                description: "Professional corporate cab service for employee transport, client pickups and business travel.",
+                icon: <Building size={24} strokeWidth={1.5} />,
+              },
+              {
+                title: "Wedding Car Rental",
+                description: "Luxury wedding car rental in Vizag with professional chauffeurs for weddings and special events.",
+                icon: <Heart size={24} strokeWidth={1.5} />,
+              },
+              {
+                title: "Vizag Tour Packages",
+                description: "Affordable Vizag sightseeing and Andhra Pradesh tour packages including Araku, Lambasingi and Borra Caves.",
+                icon: <MapIcon size={24} strokeWidth={1.5} />,
+              },
+            ].map((service, idx) => (
+              <div key={idx} className="min-w-[260px] w-[260px] flex-shrink-0 snap-start">
+                <div className="bg-white rounded-[24px] p-6 border border-gray-100 hover:border-ocean/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 group h-full">
+                  <div className="w-14 h-14 rounded-2xl bg-ocean/5 flex items-center justify-center mb-6 text-ocean group-hover:bg-ocean group-hover:text-white transition-colors duration-300">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-charcoal mb-3 group-hover:text-ocean transition-colors">{service.title}</h3>
+                  <p className="text-charcoal/60 leading-relaxed text-sm">{service.description}</p>
+                </div>
+              </div>
+            ))}
+          </ScrollCarousel>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="section-padding bg-sand-light relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 1px)", backgroundSize: "32px 32px" }}></div>
+        
+        <div className="container-max relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 text-sm font-bold text-coral bg-coral/5 border border-coral/10 px-5 py-2 rounded-full uppercase tracking-widest mb-4">
+              <span className="w-2 h-2 rounded-full bg-coral"></span>
+              How It Works
+            </span>
+            <h2 className="font-heading text-4xl sm:text-5xl text-charcoal mb-4">Book Your Ride in 4 Easy Steps</h2>
+          </div>
+          
+          <div className="flex md:grid overflow-x-auto snap-x snap-mandatory pb-4 md:overflow-visible md:pb-0 md:grid-cols-2 lg:grid-cols-4 gap-6 scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+            {[
+              {
+                step: "1",
+                title: "Search & Choose",
+                description: "Browse our fleet or tour packages and select what perfectly fits your travel needs.",
+              },
+              {
+                step: "2",
+                title: "Book & Confirm",
+                description: "Provide your travel details and confirm your booking instantly through our platform.",
+              },
+              {
+                step: "3",
+                title: "Enjoy Your Ride",
+                description: "Experience a comfortable, safe, and premium journey with our professional chauffeurs.",
+              },
+              {
+                step: "4",
+                title: "Rate & Review",
+                description: "Share your amazing experience to help us serve you even better next time.",
+              },
+            ].map((item, idx) => (
+              <div key={idx} className="min-w-[250px] w-[250px] md:min-w-0 md:w-auto flex-shrink-0 snap-start md:flex-shrink bg-white rounded-3xl p-6 md:p-8 border border-white/50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 relative overflow-hidden group flex flex-col items-center text-center">
+                {/* Large faded number in background */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[150px] font-black text-sand-light group-hover:text-ocean/5 transition-colors duration-500 leading-none select-none z-0">
+                  {item.step}
+                </div>
+                
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-ocean to-coral flex items-center justify-center text-white font-bold text-2xl mb-8 shadow-lg shadow-ocean/20 group-hover:scale-110 transition-transform duration-300">
+                    {item.step}
+                  </div>
+                  <h3 className="text-xl font-bold text-charcoal mb-3">{item.title}</h3>
+                  <p className="text-charcoal/60 leading-relaxed text-sm">{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Trending Packages */}
       <section className="section-padding bg-sand-light relative overflow-hidden">
@@ -48,6 +172,28 @@ export default function Home() {
           <div className="mt-12 text-center">
             <Link href="/tour-packages" className="btn-primary">
               View All Packages <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Hotels & Resorts */}
+      <section className="section-padding bg-white relative overflow-hidden">
+        <div className="container-max relative z-10">
+          <SectionHeading
+            title="Hotels & Resorts"
+            subtitle="Discover handpicked stays from luxury beachfront resorts to cozy eco-camps in the hills."
+          />
+          <ScrollCarousel>
+            {hotels.map((hotel) => (
+              <div key={hotel.id} className="min-w-[320px] md:w-[calc(33.333%-14px)] flex-shrink-0 snap-start">
+                <HotelCard hotel={hotel} />
+              </div>
+            ))}
+          </ScrollCarousel>
+          <div className="mt-12 text-center">
+            <Link href="/hotels-and-resorts" className="btn-secondary">
+              View All Hotels <ArrowRight size={18} />
             </Link>
           </div>
         </div>
@@ -160,13 +306,13 @@ export default function Home() {
             title="One Day Sightseeing Packages"
             subtitle="Short on time? Explore the best of Vizag and surrounding areas in a single day."
           />
-          <div className="mobile-carousel-container gap-4 max-w-5xl mx-auto">
+          <ScrollCarousel>
             {oneDayPackages.map((pkg) => (
-              <div key={pkg.id} className="mobile-carousel-item">
+              <div key={pkg.id} className="min-w-[320px] md:w-[calc(33.333%-14px)] flex-shrink-0 snap-start">
                 <PackageCard pkg={pkg} />
               </div>
             ))}
-          </div>
+          </ScrollCarousel>
         </div>
       </section>
       {/* Travel Guides */}
@@ -176,13 +322,13 @@ export default function Home() {
             title="Travel Guides & Things to Do"
             subtitle="Expert tips and recommendations to make the most of your Vizag vacation."
           />
-          <div className="mobile-carousel-container gap-4">
+          <ScrollCarousel>
             {guides.map((guide) => (
-              <div key={guide.id} className="mobile-carousel-item">
+              <div key={guide.id} className="min-w-[320px] md:w-[calc(33.333%-14px)] flex-shrink-0 snap-start">
                 <GuideCard guide={guide} />
               </div>
             ))}
-          </div>
+          </ScrollCarousel>
         </div>
       </section>
 
@@ -193,13 +339,13 @@ export default function Home() {
             title="Upcoming Events in 2026"
             subtitle="Plan your trip around these exciting activities and mega events happening in Vizag."
           />
-          <div className="mobile-carousel-container gap-4">
+          <ScrollCarousel>
             {events.map((event) => (
-              <div key={event.id} className="mobile-carousel-item">
+              <div key={event.id} className="min-w-[320px] md:w-[calc(33.333%-14px)] flex-shrink-0 snap-start">
                 <EventCard event={event} />
               </div>
             ))}
-          </div>
+          </ScrollCarousel>
         </div>
       </section>
 

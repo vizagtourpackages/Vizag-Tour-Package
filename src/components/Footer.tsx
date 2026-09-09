@@ -45,10 +45,10 @@ export default function Footer() {
           <div>
             <h3 className="font-heading text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2.5">
-              {navLinks.slice(0, 6).map((link) => (
-                <li key={link.href}>
+              {navLinks.filter(link => link.href).slice(0, 6).map((link) => (
+                <li key={link.label}>
                   <Link
-                    href={link.href}
+                    href={link.href!}
                     className="text-white/60 text-sm hover:text-coral transition-colors"
                   >
                     {link.label}

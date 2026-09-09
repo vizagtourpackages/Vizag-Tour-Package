@@ -16,16 +16,29 @@ export const siteInfo = {
   },
 } as const;
 
-export const navLinks = [
+export type NavLink = {
+  label: string;
+  href?: string;
+  subLinks?: { label: string; href: string }[];
+};
+
+export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Tour Packages", href: "/tour-packages" },
-  { label: "Araku Valley", href: "/araku-valley" },
-  { label: "Lambasingi Hills", href: "/lambasingi" },
-  { label: "Vanjangi Hills", href: "/vanjangi" },
+  { label: "Hotels & Resorts", href: "/hotels-and-resorts" },
+  { label: "Travels", href: "/travels" },
+  { 
+    label: "Destination", 
+    subLinks: [
+      { label: "Araku Valley", href: "/araku-valley" },
+      { label: "Lambasingi Hills", href: "/lambasingi" },
+      { label: "Vanjangi Hills", href: "/vanjangi" },
+    ]
+  },
   { label: "Route Map", href: "/route-map" },
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
-] as const;
+];
 
 export const stats = [
   { value: 8, suffix: "+", label: "Years Experience" },
@@ -44,13 +57,13 @@ export const heroCTAs = [
   {
     title: "Hotels & Resorts",
     description: "Handpicked stays from budget to luxury",
-    href: "/contact",
+    href: "/hotels-and-resorts",
     icon: "Hotel" as const,
   },
   {
     title: "Travels",
     description: "Reliable vehicles for any group size",
-    href: "/contact",
+    href: "/travels",
     icon: "Car" as const,
   },
 ] as const;
