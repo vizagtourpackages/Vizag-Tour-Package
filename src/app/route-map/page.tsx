@@ -46,7 +46,7 @@ const routes = [
 export default function RouteMapPage() {
   return (
     <div className="bg-warm-white min-h-screen pt-5 pb-24">
-      <div className="container-max">
+      <div className="container-max px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Route Map & Distances"
           subtitle="Plan your journey with our comprehensive distance guide for major tourist circuits around Vizag."

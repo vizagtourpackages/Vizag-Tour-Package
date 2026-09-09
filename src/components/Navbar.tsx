@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Menu, X, Phone, MessageCircle } from "lucide-react";
+import { Menu, X, Phone, MessageCircle, ChevronDown } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
 
 export default function Navbar() {
@@ -62,17 +62,45 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  showSolid
-                    ? "text-charcoal-light hover:text-ocean hover:bg-ocean/5"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {link.label}
-              </Link>
+              link.subLinks ? (
+                <div key={link.label} className="relative group">
+                  <button
+                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      showSolid
+                        ? "text-charcoal-light hover:text-ocean hover:bg-ocean/5"
+                        : "text-white/80 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {link.label}
+                    <ChevronDown size={14} className="opacity-70 group-hover:rotate-180 transition-transform" />
+                  </button>
+                  <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-[200px]">
+                      {link.subLinks.map((subLink) => (
+                        <Link
+                          key={subLink.href}
+                          href={subLink.href}
+                          className="block px-4 py-2 text-sm text-charcoal hover:bg-ocean/5 hover:text-ocean transition-colors"
+                        >
+                          {subLink.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href!}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    showSolid
+                      ? "text-charcoal-light hover:text-ocean hover:bg-ocean/5"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
           </div>
 
@@ -125,14 +153,34 @@ export default function Navbar() {
 
         <nav className="flex-1 overflow-y-auto py-4">
           {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="block px-6 py-3.5 text-charcoal-light font-medium hover:bg-ocean/5 hover:text-ocean transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              {link.label}
-            </Link>
+            link.subLinks ? (
+              <div key={link.label}>
+                <div className="px-6 py-3.5 text-charcoal-light font-medium flex items-center justify-between">
+                  {link.label}
+                </div>
+                <div className="pl-10 pr-6 pb-2 space-y-2">
+                  {link.subLinks.map((subLink) => (
+                    <Link
+                      key={subLink.href}
+                      href={subLink.href}
+                      className="block py-2 text-sm text-charcoal/70 hover:text-ocean transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {subLink.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href!}
+                className="block px-6 py-3.5 text-charcoal-light font-medium hover:bg-ocean/5 hover:text-ocean transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+              </Link>
+            )
           ))}
         </nav>
 

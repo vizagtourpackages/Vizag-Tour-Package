@@ -9,7 +9,7 @@ interface VehicleCardProps {
   vehicle: Vehicle;
 }
 
-function VehicleCard({ vehicle }: VehicleCardProps) {
+export function VehicleCard({ vehicle }: VehicleCardProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden">
       {/* Model name pill */}

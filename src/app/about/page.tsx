@@ -1,33 +1,11 @@
 import { Metadata } from "next";
-import SectionHeading from "@/components/SectionHeading";
-import StatsCounter from "@/components/StatsCounter";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import { siteInfo, stats } from "@/data/siteInfo";
-import { CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us",
   description: "Learn more about Vizag Tour Packages, your trusted travel partner in Visakhapatnam.",
 };
-
-const values = [
-  {
-    title: "Customer First",
-    description: "Your comfort, safety, and satisfaction are at the core of everything we do.",
-  },
-  {
-    title: "Local Expertise",
-    description: "Our in-depth knowledge of Vizag ensures you experience the authentic beauty of the region.",
-  },
-  {
-    title: "Transparent Pricing",
-    description: "No hidden costs. We provide clear, upfront pricing for all our tour packages.",
-  },
-  {
-    title: "Quality Service",
-    description: "From well-maintained vehicles to handpicked hotels, we don't compromise on quality.",
-  },
-];
 
 export default function AboutPage() {
   return (
@@ -79,29 +57,84 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <StatsCounter />
-
-      {/* Why Choose Us */}
-      <section className="section-padding bg-sand-light">
+      {/* Why Choose Us (From Home Page) */}
+      <section className="section-padding bg-white">
         <div className="container-max">
-          <SectionHeading
-            title="Why Choose Us"
-            subtitle="What sets us apart as Vizag's premier tour operator."
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
-            {values.map((value, idx) => (
-              <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-sand">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-ocean/10 rounded-xl flex items-center justify-center text-ocean">
-                    <CheckCircle2 size={24} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-charcoal">{value.title}</h3>
+          {/* Badge + Heading */}
+          <div className="text-center mb-10">
+            <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 border border-ocean/20 px-4 py-1.5 rounded-full uppercase tracking-widest mb-4">
+              Why Choose Us
+            </span>
+            <h2 className="font-heading text-3xl sm:text-4xl text-charcoal mb-3">Your Trusted Travel Partner</h2>
+            <p className="text-charcoal/60 max-w-2xl mx-auto">
+              With years of experience serving Visakhapatnam, we&apos;ve built our reputation on reliability, safety, and customer satisfaction.
+            </p>
+          </div>
+
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[
+              { value: "5+", label: "Years Experience", icon: "🏆" },
+              { value: "10,000+", label: "Happy Customers", icon: "👥" },
+              { value: "50+", label: "Professional Drivers", icon: "🛡️" },
+              { value: "24/7", label: "Customer Support", icon: "📞" },
+            ].map((stat, idx) => (
+              <div key={idx} className="bg-sand-light rounded-2xl p-6 text-center border border-gray-100">
+                <div className="w-14 h-14 rounded-xl bg-ocean/10 flex items-center justify-center mx-auto mb-3 text-2xl">
+                  {stat.icon}
                 </div>
-                <p className="text-charcoal-light leading-relaxed">
-                  {value.description}
-                </p>
+                <div className="text-2xl sm:text-3xl font-extrabold text-charcoal mb-1">{stat.value}</div>
+                <div className="text-xs font-medium text-charcoal/50 uppercase tracking-wider">{stat.label}</div>
               </div>
             ))}
+          </div>
+
+          {/* Feature Cards 2x2 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {[
+              {
+                title: "Local Expertise",
+                description: "5+ years of dedicated service in Visakhapatnam with deep knowledge of local routes and hidden gems.",
+                icon: "📍",
+              },
+              {
+                title: "Safety First",
+                description: "All drivers are thoroughly verified with clean driving records. Regular vehicle maintenance ensures your safety.",
+                icon: "🛡️",
+              },
+              {
+                title: "Transparent Pricing",
+                description: "Clear, upfront pricing with no hidden charges. What you see is what you pay — always.",
+                icon: "💳",
+              },
+              {
+                title: "24/7 Availability",
+                description: "Round-the-clock service for all your transportation needs. We're here whenever you need us.",
+                icon: "⏰",
+              },
+            ].map((feature, idx) => (
+              <div key={idx} className="flex items-start gap-4 bg-sand-light rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-ocean/10 flex items-center justify-center shrink-0 text-xl">
+                  {feature.icon}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-charcoal mb-1">{feature.title}</h3>
+                  <p className="text-sm text-charcoal/60 leading-relaxed">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Banner */}
+          <div className="bg-sand-light rounded-2xl p-8 text-center border border-gray-100">
+            <h3 className="font-heading text-xl sm:text-2xl text-charcoal mb-2">Ready to Experience the Difference?</h3>
+            <p className="text-charcoal/60 text-sm mb-5 max-w-lg mx-auto">
+              Join thousands of satisfied customers who trust us for their transportation needs.
+            </p>
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <a href="/contact" className="btn-primary">Book Online</a>
+              <span className="text-charcoal/50 text-sm">or call <a href="tel:+919966363662" className="font-semibold text-charcoal hover:text-ocean transition-colors">+91 9966363662</a></span>
+            </div>
           </div>
         </div>
       </section>

@@ -5,6 +5,7 @@ import { siteInfo } from "@/data/siteInfo";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,7 +40,10 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1 pt-[72px]">{children}</main>
         <Footer />
-        <WhatsAppFAB />
+        <div className="hidden md:block">
+          <WhatsAppFAB />
+        </div>
+        <MobileBottomNav />
       </body>
     </html>
   );

@@ -22,7 +22,7 @@ export default function ContactPage() {
 
   return (
     <div className="bg-warm-white min-h-screen pb-24 pt-5">
-      <div className="container-max">
+      <div className="container-max px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Contact Us"
           subtitle="Have a question or ready to book? We're here to help you plan the perfect Vizag trip."
