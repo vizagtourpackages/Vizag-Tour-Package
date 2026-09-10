@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Filter, X } from "lucide-react";
+import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
 import PackageCard from "@/components/PackageCard";
 import {
@@ -34,114 +35,120 @@ export default function TourPackagesPage() {
   ];
 
   return (
-    <div className="bg-warm-white min-h-screen pb-24 pt-5">
+    <div className="bg-white min-h-screen pb-24 pt-8">
       <div className="container-max px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          title="Explore Our Tour Packages"
-          subtitle="From quick day trips to immersive multi-day adventures, find the perfect Vizag itinerary."
-        />
+        <ScrollReveal>
+          <SectionHeading
+            title="Explore Our Tour Packages"
+            subtitle="From quick day trips to immersive multi-day adventures, find the perfect Vizag itinerary."
+          />
+        </ScrollReveal>
 
-        {/* Categories Tabs */}
-        <div className="mb-6 flex gap-2 overflow-x-auto hide-scrollbar w-auto max-w-full pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-          {categories.map((cat) => (
-            <button
-              key={cat.label}
-              onClick={() => setFilters({ ...filters, category: cat.value })}
-              className={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors shrink-0 ${filters.category === cat.value
-                ? "bg-ocean text-white"
-                : "bg-white text-charcoal border border-sand hover:border-ocean/50"
-                }`}
+        <ScrollReveal delay={0.2}>
+          {/* Categories Tabs */}
+          <div className="mb-8 flex gap-3 overflow-x-auto hide-scrollbar w-auto max-w-full pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {categories.map((cat) => (
+              <button
+                key={cat.label}
+                onClick={() => setFilters({ ...filters, category: cat.value })}
+                className={`px-6 py-3 rounded-full text-sm font-bold tracking-wide whitespace-nowrap transition-all duration-300 shrink-0 border ${filters.category === cat.value
+                  ? "bg-charcoal text-white border-charcoal shadow-md"
+                  : "bg-white text-charcoal/80 border-charcoal/10 hover:border-teal hover:text-teal"
+                  }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Filters Row */}
+          <div className="mb-10 flex flex-row gap-4 items-center overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 w-auto max-w-full">
+            <select
+              value={filters.duration}
+              onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
+              className="min-w-[160px] flex-1 px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 outline-none bg-sand/50 text-charcoal font-medium shrink-0 text-sm sm:text-base appearance-none transition-all duration-300"
             >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Filters Row */}
-        <div className="mb-8 flex flex-row gap-3 sm:gap-4 items-center overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 w-auto max-w-full">
-          <select
-            value={filters.duration}
-            onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
-            className="min-w-[140px] sm:min-w-[150px] flex-1 px-3 sm:px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0 text-sm sm:text-base"
-          >
-            <option value="">Any Duration</option>
-            {dayOptions.map((day) => (
-              <option key={day} value={day.split(" ")[0]}>
-                {day}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filters.accommodation}
-            onChange={(e) =>
-              setFilters({ ...filters, accommodation: e.target.value })
-            }
-            className="min-w-[170px] sm:min-w-[190px] flex-1 px-3 sm:px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0 text-sm sm:text-base"
-          >
-            <option value="">Any Accommodation</option>
-            {accommodationOptions.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filters.vehicle}
-            onChange={(e) => setFilters({ ...filters, vehicle: e.target.value })}
-            className="min-w-[140px] sm:min-w-[150px] flex-1 px-3 sm:px-4 py-3 rounded-xl border border-sand focus:border-ocean outline-none bg-white text-charcoal shrink-0 text-sm sm:text-base"
-          >
-            <option value="">Any Vehicle</option>
-            {vehicleOptions.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={() => setFilters({ category: filters.category, duration: "", accommodation: "", vehicle: "" })}
-            className="w-11 h-11 shrink-0 flex items-center justify-center rounded-xl bg-white border border-sand text-charcoal hover:border-ocean hover:text-ocean transition-colors"
-            aria-label="Clear Filters"
-            title="Clear Filters"
-          >
-            <Filter size={20} />
-          </button>
-        </div>
-
-        {/* Active Filters Summary */}
-        {(filters.category || filters.duration || filters.accommodation || filters.vehicle) && (
-          <div className="flex items-center gap-2 mb-8 flex-wrap">
-            <span className="text-sm text-charcoal-light">Active Filters:</span>
-            <button
-              onClick={() => setFilters({ category: "", duration: "", accommodation: "", vehicle: "" })}
-              className="flex items-center gap-1 text-xs bg-rose-100 text-rose-600 px-2.5 py-1 rounded-md hover:bg-rose-200 transition-colors"
+              <option value="">Any Duration</option>
+              {dayOptions.map((day) => (
+                <option key={day} value={day.split(" ")[0]}>
+                  {day}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filters.accommodation}
+              onChange={(e) =>
+                setFilters({ ...filters, accommodation: e.target.value })
+              }
+              className="min-w-[200px] flex-1 px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 outline-none bg-sand/50 text-charcoal font-medium shrink-0 text-sm sm:text-base appearance-none transition-all duration-300"
             >
-              Clear All <X size={12} />
+              <option value="">Any Accommodation</option>
+              {accommodationOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filters.vehicle}
+              onChange={(e) => setFilters({ ...filters, vehicle: e.target.value })}
+              className="min-w-[160px] flex-1 px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 outline-none bg-sand/50 text-charcoal font-medium shrink-0 text-sm sm:text-base appearance-none transition-all duration-300"
+            >
+              <option value="">Any Vehicle</option>
+              {vehicleOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => setFilters({ category: filters.category, duration: "", accommodation: "", vehicle: "" })}
+              className="w-14 h-14 shrink-0 flex items-center justify-center rounded-[16px] bg-white border border-charcoal/10 text-charcoal/50 hover:border-coral hover:text-coral hover:bg-coral/5 transition-all duration-300 shadow-sm"
+              aria-label="Clear Filters"
+              title="Clear Filters"
+            >
+              <Filter size={24} />
             </button>
           </div>
-        )}
+
+          {/* Active Filters Summary */}
+          {(filters.category || filters.duration || filters.accommodation || filters.vehicle) && (
+            <div className="flex items-center gap-3 mb-10 flex-wrap">
+              <span className="text-sm font-bold text-charcoal/50 uppercase tracking-widest">Active Filters:</span>
+              <button
+                onClick={() => setFilters({ category: "", duration: "", accommodation: "", vehicle: "" })}
+                className="flex items-center gap-2 text-xs font-bold bg-coral/10 text-coral border border-coral/20 px-3 py-1.5 rounded-full hover:bg-coral/20 transition-colors uppercase tracking-wider"
+              >
+                Clear All <X size={14} />
+              </button>
+            </div>
+          )}
+        </ScrollReveal>
 
         {/* Package Grid */}
-        {filteredPackages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full min-w-0">
-            {filteredPackages.map((pkg) => (
-              <PackageCard key={pkg.id} pkg={pkg} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 bg-white rounded-2xl border border-sand">
-            <div className="inline-flex w-16 h-16 bg-sand-light rounded-full items-center justify-center mb-4">
-              <Filter size={24} className="text-charcoal-light" />
+        <ScrollReveal delay={0.4}>
+          {filteredPackages.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full min-w-0">
+              {filteredPackages.map((pkg) => (
+                <PackageCard key={pkg.id} pkg={pkg} />
+              ))}
             </div>
-            <h3 className="text-xl font-heading text-charcoal mb-2">No packages found</h3>
-            <p className="text-charcoal-light">Try adjusting your filters to see more results.</p>
-            <button
-              onClick={() => setFilters({ category: "", duration: "", accommodation: "", vehicle: "" })}
-              className="mt-6 btn-secondary"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-24 bg-white rounded-[40px] border border-charcoal/5 shadow-card">
+              <div className="inline-flex w-20 h-20 bg-sand rounded-full items-center justify-center mb-6 shadow-sm border border-charcoal/5">
+                <Filter size={32} className="text-charcoal/40" />
+              </div>
+              <h3 className="text-2xl font-heading font-bold text-charcoal mb-4 tracking-tight">No packages found</h3>
+              <p className="text-charcoal/60 font-medium text-lg">Try adjusting your filters to see more results.</p>
+              <button
+                onClick={() => setFilters({ category: "", duration: "", accommodation: "", vehicle: "" })}
+                className="mt-8 btn-secondary"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+        </ScrollReveal>
       </div>
     </div>
   );

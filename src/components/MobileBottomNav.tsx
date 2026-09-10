@@ -116,32 +116,32 @@ export default function MobileBottomNav() {
 
       {/* Floating Bottom Nav (Mobile Only) */}
       <div className="md:hidden fixed bottom-6 left-4 right-4 z-[150]">
-        <div className="bg-white/40 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/50 rounded-full flex items-center justify-between px-2 py-2">
+        <div className="bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/40 rounded-[32px] flex items-center justify-between px-2 py-2">
           {/* Home */}
-          <Link href="/" className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-colors ${pathname === '/' ? 'bg-white/60 shadow-sm' : 'hover:bg-white/40'}`}>
-            <Home size={24} className={pathname === '/' ? 'text-ocean' : 'text-charcoal/70'} strokeWidth={pathname === '/' ? 2.5 : 2} />
+          <Link href="/" className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${pathname === '/' ? 'bg-white/80 shadow-sm scale-105' : 'hover:bg-white/40'}`}>
+            <Home size={24} className={pathname === '/' ? 'text-coral' : 'text-charcoal/80'} strokeWidth={pathname === '/' ? 2.5 : 2} />
           </Link>
 
           {/* WhatsApp */}
-          <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
+          <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-all duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
             </svg>
           </a>
 
           {/* Phone */}
-          <a href={`tel:${siteInfo.whatsapp}`} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
-            <Phone size={24} className="text-charcoal/70" strokeWidth={2} />
+          <a href={`tel:${siteInfo.whatsapp}`} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-all duration-300">
+            <Phone size={24} className="text-charcoal/80" strokeWidth={2} />
           </a>
 
           {/* Search */}
-          <button onClick={() => setIsSearchOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
-            <Search size={24} className="text-charcoal/70" strokeWidth={2} />
+          <button onClick={() => setIsSearchOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-all duration-300">
+            <Search size={24} className="text-charcoal/80" strokeWidth={2} />
           </button>
 
           {/* Profile */}
-          <button onClick={() => setIsProfileOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
-            <User size={24} className="text-charcoal/70" strokeWidth={2} />
+          <button onClick={() => setIsProfileOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-all duration-300">
+            <User size={24} className="text-charcoal/80" strokeWidth={2} />
           </button>
         </div>
       </div>

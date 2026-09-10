@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ScrollReveal from "@/components/ScrollReveal";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import SectionHeading from "./SectionHeading";
 import { siteInfo } from "@/data/siteInfo";
@@ -51,61 +52,64 @@ export default function FAQAccordion() {
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
-              <div
-                key={index}
-                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                  isOpen
-                    ? "bg-ocean/5 border-ocean/30 shadow-md"
-                    : "bg-white border-gray-100 hover:border-gray-300"
-                }`}
-              >
-                <button
-                  onClick={() => toggleAccordion(index)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-sm md:text-base text-charcoal focus:outline-none"
-                  aria-expanded={isOpen}
-                >
-                  <span className="flex items-center gap-4">
-                    <span
-                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border transition-colors ${
-                        isOpen
-                          ? "bg-ocean text-white border-ocean"
-                          : "bg-ocean/10 text-ocean border-ocean/20"
-                      }`}
-                    >
-                      <HelpCircle size={16} />
-                    </span>
-                    <span className="font-heading tracking-wide">{faq.q}</span>
-                  </span>
-                  <ChevronDown
-                    className={`w-5 h-5 transition-transform duration-300 shrink-0 ${
-                      isOpen ? "rotate-180 text-ocean" : "text-gray-400"
-                    }`}
-                  />
-                </button>
-                
+              <ScrollReveal key={index} delay={index * 0.1}>
                 <div
-                  className={`px-5 md:px-16 overflow-hidden transition-all duration-300 ${
-                    isOpen ? "max-h-96 pb-5 opacity-100" : "max-h-0 opacity-0"
+                  className={`rounded-[24px] border transition-all duration-500 overflow-hidden ${
+                    isOpen
+                      ? "bg-white border-charcoal/10 shadow-card"
+                      : "bg-white border-charcoal/5 hover:border-charcoal/10 shadow-sm"
                   }`}
                 >
-                  <div className="pt-2 border-t border-gray-100/50 text-sm md:text-base text-charcoal/70 leading-relaxed">
-                    {faq.a}
+                  <button
+                    onClick={() => toggleAccordion(index)}
+                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-base md:text-lg text-charcoal focus:outline-none tracking-tight"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="flex items-center gap-4">
+                      <span
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border transition-colors duration-500 ${
+                          isOpen
+                            ? "bg-coral text-white border-coral"
+                            : "bg-sand text-charcoal/60 border-charcoal/5"
+                        }`}
+                      >
+                        <HelpCircle size={20} />
+                      </span>
+                      <span className="font-heading tracking-tight leading-tight">{faq.q}</span>
+                    </span>
+                    <ChevronDown
+                      className={`w-5 h-5 transition-transform duration-500 shrink-0 ${
+                        isOpen ? "rotate-180 text-coral" : "text-charcoal/40"
+                      }`}
+                    />
+                  </button>
+                  
+                  <div
+                    className={`px-5 sm:px-6 md:px-[88px] overflow-hidden transition-all duration-500 ${
+                      isOpen ? "max-h-96 pb-6 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="pt-2 border-t border-charcoal/5 text-sm md:text-base text-charcoal/60 font-medium leading-relaxed">
+                      {faq.a}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
 
-        <div className="mt-12 max-w-2xl mx-auto text-center p-6 sm:p-8 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="text-left">
-            <h4 className="text-lg font-bold text-charcoal font-heading">Have a custom query or large group?</h4>
-            <p className="text-sm text-charcoal/60 mt-1">Our 24/7 human desk is standing by.</p>
+        <ScrollReveal delay={0.6}>
+          <div className="mt-12 max-w-2xl mx-auto text-center p-8 sm:p-10 bg-white rounded-[32px] border border-charcoal/5 shadow-card flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-card-hover transition-shadow duration-500">
+            <div className="text-center sm:text-left">
+              <h4 className="text-xl font-bold text-charcoal font-heading tracking-tight">Have a custom query or large group?</h4>
+              <p className="text-base text-charcoal/60 font-medium mt-1">Our 24/7 human desk is standing by.</p>
+            </div>
+            <a href={`tel:${siteInfo.whatsapp.replace(/\D/g, '')}`} className="btn-primary shrink-0 whitespace-nowrap bg-teal hover:bg-teal-dark w-full sm:w-auto">
+              Call Support Now
+            </a>
           </div>
-          <a href={`tel:${siteInfo.whatsapp.replace(/\D/g, '')}`} className="btn-primary shrink-0 whitespace-nowrap">
-            Call Support Now
-          </a>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

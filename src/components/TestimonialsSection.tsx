@@ -55,30 +55,30 @@ export default function TestimonialsSection() {
   return (
     <div className="relative">
       {/* Scroll Controls (Desktop) */}
-      <div className="hidden lg:flex justify-end gap-3 mb-6 pr-4">
+      <div className="hidden lg:flex justify-end gap-3 mb-8 pr-4">
         <button
           onClick={() => scroll("left")}
           disabled={!canScrollLeft}
-          className={`w-10 h-10 rounded-full flex items-center justify-center border border-sand transition-all ${
+          className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-300 ${
             canScrollLeft
-              ? "bg-white text-charcoal hover:bg-ocean hover:text-white hover:border-ocean"
-              : "bg-white/50 text-charcoal/30 cursor-not-allowed"
+              ? "bg-white text-charcoal border-charcoal/10 hover:bg-teal hover:text-white hover:border-teal shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              : "bg-white/50 text-charcoal/20 border-charcoal/5 cursor-not-allowed"
           }`}
           aria-label="Scroll left"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={24} />
         </button>
         <button
           onClick={() => scroll("right")}
           disabled={!canScrollRight}
-          className={`w-10 h-10 rounded-full flex items-center justify-center border border-sand transition-all ${
+          className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-300 ${
             canScrollRight
-              ? "bg-white text-charcoal hover:bg-ocean hover:text-white hover:border-ocean"
-              : "bg-white/50 text-charcoal/30 cursor-not-allowed"
+              ? "bg-white text-charcoal border-charcoal/10 hover:bg-teal hover:text-white hover:border-teal shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              : "bg-white/50 text-charcoal/20 border-charcoal/5 cursor-not-allowed"
           }`}
           aria-label="Scroll right"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={24} />
         </button>
       </div>
 

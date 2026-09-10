@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, DM_Serif_Display } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { siteInfo } from "@/data/siteInfo";
 import Navbar from "@/components/Navbar";
@@ -13,10 +13,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const dmSerif = DM_Serif_Display({
-  weight: "400",
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-dm-serif",
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -35,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${dmSerif.variable}`}>
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="antialiased min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1 pt-[72px]">{children}</main>

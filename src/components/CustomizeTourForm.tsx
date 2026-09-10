@@ -44,58 +44,58 @@ export default function CustomizeTourForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-card border border-sand">
+    <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-card border border-charcoal/5">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-charcoal mb-2">
+            <label htmlFor="name" className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
               Full Name *
             </label>
             <input
               type="text"
               id="name"
               required
-              className="w-full px-4 py-3 rounded-xl border border-sand focus:border-ocean focus:ring-2 focus:ring-ocean/20 transition-all outline-none text-charcoal"
+              className="w-full px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 transition-all outline-none text-charcoal font-medium bg-sand/50"
               placeholder="John Doe"
             />
           </div>
 
           {/* Phone */}
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-charcoal mb-2">
+            <label htmlFor="phone" className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
               Phone Number *
             </label>
             <input
               type="tel"
               id="phone"
               required
-              className="w-full px-4 py-3 rounded-xl border border-sand focus:border-ocean focus:ring-2 focus:ring-ocean/20 transition-all outline-none text-charcoal"
+              className="w-full px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 transition-all outline-none text-charcoal font-medium bg-sand/50"
               placeholder="+91 98765 43210"
             />
           </div>
 
           {/* Email */}
           <div className="sm:col-span-2">
-            <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">
+            <label htmlFor="email" className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
               Email Address (Optional)
             </label>
             <input
               type="email"
               id="email"
-              className="w-full px-4 py-3 rounded-xl border border-sand focus:border-ocean focus:ring-2 focus:ring-ocean/20 transition-all outline-none text-charcoal"
+              className="w-full px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 transition-all outline-none text-charcoal font-medium bg-sand/50"
               placeholder="john@example.com"
             />
           </div>
 
           {/* Days */}
           <div>
-            <label htmlFor="days" className="block text-sm font-medium text-charcoal mb-2">
+            <label htmlFor="days" className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
               Number of Days
             </label>
             <select
               id="days"
-              className="w-full px-4 py-3 rounded-xl border border-sand focus:border-ocean focus:ring-2 focus:ring-ocean/20 transition-all outline-none text-charcoal bg-white"
+              className="w-full px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 transition-all outline-none text-charcoal font-medium bg-sand/50 appearance-none"
             >
               <option value="">Select duration</option>
               {dayOptions.map((day) => (
@@ -108,12 +108,12 @@ export default function CustomizeTourForm() {
 
           {/* Accommodation */}
           <div>
-            <label htmlFor="accommodation" className="block text-sm font-medium text-charcoal mb-2">
+            <label htmlFor="accommodation" className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
               Accommodation Type
             </label>
             <select
               id="accommodation"
-              className="w-full px-4 py-3 rounded-xl border border-sand focus:border-ocean focus:ring-2 focus:ring-ocean/20 transition-all outline-none text-charcoal bg-white"
+              className="w-full px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 transition-all outline-none text-charcoal font-medium bg-sand/50 appearance-none"
             >
               <option value="">Select accommodation</option>
               {accommodationOptions.map((acc) => (
@@ -126,12 +126,12 @@ export default function CustomizeTourForm() {
 
           {/* Vehicle */}
           <div className="sm:col-span-2">
-            <label htmlFor="vehicle" className="block text-sm font-medium text-charcoal mb-2">
+            <label htmlFor="vehicle" className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
               Vehicle Type
             </label>
             <select
               id="vehicle"
-              className="w-full px-4 py-3 rounded-xl border border-sand focus:border-ocean focus:ring-2 focus:ring-ocean/20 transition-all outline-none text-charcoal bg-white"
+              className="w-full px-5 py-4 rounded-[16px] border border-charcoal/10 focus:border-teal focus:ring-4 focus:ring-teal/10 transition-all outline-none text-charcoal font-medium bg-sand/50 appearance-none"
             >
               <option value="">Select vehicle</option>
               {vehicleOptions.map((vehicle) => (
@@ -146,7 +146,7 @@ export default function CustomizeTourForm() {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="btn-primary w-full mt-4"
+          className="btn-primary w-full mt-6 bg-teal hover:bg-teal-dark"
         >
           {status === "submitting" ? (
             <>
@@ -160,7 +160,7 @@ export default function CustomizeTourForm() {
             </>
           )}
         </button>
-        <p className="text-center text-xs text-charcoal-light/60 mt-4">
+        <p className="text-center text-xs font-medium text-charcoal/50 mt-4">
           No payment required. We will contact you with the best available prices.
         </p>
       </form>
