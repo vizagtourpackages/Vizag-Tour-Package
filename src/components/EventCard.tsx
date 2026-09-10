@@ -8,31 +8,33 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   return (
-    <div className="card-base h-full flex flex-col overflow-hidden group border border-sand">
-      <div className="relative overflow-hidden">
-        <PlaceholderImage
-          gradient={event.imageGradient}
-          alt={event.title}
-          className="h-48 w-full transform transition-transform duration-500 group-hover:scale-105"
-        />
+    <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden h-full group">
+      <div className="relative overflow-hidden p-2">
+        <div className="relative overflow-hidden rounded-[16px] bg-sand">
+          <PlaceholderImage
+            gradient={event.imageGradient}
+            alt={event.title}
+            className="h-48 w-full transform transition-transform duration-700 group-hover:scale-105"
+          />
+        </div>
       </div>
       
-      <div className="p-4 sm:p-5 flex flex-col flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <span className="text-xs font-semibold text-ocean bg-ocean/10 px-2.5 py-1 rounded-md shrink-0 whitespace-nowrap [writing-mode:horizontal-tb]">
+      <div className="p-5 sm:p-6 flex flex-col flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-teal bg-teal/10 px-3 py-1.5 rounded-full shrink-0 whitespace-nowrap">
             {event.category}
           </span>
-          <div className="flex items-center gap-1.5 text-xs text-charcoal-light/60 font-medium shrink-0">
-            <Calendar size={14} />
+          <div className="flex items-center gap-1.5 text-xs text-charcoal/40 font-bold shrink-0 tracking-wide">
+            <Calendar size={14} className="text-charcoal/30" />
             {event.year}
           </div>
         </div>
         
-        <h3 className="font-heading text-lg sm:text-xl text-charcoal mb-2 leading-tight group-hover:text-ocean transition-colors break-words">
+        <h3 className="font-heading font-bold text-xl sm:text-2xl text-charcoal mb-3 leading-tight group-hover:text-coral transition-colors break-words tracking-tight">
           {event.title}
         </h3>
         
-        <p className="text-sm text-charcoal-light/70 flex-1 break-words line-clamp-3">
+        <p className="text-sm text-charcoal/60 flex-1 break-words line-clamp-3 font-medium leading-relaxed">
           {event.description}
         </p>
       </div>

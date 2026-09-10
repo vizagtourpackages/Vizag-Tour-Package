@@ -17,9 +17,9 @@ export default function NewsPromoCard({ item }: { item: NewsPromoData }) {
   const isPromo = item.type === "Promotion";
 
   return (
-    <div className="bg-[#1a1f2e] rounded-3xl p-4 sm:p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-stretch border border-white/10 hover:border-white/20 transition-all duration-300 group">
+    <div className="bg-white rounded-[32px] p-4 sm:p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-stretch border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 group hover:-translate-y-2">
       {/* Image container */}
-      <div className="w-full sm:w-2/5 aspect-[4/3] sm:aspect-auto rounded-2xl overflow-hidden relative shrink-0 bg-charcoal">
+      <div className="w-full sm:w-2/5 aspect-[4/3] sm:aspect-auto rounded-[24px] overflow-hidden relative shrink-0 bg-sand">
         <Image
           src={item.imageUrl}
           alt={item.title}
@@ -32,21 +32,21 @@ export default function NewsPromoCard({ item }: { item: NewsPromoData }) {
       <div className="w-full sm:w-3/5 flex flex-col justify-center py-2">
         <div className="mb-4 flex items-center justify-between">
           <span
-            className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            className={`inline-block px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${
               isPromo
-                ? "bg-coral/20 text-coral border border-coral/30"
-                : "bg-ocean/20 text-[#38bdf8] border border-[#38bdf8]/30"
+                ? "bg-coral/10 text-coral border border-coral/20"
+                : "bg-teal/10 text-teal border border-teal/20"
             }`}
           >
             {item.type}
           </span>
-          <span className="text-white/40 text-xs font-medium">{item.date}</span>
+          <span className="text-charcoal/40 text-xs font-bold tracking-wide">{item.date}</span>
         </div>
 
-        <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 font-heading leading-tight group-hover:text-ocean-light transition-colors">
+        <h3 className="text-xl sm:text-2xl font-bold text-charcoal mb-4 font-heading leading-tight group-hover:text-coral transition-colors tracking-tight">
           {item.title}
         </h3>
-        <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-6 line-clamp-3">
+        <p className="text-charcoal/60 text-sm sm:text-base leading-relaxed mb-6 line-clamp-3 font-medium">
           {item.description}
         </p>
 
@@ -54,7 +54,7 @@ export default function NewsPromoCard({ item }: { item: NewsPromoData }) {
           <Link
             href={item.href}
             className={`inline-flex items-center gap-2 text-sm font-bold transition-colors ${
-              isPromo ? "text-coral hover:text-coral-light" : "text-[#38bdf8] hover:text-[#7dd3fc]"
+              isPromo ? "text-coral hover:text-coral-light" : "text-teal hover:text-teal-dark"
             }`}
           >
             {item.linkText} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

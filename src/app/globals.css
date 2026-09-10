@@ -1,37 +1,38 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* --- Brand Colors --- */
-  --color-ocean: #0B4F6C;
-  --color-ocean-dark: #023047;
-  --color-ocean-light: #10678D;
-  --color-teal: #219EBC;
-  --color-teal-dark: #1B849C;
-  --color-coral: #3A86FF;
-  --color-coral-light: #609FFF;
-  --color-sand: #F1F5F9;
-  --color-sand-light: #F8FAFC;
-  --color-warm-white: #FCFDFF;
-  --color-charcoal: #1E293B;
-  --color-charcoal-light: #334155;
+  /* --- Brand Colors (Nomu.store aesthetic) --- */
+  --color-ocean: #0f151d; /* Using charcoal as the primary dark for sleekness */
+  --color-ocean-dark: #000000;
+  --color-ocean-light: #2d3748;
+  --color-teal: #10b981; /* Emerald Green */
+  --color-teal-dark: #059669;
+  --color-coral: #ff7448; /* Vibrant Orange */
+  --color-coral-light: #f97316;
+  --color-sand: #fef0e8;
+  --color-sand-light: #fff5ed;
+  --color-warm-white: #FFF9F6; /* Global Base */
+  --color-charcoal: #0f151d;
+  --color-charcoal-light: #4a5568;
   --color-gold: #F59E0B;
 
   /* --- Font families --- */
-  --font-heading: "DM Serif Display", Georgia, serif;
+  --font-heading: "Outfit", "DM Sans", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
 
   /* --- Shadows --- */
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
-  --shadow-nav: 0 2px 20px rgba(0, 0, 0, 0.08);
-  --shadow-float: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 4px 20px rgba(15, 21, 29, 0.04);
+  --shadow-card-hover: 0 18px 40px -8px rgba(255, 116, 72, 0.25); /* Subtle orange glow lift */
+  --shadow-nav: 0 4px 30px rgba(15, 21, 29, 0.03);
+  --shadow-float: 0 12px 30px -12px rgba(15, 21, 29, 0.15);
 
   /* --- Animations --- */
-  --animate-fade-in: fade-in 0.6s ease-out forwards;
-  --animate-slide-up: slide-up 0.6s ease-out forwards;
-  --animate-slide-down: slide-down 0.3s ease-out forwards;
+  --animate-fade-in: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-up: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-down: slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
-  --animate-float: float 3s ease-in-out infinite;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-marquee: marquee 25s linear infinite;
 }
 
 /* --- Keyframes --- */
@@ -58,6 +59,11 @@
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
 }
 
 /* --- Base Styles --- */
@@ -194,19 +200,19 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Button styles --- */
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-ocean text-white font-semibold rounded-xl transition-all duration-300 hover:bg-ocean-dark hover:shadow-lg active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-ocean text-white font-semibold rounded-full transition-all duration-300 hover:bg-ocean-light hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98];
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-ocean text-ocean font-semibold rounded-xl transition-all duration-300 hover:bg-ocean hover:text-white active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-ocean/10 text-ocean font-semibold rounded-full transition-all duration-300 hover:border-ocean/30 hover:bg-ocean/5 active:scale-[0.98];
 }
 
 .btn-coral {
-  @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-coral text-white font-semibold rounded-xl transition-all duration-300 hover:bg-orange-600 hover:shadow-lg active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-coral text-white font-semibold rounded-full transition-all duration-300 hover:bg-coral-light hover:shadow-[0_12px_24px_-8px_rgba(255,116,72,0.5)] hover:-translate-y-0.5 active:scale-[0.98];
 }
 
 .btn-whatsapp {
-  @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 text-white font-semibold rounded-xl transition-all duration-300 hover:bg-green-600 hover:shadow-lg active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-teal text-white font-semibold rounded-full transition-all duration-300 hover:bg-teal-dark hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98];
 }
 
 /* --- Hide Scrollbar Utility --- */
