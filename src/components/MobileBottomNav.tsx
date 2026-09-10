@@ -116,36 +116,32 @@ export default function MobileBottomNav() {
 
       {/* Floating Bottom Nav (Mobile Only) */}
       <div className="md:hidden fixed bottom-6 left-4 right-4 z-[150]">
-        <div className="bg-white/95 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 rounded-full flex items-center justify-between px-2 py-2">
+        <div className="bg-white/40 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/50 rounded-full flex items-center justify-between px-2 py-2">
           {/* Home */}
-          <Link href="/" className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-colors ${pathname === '/' ? 'bg-blue-50' : ''}`}>
-            <Home size={24} className={pathname === '/' ? 'text-blue-600' : 'text-gray-500'} strokeWidth={pathname === '/' ? 2.5 : 2} />
+          <Link href="/" className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-colors ${pathname === '/' ? 'bg-white/60 shadow-sm' : 'hover:bg-white/40'}`}>
+            <Home size={24} className={pathname === '/' ? 'text-ocean' : 'text-charcoal/70'} strokeWidth={pathname === '/' ? 2.5 : 2} />
           </Link>
 
           {/* WhatsApp */}
-          <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="relative flex items-center justify-center w-12 h-12 rounded-full">
-            <div className="absolute top-2.5 right-2.5 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
             </svg>
           </a>
 
           {/* Phone */}
-          <a href={`tel:${siteInfo.whatsapp}`} className="relative flex items-center justify-center w-12 h-12 rounded-full">
-            <Phone size={24} className="text-gray-500" strokeWidth={2} />
+          <a href={`tel:${siteInfo.whatsapp}`} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
+            <Phone size={24} className="text-charcoal/70" strokeWidth={2} />
           </a>
 
           {/* Search */}
-          <button onClick={() => setIsSearchOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full">
-            <Search size={24} className="text-gray-500" strokeWidth={2} />
+          <button onClick={() => setIsSearchOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
+            <Search size={24} className="text-charcoal/70" strokeWidth={2} />
           </button>
 
           {/* Profile */}
-          <button onClick={() => setIsProfileOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full">
-            <div className="absolute top-2.5 right-2 w-3 h-3 bg-red-500 border-2 border-white rounded-full z-10"></div>
-            <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border border-gray-200">
-              <User size={16} className="text-gray-600" />
-            </div>
+          <button onClick={() => setIsProfileOpen(true)} className="relative flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/40 transition-colors">
+            <User size={24} className="text-charcoal/70" strokeWidth={2} />
           </button>
         </div>
       </div>

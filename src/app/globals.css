@@ -2,19 +2,19 @@
 
 @theme inline {
   /* --- Brand Colors --- */
-  --color-ocean: #0C7B93;
-  --color-ocean-dark: #095E72;
-  --color-ocean-light: #1CA3C4;
-  --color-teal: #0F766E;
-  --color-teal-dark: #0A5C56;
-  --color-coral: #F97316;
-  --color-coral-light: #FB923C;
-  --color-sand: #F5E6D3;
-  --color-sand-light: #FDF8F3;
-  --color-warm-white: #FEFBF6;
+  --color-ocean: #0B4F6C;
+  --color-ocean-dark: #023047;
+  --color-ocean-light: #10678D;
+  --color-teal: #219EBC;
+  --color-teal-dark: #1B849C;
+  --color-coral: #3A86FF;
+  --color-coral-light: #609FFF;
+  --color-sand: #F1F5F9;
+  --color-sand-light: #F8FAFC;
+  --color-warm-white: #FCFDFF;
   --color-charcoal: #1E293B;
   --color-charcoal-light: #334155;
-  --color-gold: #D97706;
+  --color-gold: #F59E0B;
 
   /* --- Font families --- */
   --font-heading: "DM Serif Display", Georgia, serif;

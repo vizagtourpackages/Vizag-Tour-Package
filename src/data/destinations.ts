@@ -67,6 +67,51 @@ export const topPlaces: Destination[] = [
   },
 ];
 
+export const vizagPlaces: Destination[] = [
+  {
+    id: "rk-beach",
+    name: "Ramakrishna Beach (RK Beach)",
+    description: "The most popular beach in Vizag, known for its serene views, INS Kursura Submarine Museum, and vibrant evenings.",
+    category: "Beach",
+    imageGradient: "from-blue-400 to-ocean",
+  },
+  {
+    id: "kailasagiri",
+    name: "Kailasagiri",
+    description: "A hilltop park with panoramic views of the city and sea, featuring huge statues of Shiva and Parvathi and a ropeway.",
+    category: "Viewpoint",
+    imageGradient: "from-green-400 to-teal",
+  },
+  {
+    id: "submarine-museum",
+    name: "INS Kursura Submarine Museum",
+    description: "A decommissioned submarine turned museum on RK Beach, offering a glimpse into the life of Indian Navy submariners.",
+    category: "Museum",
+    imageGradient: "from-gray-400 to-charcoal",
+  },
+  {
+    id: "rushikonda",
+    name: "Rushikonda Beach",
+    description: "A pristine beach known for its golden sands and water sports, perfect for swimming and surfing.",
+    category: "Beach",
+    imageGradient: "from-yellow-400 to-coral",
+  },
+  {
+    id: "yarada",
+    name: "Yarada Beach",
+    description: "A stunning, secluded beach surrounded by lush green hills on three sides and the Bay of Bengal on the fourth.",
+    category: "Beach",
+    imageGradient: "from-teal-300 to-ocean-dark",
+  },
+  {
+    id: "simhachalam",
+    name: "Simhachalam Temple",
+    description: "An ancient 11th-century temple dedicated to Lord Narasimha, known for its intricate Kalinga architecture.",
+    category: "Temple",
+    imageGradient: "from-amber-400 to-orange-600",
+  }
+];
+
 export interface DestinationDetail {
   id: string;
   name: string;
