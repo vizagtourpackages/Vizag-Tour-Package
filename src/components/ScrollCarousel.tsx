@@ -51,7 +51,7 @@ export default function ScrollCarousel({ children }: ScrollCarouselProps) {
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 scrollbar-hide"
+        className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 hide-scrollbar"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {children}

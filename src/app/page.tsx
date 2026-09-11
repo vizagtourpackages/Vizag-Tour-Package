@@ -12,6 +12,7 @@ import MobileTrustBanner from "@/components/MobileTrustBanner";
 import CustomizeTourForm from "@/components/CustomizeTourForm";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ScrollCarousel from "@/components/ScrollCarousel";
+import CustomizeTourWrapper from "@/components/CustomizeTourWrapper";
 import GoldStandardGrid from "@/components/GoldStandardGrid";
 import ComparisonTable from "@/components/ComparisonTable";
 import FAQAccordion from "@/components/FAQAccordion";
@@ -38,10 +39,10 @@ export default function Home() {
       <MobileTrustBanner />
 
       {/* 2. Trending Packages */}
-      <section className="section-padding bg-warm-white relative overflow-hidden">
+      <section className="section-padding bg-warm-white relative overflow-hidden ">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-teal/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-        
+
         <div className="container-max relative z-10">
           <SectionHeading
             title="Trending Packages"
@@ -50,7 +51,7 @@ export default function Home() {
           <ScrollReveal delay={0.2}>
             <div className="mobile-carousel-container gap-6">
               {trendingPackages.map((pkg) => (
-                <div key={pkg.id} className="mobile-carousel-item w-[300px] sm:w-[350px]">
+                <div key={pkg.id} className="mobile-carousel-item w-[85vw] max-w-[300px] sm:max-w-none sm:w-[350px]">
                   <PackageCard pkg={pkg} />
                 </div>
               ))}
@@ -66,85 +67,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Customize Your Dream Tour */}
-      <section className="section-padding bg-charcoal relative overflow-hidden">
-        {/* Decorative Grid */}
-        <div className="absolute inset-0 opacity-5">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="1"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
-        </div>
-        
-        {/* Decorative Blobs */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-coral/10 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
-        <div className="container-max relative z-10">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
-            <div className="lg:w-1/2">
-              <ScrollReveal delay={0}>
-                <div className="mb-12">
-                  <span className="inline-block badge border border-white/10 text-white/70 bg-white/5 mb-6 tracking-widest px-4 py-1.5 shadow-sm">
-                    ✨ BESPOKE EXPERIENCES
-                  </span>
-                  <h2 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-[1.1] tracking-tight">
-                    Customize Your <span className="text-coral">Dream Tour</span>
-                  </h2>
-                  <p className="text-lg sm:text-xl text-white/60 max-w-xl font-medium leading-relaxed">
-                    Tell us your preferences and our travel experts will design a personalized itinerary just for you.
-                  </p>
-                </div>
-              </ScrollReveal>
-              
-              <div className="space-y-8 mt-12">
-                {[
-                  {
-                    num: "1",
-                    title: "Fill the Form",
-                    desc: "Provide your travel dates, group size, and preferences.",
-                  },
-                  {
-                    num: "2",
-                    title: "Get a Quote",
-                    desc: "We'll send you a customized itinerary with the best pricing.",
-                  },
-                  {
-                    num: "3",
-                    title: "Confirm & Travel",
-                    desc: "Approve the plan and get ready for a memorable vacation.",
-                  },
-                ].map((step, idx) => (
-                  <ScrollReveal key={idx} delay={0.2 + idx * 0.1}>
-                    <div className="flex items-start gap-6 group">
-                      <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-coral group-hover:border-coral transition-colors duration-500 shadow-sm">
-                        <span className="text-coral group-hover:text-white font-heading font-bold text-2xl transition-colors duration-500">{step.num}</span>
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-heading font-bold text-white mb-2 tracking-tight group-hover:text-coral transition-colors duration-500">{step.title}</h4>
-                        <p className="text-white/60 text-base font-medium leading-relaxed">{step.desc}</p>
-                      </div>
-                    </div>
-                  </ScrollReveal>
-                ))}
-              </div>
-            </div>
-            
-            <div className="lg:w-1/2 w-full">
-              <ScrollReveal delay={0.4} direction="up" className="h-full">
-                <CustomizeTourForm />
-              </ScrollReveal>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 4. Our Premium Fleet */}
-      <section className="section-padding bg-warm-white">
+      <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max">
           <div className="text-center mb-2">
             <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 border border-ocean/20 px-4 py-1.5 rounded-full uppercase tracking-widest mb-4">
@@ -178,7 +104,7 @@ export default function Home() {
               <span className="w-2 h-2 rounded-full bg-teal animate-pulse-soft"></span>
               Our Services
             </span>
-            <h2 className="font-heading font-bold text-4xl sm:text-5xl text-charcoal mb-6 tracking-tight leading-[1.1]">What We Offer</h2>
+            <h2 className="font-heading font-bold text-3xl sm:text-5xl text-charcoal mb-6 tracking-tight leading-[1.1]">What We Offer</h2>
             <p className="text-charcoal/60 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
               Experience the best of Visakhapatnam with our premium, reliable, and comfortable travel services.
             </p>
@@ -241,7 +167,7 @@ export default function Home() {
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
               {hotels.map((hotel) => (
-                <div key={hotel.id} className="w-[85vw] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                <div key={hotel.id} className="w-[320px] sm:w-[320px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
                   <HotelCard hotel={hotel} />
                 </div>
               ))}
@@ -260,7 +186,7 @@ export default function Home() {
       {/* 7. Top Destinations from Vizag */}
       <section className="section-padding bg-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-sand rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-        
+
         <div className="container-max relative z-10">
           <SectionHeading
             title="Top Destinations from Vizag"
@@ -269,7 +195,7 @@ export default function Home() {
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
               {topPlaces.map((destination) => (
-                <div key={destination.id} className="min-w-[280px] w-[calc(25%-15px)] flex-shrink-0 snap-start">
+                <div key={destination.id} className="min-w-[280px] w-[280px] sm:w-[calc(25%-15px)] flex-shrink-0 snap-start">
                   <DestinationCard destination={destination} />
                 </div>
               ))}
@@ -286,7 +212,7 @@ export default function Home() {
       </section>
 
       {/* 8. Places to Visit in Vizag */}
-      <section className="section-padding bg-warm-white">
+      <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max">
           <SectionHeading
             title="Places to Visit in Vizag"
@@ -295,7 +221,7 @@ export default function Home() {
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
               {vizagPlaces.map((destination) => (
-                <div key={destination.id} className="w-[85vw] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                <div key={destination.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
                   <DestinationCard destination={destination} />
                 </div>
               ))}
@@ -308,7 +234,7 @@ export default function Home() {
       <section className="section-padding bg-white relative overflow-hidden">
         {/* Background Decorative Blob */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-teal/5 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/4 pointer-events-none -z-10"></div>
-        
+
         <div className="container-max relative z-10">
           <SectionHeading
             title="Hill Station Escapes"
@@ -325,7 +251,7 @@ export default function Home() {
                   imageGradient: d.imageGradient,
                 };
                 return (
-                  <div key={d.id} className="w-[85vw] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                  <div key={d.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
                     <DestinationCard destination={hillStationData} />
                   </div>
                 );
@@ -343,7 +269,7 @@ export default function Home() {
       </section>
 
       {/* 9. Travel Guides */}
-      <section className="section-padding bg-warm-white">
+      <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max">
           <SectionHeading
             title="Travel Guides & Things to Do"
@@ -352,7 +278,7 @@ export default function Home() {
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
               {guides.map((guide) => (
-                <div key={guide.id} className="w-[85vw] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                <div key={guide.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
                   <GuideCard guide={guide} />
                 </div>
               ))}
@@ -372,7 +298,7 @@ export default function Home() {
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
               {events.map((event) => (
-                <div key={event.id} className="w-[85vw] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                <div key={event.id} className="w-[260px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
                   <EventCard event={event} />
                 </div>
               ))}
@@ -408,7 +334,7 @@ export default function Home() {
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="grid-news" width="60" height="60" patternUnits="userSpaceOnUse">
-                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="1"/>
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="1" />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid-news)" />
@@ -424,27 +350,39 @@ export default function Home() {
             subtitle="Catch up on the latest travel news and take advantage of our seasonal promotions."
             light
           />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mt-16">
-            <ScrollReveal delay={0.2}>
-              <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr,1px,1fr] gap-8 lg:gap-12 mt-16">
+            <ScrollReveal delay={0.2} className="w-full min-w-0">
+              <div className="w-full">
                 <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-4">
                   <h3 className="text-2xl font-heading font-bold text-white tracking-tight">Special Promotions</h3>
                   <span className="badge bg-coral/20 text-coral border border-coral/30 tracking-widest text-[10px]">LIMITED</span>
                 </div>
-                {promotionsData.map((promo) => (
-                  <NewsPromoCard key={promo.id} item={promo} />
-                ))}
+                <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+                  {promotionsData.map((promo) => (
+                    <div key={promo.id} className="w-[85vw] max-w-[300px] lg:max-w-none lg:w-[85%] shrink-0 snap-start">
+                      <NewsPromoCard item={promo} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </ScrollReveal>
-            <ScrollReveal delay={0.3}>
-              <div className="space-y-6">
-                <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-4">
+
+            {/* Vertical Divider */}
+            <div className="hidden lg:block w-full h-full bg-white/10 rounded-full" />
+
+            <ScrollReveal delay={0.3} className="w-full min-w-0">
+              <div className="w-full">
+                <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-4 mt-8 lg:mt-0">
                   <h3 className="text-2xl font-heading font-bold text-white tracking-tight">Travel News</h3>
                   <span className="badge bg-teal/20 text-teal border border-teal/30 tracking-widest text-[10px]">UPDATES</span>
                 </div>
-                {newsData.map((news) => (
-                  <NewsPromoCard key={news.id} item={news} />
-                ))}
+                <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+                  {newsData.map((news) => (
+                    <div key={news.id} className="w-[85vw] max-w-[300px] lg:max-w-none lg:w-[85%] shrink-0 snap-start">
+                      <NewsPromoCard item={news} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </ScrollReveal>
           </div>

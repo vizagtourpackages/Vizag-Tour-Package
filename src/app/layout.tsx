@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import EnquiryDrawer from "@/components/EnquiryDrawer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,8 +35,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
-      <body className="antialiased min-h-screen flex flex-col">
+    <html lang="en" className={`${inter.variable} ${outfit.variable} bg-warm-white`}>
+      <body className="antialiased min-h-screen flex flex-col bg-warm-white text-charcoal overflow-x-hidden">
         <Navbar />
         <main className="flex-1 pt-[72px]">{children}</main>
         <Footer />
@@ -43,6 +44,7 @@ export default function RootLayout({
           <WhatsAppFAB />
         </div>
         <MobileBottomNav />
+        <EnquiryDrawer />
       </body>
     </html>
   );
