@@ -12,7 +12,6 @@ import MobileTrustBanner from "@/components/MobileTrustBanner";
 import CustomizeTourForm from "@/components/CustomizeTourForm";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ScrollCarousel from "@/components/ScrollCarousel";
-import CustomizeTourWrapper from "@/components/CustomizeTourWrapper";
 import GoldStandardGrid from "@/components/GoldStandardGrid";
 import ComparisonTable from "@/components/ComparisonTable";
 import FAQAccordion from "@/components/FAQAccordion";
