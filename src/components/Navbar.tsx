@@ -50,11 +50,8 @@ export default function Navbar() {
               <span className="text-charcoal font-black text-xl group-hover:text-white transition-colors">V</span>
             </div>
             <div className="hidden sm:block">
-              <span className={`font-heading font-bold text-xl leading-tight block tracking-tight ${showSolid ? "text-charcoal" : "text-white"}`}>
-                Vizag Tour
-              </span>
-              <span className={`text-xs font-medium tracking-widest uppercase block ${showSolid ? "text-teal" : "text-white/80"}`}>
-                Packages
+              <span className={`font-heading font-bold text-lg leading-tight block tracking-tight ${showSolid ? "text-charcoal" : "text-white"}`}>
+                Vizag Tour Packages
               </span>
             </div>
           </Link>
@@ -153,7 +150,7 @@ export default function Navbar() {
           {navLinks.map((link) => (
             link.subLinks ? (
               <div key={link.label} className="mb-2">
-                <button 
+                <button
                   onClick={() => setExpandedMobileMenu(expandedMobileMenu === link.label ? null : link.label)}
                   className="w-full px-8 py-4 text-sm font-bold text-charcoal hover:bg-sand hover:text-coral rounded-[16px] transition-colors flex items-center justify-between"
                 >

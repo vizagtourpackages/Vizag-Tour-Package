@@ -7,7 +7,7 @@ export const newsData: NewsPromoData[] = [
     title: "New Vande Bharat Express to Vizag Starts This Month",
     description: "Travel to Visakhapatnam is getting faster! The new high-speed train connects major hubs directly to Vizag, cutting travel time by 3 hours. Plan your weekend getaway now with our exclusive station-pickup packages.",
     date: "SEP 10, 2026",
-    imageUrl: "https://images.unsplash.com/photo-1541888069502-d1d49e1e233d?auto=format&fit=crop&q=80&w=800",
+    imageUrl: "https://images.unsplash.com/photo-1496850471190-6ce3a1c8b321?auto=format&fit=crop&q=80&w=800",
     linkText: "Read the Full Article",
     href: "/news/vande-bharat-express",
   },

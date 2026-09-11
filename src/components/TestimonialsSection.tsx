@@ -92,7 +92,7 @@ export default function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[350px] sm:max-w-none lg:w-[400px] snap-start shrink-0"
+              className="w-[85vw] max-w-[300px] sm:w-[350px] sm:max-w-none lg:w-[400px] snap-start shrink-0"
             >
               <TestimonialCard testimonial={testimonial} />
             </div>

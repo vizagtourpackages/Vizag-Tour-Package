@@ -15,7 +15,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
           <PlaceholderImage
             gradient={guide.imageGradient}
             alt={guide.title}
-            className="h-40 w-full transform transition-transform duration-700 group-hover:scale-105"
+            className="h-28 sm:h-40 w-full transform transition-transform duration-700 group-hover:scale-105"
           />
         </div>
         <div className="absolute top-5 left-5">

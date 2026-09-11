@@ -25,7 +25,7 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
             className="h-48 w-full rounded-[16px] transform transition-transform duration-700 group-hover:scale-105"
             overlay
           />
-          <span className="absolute top-6 left-6 badge bg-white/90 backdrop-blur-md text-charcoal font-bold tracking-tight shadow-sm border border-charcoal/5">
+          <span className="absolute top-6 left-6 badge bg-white/90 backdrop-blur-md text-charcoal font-bold tracking-tight shadow-sm border border-charcoal/5" style={{ fontSize: '10px' }}>
             {destination.name}
           </span>
           {destination.price && (

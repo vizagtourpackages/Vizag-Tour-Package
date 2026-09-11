@@ -114,11 +114,11 @@ export default function MobileBottomNav() {
         </div>
       )}
 
-      {/* Floating Bottom Nav (Mobile Only) */}
-      <div className="md:hidden fixed bottom-6 left-4 right-4 z-[150]">
-        <div className="bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/40 rounded-[32px] flex items-center justify-between px-2 py-2">
+      {/* Docked Bottom Nav (Mobile Only) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[150] bg-white/95 backdrop-blur-xl border-t border-charcoal/10 shadow-[0_-8px_32px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center justify-between px-4 py-2">
           {/* Home */}
-          <Link href="/" className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${pathname === '/' ? 'bg-white/80 shadow-sm scale-105' : 'hover:bg-white/40'}`}>
+          <Link href="/" className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${pathname === '/' ? 'bg-charcoal/5 shadow-sm scale-105' : 'hover:bg-charcoal/5'}`}>
             <Home size={24} className={pathname === '/' ? 'text-coral' : 'text-charcoal/80'} strokeWidth={pathname === '/' ? 2.5 : 2} />
           </Link>
 

@@ -5,7 +5,7 @@ import type { Hotel } from "@/data/hotels";
 export default function HotelCard({ hotel }: { hotel: Hotel }) {
   return (
     <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 h-full flex flex-col overflow-hidden group">
-      <div className="w-full aspect-[4/3] relative p-2">
+      <div className="w-full aspect-[16/10] sm:aspect-[4/3] relative p-2">
         <div className="relative w-full h-full rounded-[16px] overflow-hidden bg-sand">
           <Image
             src={hotel.image}
@@ -18,7 +18,7 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
           {hotel.type}
         </div>
       </div>
-      
+
       <div className="p-5 sm:p-6 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-3">
           <h3 className="font-heading font-bold text-xl text-charcoal leading-tight pr-2 tracking-tight group-hover:text-coral transition-colors">{hotel.name}</h3>
@@ -27,7 +27,7 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
             {hotel.rating}
           </div>
         </div>
-        
+
         <div className="flex items-center gap-1.5 text-sm text-charcoal/60 mb-5 font-medium">
           <MapPin size={16} className="text-teal" />
           {hotel.location}
