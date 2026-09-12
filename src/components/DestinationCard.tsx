@@ -18,13 +18,22 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
   return (
     <Link href={href} className="group block h-full">
       <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 h-full flex flex-col overflow-hidden">
-        <div className="relative overflow-hidden p-2">
-          <PlaceholderImage
-            gradient={destination.imageGradient}
-            alt={destination.name}
-            className="h-48 w-full rounded-[16px] transform transition-transform duration-700 group-hover:scale-105"
-            overlay
-          />
+        <div className="relative overflow-hidden">
+          {destination.imageUrl ? (
+            <div className="relative h-48 sm:h-56 w-full">
+              <img 
+                src={destination.imageUrl} 
+                alt={destination.name}
+                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+          ) : (
+            <PlaceholderImage
+              gradient={destination.imageGradient}
+              alt={destination.name}
+              className="h-48 sm:h-56 w-full transform transition-transform duration-700 group-hover:scale-105"
+            />
+          )}
           <span className="absolute top-6 left-6 badge bg-white/90 backdrop-blur-md text-charcoal font-bold tracking-tight shadow-sm border border-charcoal/5" style={{ fontSize: '10px' }}>
             {destination.name}
           </span>

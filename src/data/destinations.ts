@@ -7,6 +7,7 @@ export interface Destination {
   price?: string;
   distance?: string;
   duration?: string;
+  imageUrl?: string;
 }
 
 export const topPlaces: Destination[] = [

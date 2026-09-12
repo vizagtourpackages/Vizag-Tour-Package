@@ -12,11 +12,21 @@ export default function GuideCard({ guide }: GuideCardProps) {
     <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden h-full group">
       <div className="relative p-2">
         <div className="relative overflow-hidden rounded-[16px]">
-          <PlaceholderImage
-            gradient={guide.imageGradient}
-            alt={guide.title}
-            className="h-28 sm:h-40 w-full transform transition-transform duration-700 group-hover:scale-105"
-          />
+          {guide.imageUrl ? (
+            <div className="relative h-28 sm:h-40 w-full">
+              <img 
+                src={guide.imageUrl} 
+                alt={guide.title}
+                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+          ) : (
+            <PlaceholderImage
+              gradient={guide.imageGradient}
+              alt={guide.title}
+              className="h-28 sm:h-40 w-full transform transition-transform duration-700 group-hover:scale-105"
+            />
+          )}
         </div>
         <div className="absolute top-5 left-5">
           <span className="badge bg-white/90 text-charcoal shadow-sm border border-charcoal/5 font-bold tracking-tight">

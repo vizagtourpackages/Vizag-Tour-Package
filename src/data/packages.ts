@@ -11,6 +11,7 @@ export interface Package {
   excludes: string[];
   category: "trending" | "one-day" | "pilgrimage" | "multi-day";
   imageGradient: string;
+  imageUrl?: string;
 }
 
 export const trendingPackages: Package[] = [
