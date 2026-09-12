@@ -11,11 +11,21 @@ export default function EventCard({ event }: EventCardProps) {
     <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden h-full group">
       <div className="relative overflow-hidden p-2">
         <div className="relative overflow-hidden rounded-[16px] bg-sand">
-          <PlaceholderImage
-            gradient={event.imageGradient}
-            alt={event.title}
-            className="h-48 w-full transform transition-transform duration-700 group-hover:scale-105"
-          />
+          {event.imageUrl ? (
+            <div className="relative h-48 w-full">
+              <img 
+                src={event.imageUrl} 
+                alt={event.title}
+                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+          ) : (
+            <PlaceholderImage
+              gradient={event.imageGradient}
+              alt={event.title}
+              className="h-48 w-full transform transition-transform duration-700 group-hover:scale-105"
+            />
+          )}
         </div>
       </div>
       

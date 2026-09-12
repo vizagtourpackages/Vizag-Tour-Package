@@ -27,8 +27,126 @@ import { hotels } from "@/data/hotels";
 import HotelCard from "@/components/HotelCard";
 import NewsPromoCard from "@/components/NewsPromoCard";
 import { newsData, promotionsData } from "@/data/news";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: dbPackages } = await supabase
+    .from('tour_packages')
+    .select('*')
+    .eq('is_published', true)
+    .eq('category', 'trending')
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  const { data: dbEvents } = await supabase
+    .from('upcoming_events')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false })
+    .limit(6);
+
+  // Map DB rows to match the existing Event interface, with a fallback
+  const displayEvents = dbEvents && dbEvents.length > 0
+    ? dbEvents.map(evt => ({
+        id: evt.id,
+        title: evt.title,
+        description: evt.description,
+        category: evt.category,
+        year: evt.date,
+        imageGradient: 'from-purple-500 to-pink-600', // fallback
+        imageUrl: evt.image_url
+      }))
+    : events;
+
+  const { data: dbGuides } = await supabase
+    .from('travel_guides')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false })
+    .limit(6);
+
+  const { data: dbFaqs } = await supabase
+    .from('faqs')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: true });
+
+  const displayGuides = dbGuides && dbGuides.length > 0
+    ? dbGuides.map(guide => ({
+        id: guide.id,
+        title: guide.title,
+        category: guide.category,
+        highlights: guide.highlights || [],
+        imageGradient: 'from-emerald-400 to-teal-600', // fallback
+        imageUrl: guide.image_url
+      }))
+    : guides;
+
+  const displayFaqs = dbFaqs && dbFaqs.length > 0
+    ? dbFaqs.map(faq => ({
+        id: faq.id,
+        q: faq.question,
+        a: faq.answer,
+      }))
+    : undefined;
+
+  const { data: dbDestinations } = await supabase
+    .from('top_destinations')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+
+  const { data: dbPlaces } = await supabase
+    .from('places_to_visit')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+
+  const displayDestinations = dbDestinations && dbDestinations.length > 0
+    ? dbDestinations.map(dest => ({
+        id: dest.id,
+        name: dest.name,
+        description: dest.description,
+        category: dest.location || dest.category || 'Destination',
+        price: dest.price,
+        distance: dest.distance_km,
+        duration: dest.duration,
+        imageGradient: 'from-amber-400 to-orange-600', // fallback
+        imageUrl: dest.image_url
+      }))
+    : topPlaces;
+
+  const displayPlaces = dbPlaces && dbPlaces.length > 0
+    ? dbPlaces.map(place => ({
+        id: place.id,
+        name: place.name,
+        description: place.description,
+        category: place.category || 'Place',
+        imageGradient: 'from-blue-400 to-ocean', // fallback
+        imageUrl: place.image_url
+      }))
+    : vizagPlaces;
+
+  // Map DB rows to match the existing Package interface, with a fallback
+  const displayPackages = dbPackages && dbPackages.length > 0  
+    ? dbPackages.map(pkg => ({
+        id: pkg.id,
+        title: pkg.title,
+        price: pkg.price,
+        priceLabel: pkg.price_label,
+        duration: pkg.duration,
+        people: pkg.people,
+        badge: pkg.badge,
+        highlights: pkg.highlights,
+        includes: pkg.includes,
+        excludes: pkg.excludes,
+        category: pkg.category,
+        imageGradient: 'from-teal to-blue-600', // fallback
+        imageUrl: pkg.image_url
+      }))
+    : trendingPackages;
+
   return (
     <>
       {/* 1. Home/Hero section */}
@@ -49,7 +167,7 @@ export default function Home() {
           />
           <ScrollReveal delay={0.2}>
             <div className="mobile-carousel-container gap-6">
-              {trendingPackages.map((pkg) => (
+              {displayPackages.map((pkg: any) => (
                 <div key={pkg.id} className="mobile-carousel-item w-[85vw] max-w-[300px] sm:max-w-none sm:w-[350px]">
                   <PackageCard pkg={pkg} />
                 </div>
@@ -193,9 +311,9 @@ export default function Home() {
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
-              {topPlaces.map((destination) => (
+              {displayDestinations.map((destination) => (
                 <div key={destination.id} className="min-w-[280px] w-[280px] sm:w-[calc(25%-15px)] flex-shrink-0 snap-start">
-                  <DestinationCard destination={destination} />
+                  <DestinationCard destination={destination as any} />
                 </div>
               ))}
             </ScrollCarousel>
@@ -219,9 +337,9 @@ export default function Home() {
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
-              {vizagPlaces.map((destination) => (
+              {displayPlaces.map((destination) => (
                 <div key={destination.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
-                  <DestinationCard destination={destination} />
+                  <DestinationCard destination={destination as any} />
                 </div>
               ))}
             </ScrollCarousel>
@@ -276,7 +394,7 @@ export default function Home() {
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
-              {guides.map((guide) => (
+              {displayGuides.map((guide: any) => (
                 <div key={guide.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
                   <GuideCard guide={guide} />
                 </div>
@@ -296,7 +414,7 @@ export default function Home() {
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
-              {events.map((event) => (
+              {displayEvents.map((event: any) => (
                 <div key={event.id} className="w-[260px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
                   <EventCard event={event} />
                 </div>
@@ -389,7 +507,7 @@ export default function Home() {
       </section>
 
       {/* NEW: FAQ Section */}
-      <FAQAccordion />
+      <FAQAccordion faqs={displayFaqs} />
 
       {/* 11. Customer Reviews */}
       <section className="section-padding bg-sand-light overflow-hidden">

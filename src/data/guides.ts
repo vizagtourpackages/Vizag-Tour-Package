@@ -4,6 +4,7 @@ export interface Guide {
   category: string;
   highlights: string[];
   imageGradient: string;
+  imageUrl?: string;
 }
 
 export const guides: Guide[] = [

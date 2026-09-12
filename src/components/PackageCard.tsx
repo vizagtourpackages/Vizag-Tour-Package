@@ -18,12 +18,23 @@ export default function PackageCard({ pkg }: PackageCardProps) {
       {/* Image */}
       <div className="relative p-2">
         <div className="relative overflow-hidden rounded-[24px]">
-          <PlaceholderImage
-            gradient={pkg.imageGradient}
-            alt={pkg.title}
-            className="h-48 sm:h-56 w-full transform transition-transform duration-700 group-hover:scale-105"
-            overlay
-          />
+          {pkg.imageUrl ? (
+            <div className="relative h-48 sm:h-56 w-full">
+              <img 
+                src={pkg.imageUrl} 
+                alt={pkg.title}
+                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/20" />
+            </div>
+          ) : (
+            <PlaceholderImage
+              gradient={pkg.imageGradient}
+              alt={pkg.title}
+              className="h-48 sm:h-56 w-full transform transition-transform duration-700 group-hover:scale-105"
+              overlay
+            />
+          )}
         </div>
         {pkg.badge && (
           <span className="absolute top-6 left-6 badge bg-coral text-white shadow-sm border border-coral/20 tracking-tight">

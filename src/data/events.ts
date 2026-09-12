@@ -3,8 +3,9 @@ export interface Event {
   title: string;
   description: string;
   category: string;
-  year: number;
+  year: number | string;
   imageGradient: string;
+  imageUrl?: string;
 }
 
 export const events: Event[] = [

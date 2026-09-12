@@ -6,7 +6,7 @@ import { ChevronDown, HelpCircle } from "lucide-react";
 import SectionHeading from "./SectionHeading";
 import { siteInfo } from "@/data/siteInfo";
 
-const faqs = [
+const defaultFaqs = [
   {
     q: "How do I book a tour package or cab with you?",
     a: `You can book online through our platform, send a WhatsApp message to ${siteInfo.whatsapp}, or call our 24/7 helpline. Zero advance deposit required for standard bookings!`,
@@ -33,12 +33,24 @@ const faqs = [
   },
 ];
 
-export default function FAQAccordion() {
+export interface FaqItem {
+  q: string;
+  a: string;
+  id?: string;
+}
+
+interface FAQAccordionProps {
+  faqs?: FaqItem[];
+}
+
+export default function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  const displayFaqs = faqs && faqs.length > 0 ? faqs : defaultFaqs;
 
   return (
     <section className="section-padding bg-warm-white">
@@ -49,7 +61,7 @@ export default function FAQAccordion() {
         />
 
         <div className="mt-10 space-y-4">
-          {faqs.map((faq, index) => {
+          {displayFaqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <ScrollReveal key={index} delay={index * 0.1}>
