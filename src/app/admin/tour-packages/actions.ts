@@ -26,6 +26,7 @@ export async function saveTourPackage(formData: FormData) {
   const id = formData.get('id') as string
   const data = {
     title: formData.get('title') as string,
+    slug: formData.get('slug') as string,
     description: formData.get('description') as string,
     price: parseInt(formData.get('price') as string),
     price_label: formData.get('price_label') as string,
@@ -42,10 +43,16 @@ export async function saveTourPackage(formData: FormData) {
 
   if (id === 'new') {
     const { error } = await supabase.from('tour_packages').insert([data])
-    if (error) throw new Error(error.message)
+    if (error) {
+      if (error.code === '23505') throw new Error('A package with this slug already exists. Please modify the slug to make it unique.')
+      throw new Error(error.message)
+    }
   } else {
     const { error } = await supabase.from('tour_packages').update(data).eq('id', id)
-    if (error) throw new Error(error.message)
+    if (error) {
+      if (error.code === '23505') throw new Error('A package with this slug already exists. Please modify the slug to make it unique.')
+      throw new Error(error.message)
+    }
   }
 
   revalidatePath('/admin/tour-packages')

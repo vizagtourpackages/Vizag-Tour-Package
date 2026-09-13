@@ -1,5 +1,6 @@
 export interface Package {
   id: string;
+  slug?: string;
   title: string;
   price: number;
   priceLabel: string;

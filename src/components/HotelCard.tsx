@@ -1,11 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Star, MapPin, CheckCircle2 } from "lucide-react";
 import type { Hotel } from "@/data/hotels";
 
 export default function HotelCard({ hotel }: { hotel: Hotel }) {
   return (
     <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 h-full flex flex-col overflow-hidden group">
-      <div className="w-full aspect-[16/10] sm:aspect-[4/3] relative p-2">
+      <Link href={`/resorts/${hotel.slug || hotel.id}`} className="w-full aspect-[16/10] sm:aspect-[4/3] relative p-2 block group-hover:scale-[1.01] transition-transform">
         <div className="relative w-full h-full rounded-[16px] overflow-hidden bg-sand">
           <Image
             src={hotel.image}
@@ -14,14 +15,16 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
             className="object-cover transform transition-transform duration-700 group-hover:scale-105"
           />
         </div>
-        <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-charcoal shadow-sm border border-charcoal/5">
+        <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-charcoal shadow-sm border border-charcoal/5 z-10">
           {hotel.type}
         </div>
-      </div>
+      </Link>
 
       <div className="p-5 sm:p-6 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-3">
-          <h3 className="font-heading font-bold text-xl text-charcoal leading-tight pr-2 tracking-tight group-hover:text-coral transition-colors">{hotel.name}</h3>
+          <Link href={`/resorts/${hotel.slug || hotel.id}`} className="group-hover:text-coral transition-colors">
+            <h3 className="font-heading font-bold text-xl text-charcoal leading-tight pr-2 tracking-tight">{hotel.name}</h3>
+          </Link>
           <div className="flex items-center gap-1.5 bg-sand-light border border-charcoal/5 px-2.5 py-1 rounded-full text-sm font-bold shrink-0">
             <Star size={14} className="text-coral fill-coral" />
             {hotel.rating}
@@ -48,9 +51,9 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
             <span className="text-2xl font-black text-charcoal tracking-tight">{hotel.price}</span>
             <span className="text-xs text-charcoal/50 font-medium"> / night</span>
           </div>
-          <button className="btn-primary py-2.5 px-6 text-sm rounded-full bg-charcoal hover:bg-coral">
+          <Link href={`/resorts/${hotel.slug || hotel.id}`} className="btn-primary py-2.5 px-6 text-sm rounded-full bg-charcoal hover:bg-coral">
             Book Now
-          </button>
+          </Link>
         </div>
       </div>
     </div>

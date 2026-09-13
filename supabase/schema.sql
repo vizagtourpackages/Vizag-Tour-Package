@@ -5,6 +5,7 @@ CREATE TABLE tour_packages (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     is_published BOOLEAN DEFAULT true,
     
+    slug TEXT UNIQUE NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
     price INTEGER NOT NULL,
@@ -26,15 +27,37 @@ CREATE TABLE hotels_resorts (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     is_published BOOLEAN DEFAULT true,
     
+    slug TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
+    tagline TEXT,
     description TEXT,
-    type TEXT NOT NULL,
+    category TEXT NOT NULL,
     rating NUMERIC,
     reviews INTEGER,
     location TEXT NOT NULL,
-    price TEXT NOT NULL,
-    image_url TEXT NOT NULL,
-    amenities TEXT[]
+    latitude NUMERIC,
+    longitude NUMERIC,
+    price_per_night NUMERIC,
+    whatsapp_link TEXT,
+    cover_image_url TEXT NOT NULL,
+    highlights TEXT[],
+    amenities TEXT[],
+    meta_title TEXT,
+    meta_description TEXT,
+    meta_keywords TEXT,
+    og_image_url TEXT,
+    nearby_places JSONB
+);
+
+-- 2a. Resort Room Types
+CREATE TABLE resort_room_types (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    resort_id UUID NOT NULL REFERENCES hotels_resorts(id) ON DELETE CASCADE,
+    room_type TEXT NOT NULL,
+    price NUMERIC NOT NULL,
+    has_ac BOOLEAN DEFAULT false,
+    is_available BOOLEAN DEFAULT true
 );
 
 -- 3. Top Destinations
@@ -152,6 +175,7 @@ ALTER TABLE travel_guides ENABLE ROW LEVEL SECURITY;
 ALTER TABLE upcoming_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE latest_updates_offers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE faqs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE resort_room_types ENABLE ROW LEVEL SECURITY;
 
 -- 1. Public can read ONLY published items
 CREATE POLICY "Public view published" ON tour_packages FOR SELECT USING (is_published = true);
@@ -163,6 +187,7 @@ CREATE POLICY "Public view published" ON travel_guides FOR SELECT USING (is_publ
 CREATE POLICY "Public view published" ON upcoming_events FOR SELECT USING (is_published = true);
 CREATE POLICY "Public view published" ON latest_updates_offers FOR SELECT USING (is_published = true);
 CREATE POLICY "Public view published" ON faqs FOR SELECT USING (is_published = true);
+CREATE POLICY "Public view published room types" ON resort_room_types FOR SELECT USING (true);
 
 -- 2. Authenticated Admin can do EVERYTHING
 CREATE POLICY "Admin full access" ON tour_packages FOR ALL TO authenticated USING (true);
@@ -174,6 +199,7 @@ CREATE POLICY "Admin full access" ON travel_guides FOR ALL TO authenticated USIN
 CREATE POLICY "Admin full access" ON upcoming_events FOR ALL TO authenticated USING (true);
 CREATE POLICY "Admin full access" ON latest_updates_offers FOR ALL TO authenticated USING (true);
 CREATE POLICY "Admin full access" ON faqs FOR ALL TO authenticated USING (true);
+CREATE POLICY "Admin full access room types" ON resort_room_types FOR ALL TO authenticated USING (true);
 
 -- ==========================================
 -- STORAGE SETUP
