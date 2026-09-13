@@ -520,9 +520,6 @@ export default async function Home() {
           <TestimonialsSection />
         </div>
       </section>
-
-      {/* NEW: Community CTA */}
-      <CommunityCTA />
     </>
   );
 }
