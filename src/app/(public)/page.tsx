@@ -168,7 +168,7 @@ export default async function Home() {
           <ScrollReveal delay={0.2}>
             <div className="mobile-carousel-container gap-4">
               {displayPackages.map((pkg: any) => (
-                <div key={pkg.id} className="mobile-carousel-item w-[85vw] max-w-[300px] sm:max-w-none sm:w-[350px]">
+                <div key={pkg.id} className="mobile-carousel-item w-[90vw] max-w-[370px] sm:max-w-none sm:w-[370px]">
                   <PackageCard pkg={pkg} />
                 </div>
               ))}

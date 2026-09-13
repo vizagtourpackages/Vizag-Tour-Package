@@ -66,6 +66,6 @@ export const heroCTAs = [
     title: "Travels",
     description: "Reliable vehicles for any group size",
     href: "/travels",
-    icon: "Car" as const,
+    icon: "CarFront" as const,
   },
 ] as const;
