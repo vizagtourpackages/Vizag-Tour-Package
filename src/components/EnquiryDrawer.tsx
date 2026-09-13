@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Send, CheckCircle2, ArrowRight } from "lucide-react";
+import { Send, CheckCircle2, ArrowRight, Plus, Minus } from "lucide-react";
 
 export default function EnquiryDrawer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
 
   return (
     <>
@@ -84,29 +86,50 @@ export default function EnquiryDrawer() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-white/50 uppercase tracking-widest block">Adults</label>
-                <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-coral/50 transition-all text-sm font-medium appearance-none">
-                  <option value="1">1 Adult</option>
-                  <option value="2">2 Adults</option>
-                  <option value="3">3 Adults</option>
-                  <option value="4">4 Adults</option>
-                  <option value="5+">5+ Adults</option>
-                </select>
+                <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-2 h-[48px]">
+                  <button 
+                    type="button"
+                    onClick={() => setAdults(Math.max(1, adults - 1))}
+                    className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className="font-bold text-white text-sm">{adults}</span>
+                  <button 
+                    type="button"
+                    onClick={() => setAdults(adults + 1)}
+                    className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-white/50 uppercase tracking-widest block">Children</label>
-                <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-coral/50 transition-all text-sm font-medium appearance-none">
-                  <option value="0">0 Children</option>
-                  <option value="1">1 Child</option>
-                  <option value="2">2 Children</option>
-                  <option value="3+">3+ Children</option>
-                </select>
+                <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-2 h-[48px]">
+                  <button 
+                    type="button"
+                    onClick={() => setChildren(Math.max(0, children - 1))}
+                    className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className="font-bold text-white text-sm">{children}</span>
+                  <button 
+                    type="button"
+                    onClick={() => setChildren(children + 1)}
+                    className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
               </div>
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-white/50 uppercase tracking-widest block">Destinations of Interest</label>
               <div className="flex flex-wrap gap-2">
-                {["Araku Valley", "Lambasingi", "Vizag City", "Beaches", "Temples"].map(
+                {["Vizag Local", "Araku Valley", "Vanajangi", "Lambasingi", "Tarabu Waterfalls"].map(
                   (dest) => (
                     <label
                       key={dest}

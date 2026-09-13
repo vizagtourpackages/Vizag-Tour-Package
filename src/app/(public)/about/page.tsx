@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <div className="bg-white min-h-screen">
       {/* Hero */}
-      <section className="relative mt-[-8px] pt-8 pb-16 lg:pb-24 overflow-hidden rounded-b-[40px] shadow-sm">
+      <section className="relative -mt-[72px] pt-[104px] pb-16 lg:pb-24 overflow-hidden rounded-b-[40px] shadow-sm">
         <div className="absolute inset-0 bg-charcoal">
           <PlaceholderImage
             gradient="from-ocean-dark to-charcoal"
@@ -22,10 +22,10 @@ export default function AboutPage() {
         </div>
         <div className="container-max relative z-10 text-center px-4 mt-8">
           <ScrollReveal>
-            <h1 className="text-5xl sm:text-6xl lg:text-8xl font-heading font-black text-white mb-6 leading-[1.1] tracking-tight drop-shadow-sm">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-black text-white mb-4 leading-[1.1] tracking-tight drop-shadow-sm">
               About Us
             </h1>
-            <p className="text-lg sm:text-2xl text-white/80 max-w-2xl mx-auto leading-relaxed font-medium drop-shadow-sm">
+            <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed font-medium drop-shadow-sm">
               Your trusted travel partner for exploring the City of Destiny and beyond.
             </p>
           </ScrollReveal>
@@ -38,8 +38,8 @@ export default function AboutPage() {
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
             <div className="lg:w-1/2 w-full">
               <ScrollReveal direction="right">
-                <h2 className="text-4xl lg:text-5xl font-heading font-black text-charcoal mb-8 tracking-tight">Our Story</h2>
-                <div className="space-y-6 text-charcoal/70 font-medium text-lg leading-relaxed">
+                <h2 className="text-3xl lg:text-4xl font-heading font-black text-charcoal mb-6 tracking-tight">Our Story</h2>
+                <div className="space-y-4 text-charcoal/70 font-medium text-base leading-relaxed">
                   <p>
                     Welcome to <strong className="text-charcoal">{siteInfo.name}</strong>. Based in Visakhapatnam, we are a passionate team of local travel experts dedicated to showcasing the unparalleled beauty of the Eastern Ghats and the Bay of Bengal coastline.
                   </p>
@@ -86,18 +86,18 @@ export default function AboutPage() {
 
           {/* Stats Row */}
           <ScrollReveal delay={0.2}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12">
               {[
                 { value: "5+", label: "Years Experience", icon: "🏆" },
                 { value: "10,000+", label: "Happy Customers", icon: "👥" },
                 { value: "50+", label: "Professional Drivers", icon: "🛡️" },
                 { value: "24/7", label: "Customer Support", icon: "📞" },
               ].map((stat, idx) => (
-                <div key={idx} className="bg-white rounded-[32px] p-8 text-center border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1">
-                  <div className="w-16 h-16 rounded-full bg-sand flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm border border-charcoal/5">
+                <div key={idx} className="bg-white rounded-[24px] p-6 text-center border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1">
+                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mx-auto mb-3 text-2xl shadow-sm border border-charcoal/5">
                     {stat.icon}
                   </div>
-                  <div className="text-3xl sm:text-4xl font-black text-charcoal mb-2 tracking-tight">{stat.value}</div>
+                  <div className="text-2xl sm:text-3xl font-black text-charcoal mb-1 tracking-tight">{stat.value}</div>
                   <div className="text-[10px] font-bold text-charcoal/50 uppercase tracking-widest">{stat.label}</div>
                 </div>
               ))}
@@ -106,7 +106,7 @@ export default function AboutPage() {
 
           {/* Feature Cards 2x2 */}
           <ScrollReveal delay={0.4}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-12">
               {[
                 {
                   title: "Local Expertise",
@@ -129,13 +129,13 @@ export default function AboutPage() {
                   icon: "⏰",
                 },
               ].map((feature, idx) => (
-                <div key={idx} className="flex items-start gap-5 bg-white rounded-[32px] p-8 border border-charcoal/5 shadow-sm hover:shadow-md transition-all duration-500 group hover:-translate-y-1">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center shrink-0 text-2xl shadow-sm border border-charcoal/5 group-hover:bg-coral transition-colors duration-500">
+                <div key={idx} className="flex items-start gap-4 bg-white rounded-[24px] p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 group hover:-translate-y-1">
+                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center shrink-0 text-xl shadow-sm border border-charcoal/5 group-hover:bg-coral transition-colors duration-500">
                     <span className="group-hover:scale-110 transition-transform duration-500">{feature.icon}</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-charcoal mb-2 tracking-tight">{feature.title}</h3>
-                    <p className="text-base text-charcoal/60 font-medium leading-relaxed">{feature.description}</p>
+                    <h3 className="text-lg font-black text-charcoal mb-1 tracking-tight">{feature.title}</h3>
+                    <p className="text-sm text-charcoal/60 font-medium leading-relaxed">{feature.description}</p>
                   </div>
                 </div>
               ))}

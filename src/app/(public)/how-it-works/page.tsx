@@ -9,12 +9,12 @@ export const metadata = {
 
 export default function HowItWorksPage() {
   return (
-    <main className="pt-24 pb-16">
+    <div className="bg-white min-h-screen pb-16">
       {/* Hero Header */}
-      <div className="bg-ocean text-white py-16">
+      <div className="bg-charcoal text-white pt-[104px] pb-16 rounded-b-[32px] mb-8 shadow-sm -mt-[72px]">
         <div className="container-max text-center">
-          <h1 className="font-heading text-4xl sm:text-5xl mb-4">How It Works</h1>
-          <p className="text-white/80 max-w-2xl mx-auto text-lg">
+          <h1 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl mb-4 tracking-tight drop-shadow-sm">How It Works</h1>
+          <p className="text-white/80 max-w-2xl mx-auto text-sm sm:text-base font-medium">
             Booking your dream vacation or a quick ride shouldn&apos;t be complicated. We&apos;ve made it simple and straightforward.
           </p>
         </div>
@@ -30,7 +30,7 @@ export default function HowItWorksPage() {
             subtitle="Follow these simple steps to start your journey with us."
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               {
                 step: "1",
@@ -53,18 +53,18 @@ export default function HowItWorksPage() {
                 description: "Share your amazing experience to help us serve you even better next time.",
               },
             ].map((item, idx) => (
-              <div key={idx} className="bg-white rounded-3xl p-8 border border-white/50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 relative overflow-hidden group flex flex-col items-center text-center">
+              <div key={idx} className="bg-white rounded-[24px] p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-300 relative overflow-hidden group flex flex-col items-center text-center">
                 {/* Large faded number in background */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[150px] font-black text-sand-light group-hover:text-ocean/5 transition-colors duration-500 leading-none select-none z-0">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[120px] font-black text-sand-light group-hover:text-ocean/5 transition-colors duration-500 leading-none select-none z-0">
                   {item.step}
                 </div>
                 
                 <div className="relative z-10 flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-ocean to-coral flex items-center justify-center text-white font-bold text-2xl mb-8 shadow-lg shadow-ocean/20 group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-ocean to-coral flex items-center justify-center text-white font-bold text-xl mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
                     {item.step}
                   </div>
-                  <h3 className="text-xl font-bold text-charcoal mb-3">{item.title}</h3>
-                  <p className="text-charcoal/60 leading-relaxed text-sm">{item.description}</p>
+                  <h3 className="text-lg font-bold text-charcoal mb-2 tracking-tight">{item.title}</h3>
+                  <p className="text-charcoal/60 leading-relaxed text-xs sm:text-sm font-medium">{item.description}</p>
                 </div>
               </div>
             ))}
@@ -77,6 +77,6 @@ export default function HowItWorksPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

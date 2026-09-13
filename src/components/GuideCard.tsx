@@ -13,7 +13,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
       <div className="relative p-2">
         <div className="relative overflow-hidden rounded-[16px]">
           {guide.imageUrl ? (
-            <div className="relative h-28 sm:h-40 w-full">
+            <div className="relative h-48 sm:h-56 w-full">
               <img 
                 src={guide.imageUrl} 
                 alt={guide.title}
@@ -24,7 +24,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
             <PlaceholderImage
               gradient={guide.imageGradient}
               alt={guide.title}
-              className="h-28 sm:h-40 w-full transform transition-transform duration-700 group-hover:scale-105"
+              className="h-48 sm:h-56 w-full transform transition-transform duration-700 group-hover:scale-105"
             />
           )}
         </div>

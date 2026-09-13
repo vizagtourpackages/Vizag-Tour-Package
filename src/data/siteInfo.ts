@@ -3,11 +3,11 @@ export const siteInfo = {
   tagline: "Explore Vizag — The City of Destiny",
   subtitle: "Your Complete Travel Partner",
   intro:
-    "Discover the beauty of Visakhapatnam (Vizag) with hassle-free travel planning — curated tour packages, hotel bookings, and reliable travel services for family vacations, romantic getaways, and adventure holidays.",
+    "Discover Vizag with Ease — We Plan, You Explore! — Your one-stop travel partner for Vizag sightseeing, Araku Valley hill-station tours, hotel bookings, vizag airport transfers, outstation cabs, and customized holiday packages.",
   whatsapp: "+917780739851",
   whatsappLink: "https://wa.me/917780739851",
   landline: "0891 2213875",
-  email: "arakuecostays@gmail.com",
+  email: "vizagtourpackages3@gmail.com",
   address: "13-134 Pendurthi, Visakhapatnam, 531173",
   googleReviews: {
     rating: 5,
@@ -27,8 +27,8 @@ export const navLinks: NavLink[] = [
   { label: "Tour Packages", href: "/tour-packages" },
   { label: "Hotels & Resorts", href: "/hotels-and-resorts" },
   { label: "Travels", href: "/travels" },
-  { 
-    label: "Destination", 
+  {
+    label: "Destination",
     subLinks: [
       { label: "Araku Valley", href: "/araku-valley" },
       { label: "Lambasingi Hills", href: "/lambasingi" },

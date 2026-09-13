@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Send, Loader2 } from "lucide-react";
+import { CheckCircle2, Send, Loader2, Plus, Minus } from "lucide-react";
 import {
   dayOptions,
   accommodationOptions,
@@ -10,6 +10,8 @@ import {
 
 export default function CustomizeTourForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +91,7 @@ export default function CustomizeTourForm() {
           </div>
 
           {/* Days */}
-          <div>
+          <div className="sm:col-span-2">
             <label htmlFor="days" className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
               Number of Days
             </label>
@@ -104,6 +106,54 @@ export default function CustomizeTourForm() {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Adults */}
+          <div>
+            <label className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
+              Adults
+            </label>
+            <div className="flex items-center justify-between px-5 py-3 rounded-[16px] border border-charcoal/10 bg-sand/50 h-[58px]">
+              <button 
+                type="button"
+                onClick={() => setAdults(Math.max(1, adults - 1))}
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-charcoal hover:bg-teal hover:text-white transition-colors border border-charcoal/5 shadow-sm"
+              >
+                <Minus size={16} />
+              </button>
+              <span className="font-bold text-charcoal">{adults}</span>
+              <button 
+                type="button"
+                onClick={() => setAdults(adults + 1)}
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-charcoal hover:bg-teal hover:text-white transition-colors border border-charcoal/5 shadow-sm"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Children */}
+          <div>
+            <label className="block text-sm font-bold text-charcoal mb-2 tracking-tight">
+              Children (under 12)
+            </label>
+            <div className="flex items-center justify-between px-5 py-3 rounded-[16px] border border-charcoal/10 bg-sand/50 h-[58px]">
+              <button 
+                type="button"
+                onClick={() => setChildren(Math.max(0, children - 1))}
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-charcoal hover:bg-teal hover:text-white transition-colors border border-charcoal/5 shadow-sm"
+              >
+                <Minus size={16} />
+              </button>
+              <span className="font-bold text-charcoal">{children}</span>
+              <button 
+                type="button"
+                onClick={() => setChildren(children + 1)}
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-charcoal hover:bg-teal hover:text-white transition-colors border border-charcoal/5 shadow-sm"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
           </div>
 
           {/* Accommodation */}

@@ -37,47 +37,47 @@ export default function ContactPage() {
             {/* Info Cards */}
             <ScrollReveal delay={0.2}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 min-w-0">
-                <div className="bg-white rounded-[32px] p-6 sm:p-8 border border-charcoal/5 shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 min-w-0 group">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center mb-6 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-ocean group-hover:text-white transition-colors duration-500">
-                    <Phone size={24} />
+                <div className="bg-white rounded-[24px] p-5 sm:p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1 min-w-0 group">
+                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mb-4 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-ocean group-hover:text-white transition-colors duration-500">
+                    <Phone size={20} />
                   </div>
-                  <h3 className="font-black text-xl text-charcoal mb-3 tracking-tight">Call Us</h3>
-                  <div className="space-y-2 min-w-0">
-                    <a href={`tel:${siteInfo.whatsapp}`} className="block text-charcoal/60 font-medium hover:text-ocean transition-colors break-words text-lg">
+                  <h3 className="font-bold text-lg text-charcoal mb-2 tracking-tight">Call Us</h3>
+                  <div className="space-y-1 min-w-0">
+                    <a href={`tel:${siteInfo.whatsapp}`} className="block text-charcoal/60 font-medium hover:text-ocean transition-colors break-words text-base">
                       +91 {siteInfo.whatsapp.replace('+91', '')}
                     </a>
-                    <a href={`tel:${siteInfo.landline}`} className="block text-charcoal/60 font-medium hover:text-ocean transition-colors break-words text-lg">
+                    <a href={`tel:${siteInfo.landline}`} className="block text-charcoal/60 font-medium hover:text-ocean transition-colors break-words text-base">
                       {siteInfo.landline}
                     </a>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-[32px] p-6 sm:p-8 border border-charcoal/5 shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 min-w-0 group">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center mb-6 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-green-500 group-hover:text-white transition-colors duration-500">
-                    <MessageCircle size={24} />
+                <div className="bg-white rounded-[24px] p-5 sm:p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1 min-w-0 group">
+                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mb-4 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-green-500 group-hover:text-white transition-colors duration-500">
+                    <MessageCircle size={20} />
                   </div>
-                  <h3 className="font-black text-xl text-charcoal mb-3 tracking-tight">WhatsApp</h3>
-                  <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="text-charcoal/60 font-medium hover:text-green-500 transition-colors block break-words text-lg">
+                  <h3 className="font-bold text-lg text-charcoal mb-2 tracking-tight">WhatsApp</h3>
+                  <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="text-charcoal/60 font-medium hover:text-green-500 transition-colors block break-words text-base">
                     Chat with us directly
                   </a>
                 </div>
 
-                <div className="bg-white rounded-[32px] p-6 sm:p-8 border border-charcoal/5 shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 min-w-0 group">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center mb-6 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-coral group-hover:text-white transition-colors duration-500">
-                    <Mail size={24} />
+                <div className="bg-white rounded-[24px] p-5 sm:p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1 min-w-0 group">
+                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mb-4 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-coral group-hover:text-white transition-colors duration-500">
+                    <Mail size={20} />
                   </div>
-                  <h3 className="font-black text-xl text-charcoal mb-3 tracking-tight">Email</h3>
-                  <a href={`mailto:${siteInfo.email}`} className="text-charcoal/60 font-medium hover:text-coral transition-colors break-all block text-lg">
+                  <h3 className="font-bold text-lg text-charcoal mb-2 tracking-tight">Email</h3>
+                  <a href={`mailto:${siteInfo.email}`} className="text-charcoal/60 font-medium hover:text-coral transition-colors break-all block text-base">
                     {siteInfo.email}
                   </a>
                 </div>
 
-                <div className="bg-white rounded-[32px] p-6 sm:p-8 border border-charcoal/5 shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 min-w-0 group">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center mb-6 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-teal group-hover:text-white transition-colors duration-500">
-                    <MapPin size={24} />
+                <div className="bg-white rounded-[24px] p-5 sm:p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1 min-w-0 group">
+                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mb-4 text-charcoal shadow-sm border border-charcoal/5 group-hover:bg-teal group-hover:text-white transition-colors duration-500">
+                    <MapPin size={20} />
                   </div>
-                  <h3 className="font-black text-xl text-charcoal mb-3 tracking-tight">Office Address</h3>
-                  <p className="text-charcoal/60 font-medium break-words text-base leading-relaxed">
+                  <h3 className="font-bold text-lg text-charcoal mb-2 tracking-tight">Office Address</h3>
+                  <p className="text-charcoal/60 font-medium break-words text-sm leading-relaxed">
                     {siteInfo.address}
                   </p>
                 </div>
@@ -104,10 +104,10 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="lg:w-1/2 min-w-0">
             <ScrollReveal delay={0.3}>
-              <div className="bg-white rounded-[40px] p-8 sm:p-10 lg:p-12 border border-charcoal/5 shadow-card relative overflow-hidden min-w-0">
+              <div className="bg-white rounded-[24px] p-6 sm:p-8 border border-charcoal/5 shadow-card relative overflow-hidden min-w-0">
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-coral/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                 
-                <h3 className="text-3xl font-heading font-black text-charcoal mb-8 tracking-tight relative z-10">Send us a Message</h3>
+                <h3 className="text-2xl font-heading font-bold text-charcoal mb-6 tracking-tight relative z-10">Send us a Message</h3>
 
                 {status === "success" ? (
                   <div className="text-center py-16 relative z-10">
@@ -125,7 +125,7 @@ export default function ContactPage() {
                         type="text"
                         id="name"
                         required
-                        className="w-full px-5 py-4 rounded-[20px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-lg placeholder:text-charcoal/30"
+                        className="w-full px-4 py-3 rounded-[16px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-base placeholder:text-charcoal/30"
                         placeholder="John Doe"
                       />
                     </div>
@@ -137,7 +137,7 @@ export default function ContactPage() {
                           type="email"
                           id="email"
                           required
-                          className="w-full px-5 py-4 rounded-[20px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-lg placeholder:text-charcoal/30"
+                          className="w-full px-4 py-3 rounded-[16px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-base placeholder:text-charcoal/30"
                           placeholder="john@example.com"
                         />
                       </div>
@@ -147,7 +147,7 @@ export default function ContactPage() {
                           type="tel"
                           id="phone"
                           required
-                          className="w-full px-5 py-4 rounded-[20px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-lg placeholder:text-charcoal/30"
+                          className="w-full px-4 py-3 rounded-[16px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-base placeholder:text-charcoal/30"
                           placeholder="+91 9876543210"
                         />
                       </div>
@@ -158,7 +158,7 @@ export default function ContactPage() {
                       <select
                         id="subject"
                         required
-                        className="w-full px-5 py-4 rounded-[20px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-lg appearance-none cursor-pointer"
+                        className="w-full px-4 py-3 rounded-[16px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-base appearance-none cursor-pointer"
                       >
                         <option value="" disabled className="text-charcoal/30">Select a subject...</option>
                         <option value="tour">Tour Package Inquiry</option>
@@ -174,7 +174,7 @@ export default function ContactPage() {
                         id="message"
                         required
                         rows={4}
-                        className="w-full px-5 py-4 rounded-[20px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-lg resize-none placeholder:text-charcoal/30"
+                        className="w-full px-4 py-3 rounded-[16px] border border-charcoal/5 focus:border-coral focus:ring-4 focus:ring-coral/10 transition-all outline-none bg-sand/30 text-charcoal font-medium text-base resize-none placeholder:text-charcoal/30"
                         placeholder="Tell us about your trip..."
                       ></textarea>
                     </div>

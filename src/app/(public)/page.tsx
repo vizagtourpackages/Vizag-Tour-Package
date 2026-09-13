@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Car, Plane, MapPin, Building, Heart, Map as MapIcon } from "lucide-react";
+import { ArrowRight, Car, Plane, MapPin, Building, Heart, Map as MapIcon, Mountain, Sunrise, Users } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
@@ -49,14 +49,14 @@ export default async function Home() {
   // Map DB rows to match the existing Event interface, with a fallback
   const displayEvents = dbEvents && dbEvents.length > 0
     ? dbEvents.map(evt => ({
-        id: evt.id,
-        title: evt.title,
-        description: evt.description,
-        category: evt.category,
-        year: evt.date,
-        imageGradient: 'from-purple-500 to-pink-600', // fallback
-        imageUrl: evt.image_url
-      }))
+      id: evt.id,
+      title: evt.title,
+      description: evt.description,
+      category: evt.category,
+      year: evt.date,
+      imageGradient: 'from-purple-500 to-pink-600', // fallback
+      imageUrl: evt.image_url
+    }))
     : events;
 
   const { data: dbGuides } = await supabase
@@ -74,21 +74,21 @@ export default async function Home() {
 
   const displayGuides = dbGuides && dbGuides.length > 0
     ? dbGuides.map(guide => ({
-        id: guide.id,
-        title: guide.title,
-        category: guide.category,
-        highlights: guide.highlights || [],
-        imageGradient: 'from-emerald-400 to-teal-600', // fallback
-        imageUrl: guide.image_url
-      }))
+      id: guide.id,
+      title: guide.title,
+      category: guide.category,
+      highlights: guide.highlights || [],
+      imageGradient: 'from-emerald-400 to-teal-600', // fallback
+      imageUrl: guide.image_url
+    }))
     : guides;
 
   const displayFaqs = dbFaqs && dbFaqs.length > 0
     ? dbFaqs.map(faq => ({
-        id: faq.id,
-        q: faq.question,
-        a: faq.answer,
-      }))
+      id: faq.id,
+      q: faq.question,
+      a: faq.answer,
+    }))
     : undefined;
 
   const { data: dbDestinations } = await supabase
@@ -105,46 +105,46 @@ export default async function Home() {
 
   const displayDestinations = dbDestinations && dbDestinations.length > 0
     ? dbDestinations.map(dest => ({
-        id: dest.id,
-        name: dest.name,
-        description: dest.description,
-        category: dest.location || dest.category || 'Destination',
-        price: dest.price,
-        distance: dest.distance_km,
-        duration: dest.duration,
-        imageGradient: 'from-amber-400 to-orange-600', // fallback
-        imageUrl: dest.image_url
-      }))
+      id: dest.id,
+      name: dest.name,
+      description: dest.description,
+      category: dest.location || dest.category || 'Destination',
+      price: dest.price,
+      distance: dest.distance_km,
+      duration: dest.duration,
+      imageGradient: 'from-amber-400 to-orange-600', // fallback
+      imageUrl: dest.image_url
+    }))
     : topPlaces;
 
   const displayPlaces = dbPlaces && dbPlaces.length > 0
     ? dbPlaces.map(place => ({
-        id: place.id,
-        name: place.name,
-        description: place.description,
-        category: place.category || 'Place',
-        imageGradient: 'from-blue-400 to-ocean', // fallback
-        imageUrl: place.image_url
-      }))
+      id: place.id,
+      name: place.name,
+      description: place.description,
+      category: place.category || 'Place',
+      imageGradient: 'from-blue-400 to-ocean', // fallback
+      imageUrl: place.image_url
+    }))
     : vizagPlaces;
 
   // Map DB rows to match the existing Package interface, with a fallback
-  const displayPackages = dbPackages && dbPackages.length > 0  
+  const displayPackages = dbPackages && dbPackages.length > 0
     ? dbPackages.map(pkg => ({
-        id: pkg.id,
-        title: pkg.title,
-        price: pkg.price,
-        priceLabel: pkg.price_label,
-        duration: pkg.duration,
-        people: pkg.people,
-        badge: pkg.badge,
-        highlights: pkg.highlights,
-        includes: pkg.includes,
-        excludes: pkg.excludes,
-        category: pkg.category,
-        imageGradient: 'from-teal to-blue-600', // fallback
-        imageUrl: pkg.image_url
-      }))
+      id: pkg.id,
+      title: pkg.title,
+      price: pkg.price,
+      priceLabel: pkg.price_label,
+      duration: pkg.duration,
+      people: pkg.people,
+      badge: pkg.badge,
+      highlights: pkg.highlights,
+      includes: pkg.includes,
+      excludes: pkg.excludes,
+      category: pkg.category,
+      imageGradient: 'from-teal to-blue-600', // fallback
+      imageUrl: pkg.image_url
+    }))
     : trendingPackages;
 
   return (
@@ -166,7 +166,7 @@ export default async function Home() {
             subtitle="Explore our most popular, handpicked itineraries designed for the perfect Vizag experience."
           />
           <ScrollReveal delay={0.2}>
-            <div className="mobile-carousel-container gap-6">
+            <div className="mobile-carousel-container gap-4">
               {displayPackages.map((pkg: any) => (
                 <div key={pkg.id} className="mobile-carousel-item w-[85vw] max-w-[300px] sm:max-w-none sm:w-[350px]">
                   <PackageCard pkg={pkg} />
@@ -195,8 +195,8 @@ export default async function Home() {
             </span>
           </div>
           <SectionHeading
-            title="Our Premium Fleet"
-            subtitle="Choose from our well-maintained fleet of vehicles, each equipped with professional drivers and modern amenities."
+            title="Best Travels for Vizag Tours & Outstation Trips"
+            subtitle="Book reliable Vizag tour vehicles including Sedans, SUVs, Tempo Travellers, Urbania, and Buses for local and outstation travel."
           />
           <FleetSection vehicles={vehicles} />
         </div>
@@ -216,57 +216,58 @@ export default async function Home() {
         </div>
 
         <div className="container-max">
-          <div className="text-center mb-16 flex flex-col items-center">
-            <span className="inline-flex items-center gap-2 text-[10px] font-bold text-teal bg-teal/10 px-4 py-2 rounded-full uppercase tracking-widest mb-6">
+          <div className="mb-8 sm:mb-12 w-full text-center flex flex-col items-center">
+            <span className="inline-flex items-center gap-2 text-[10px] font-bold text-teal bg-teal/10 px-4 py-2 rounded-full uppercase tracking-widest mb-4 sm:mb-6">
               <span className="w-2 h-2 rounded-full bg-teal animate-pulse-soft"></span>
               Our Services
             </span>
-            <h2 className="font-heading font-bold text-3xl sm:text-5xl text-charcoal mb-6 tracking-tight leading-[1.1]">What We Offer</h2>
-            <p className="text-charcoal/60 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
-              Experience the best of Visakhapatnam with our premium, reliable, and comfortable travel services.
-            </p>
+            <div className="w-full min-w-0 max-w-full px-2">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-bold leading-[1.2] tracking-tight text-charcoal mb-3 sm:mb-6">
+                What We Offer
+              </h2>
+            </div>
+            <div className="w-full min-w-0 max-w-full px-4">
+              <p className="mt-3 sm:mt-6 text-sm sm:text-lg font-medium leading-relaxed max-w-2xl mx-auto text-charcoal/60">
+                From Vizag city sightseeing to the scenic hills of Araku, Vanjangi and Lambasingi, we make your complete travel experience simple, comfortable and memorable.
+              </p>
+            </div>
           </div>
 
           <ScrollCarousel>
             {[
               {
-                title: "Local Taxi Service in Vizag",
-                description: "24/7 local taxi service in Visakhapatnam for city rides, shopping, office travel, railway station and hospital visits.",
-                icon: <Car size={24} strokeWidth={2} />,
+                title: "Vizag Local Sightseeing",
+                description: "Explore the best of Visakhapatnam with customized sightseeing tours covering beaches, viewpoints, temples, museums, parks, and popular attractions.",
+                icon: <MapPin size={20} strokeWidth={2} />,
               },
               {
-                title: "Airport Taxi Service",
-                description: "Reliable Vizag Airport taxi with on-time pickup & drop, flight tracking and affordable fares.",
-                icon: <Plane size={24} strokeWidth={2} />,
+                title: "Vizag Airport Transfers",
+                description: "Comfortable airport pickup and drop services with professional drivers, flight monitoring, and convenient transfers to hotels and tourist destinations.",
+                icon: <Plane size={20} strokeWidth={2} />,
               },
               {
-                title: "Outstation Taxi Service",
-                description: "One-way & round-trip outstation taxi from Vizag to Araku, Tirupati, Vijayawada, Hyderabad and more.",
-                icon: <MapPin size={24} strokeWidth={2} />,
+                title: "Vizag to Araku Tours",
+                description: "Discover Araku Valley with well-planned tour packages covering Borra Caves, coffee plantations, viewpoints, tribal attractions, and scenic locations.",
+                icon: <Mountain size={20} strokeWidth={2} />,
               },
               {
-                title: "Corporate Taxi Service",
-                description: "Professional corporate cab service for employee transport, client pickups and business travel.",
-                icon: <Building size={24} strokeWidth={2} />,
+                title: "Hotels & Stay Packages",
+                description: "Find comfortable stays in Vizag, Araku, Vanjangi, Lambasingi and other destinations with accommodation options to suit different budgets.",
+                icon: <Building size={20} strokeWidth={2} />,
               },
               {
-                title: "Wedding Car Rental",
-                description: "Luxury wedding car rental in Vizag with professional chauffeurs for weddings and special events.",
-                icon: <Heart size={24} strokeWidth={2} />,
-              },
-              {
-                title: "Vizag Tour Packages",
-                description: "Affordable Vizag sightseeing and Andhra Pradesh tour packages including Araku, Lambasingi and Borra Caves.",
-                icon: <MapIcon size={24} strokeWidth={2} />,
+                title: "Group & Family Tour Packages",
+                description: "Travel together with comfortable Sedans, SUVs, Tempo Travellers, Urbania and buses for families, friends, corporate groups and large tours.",
+                icon: <Users size={20} strokeWidth={2} />,
               },
             ].map((service, idx) => (
-              <div key={idx} className="min-w-[280px] w-[280px] flex-shrink-0 snap-start">
-                <div className="bg-white rounded-[32px] p-8 border border-charcoal/5 shadow-card hover:shadow-card-hover hover:-translate-y-2 transition-all duration-500 group h-full">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center mb-6 text-charcoal group-hover:bg-coral group-hover:text-white transition-colors duration-500 shadow-sm">
+              <div key={idx} className="min-w-[260px] w-[260px] flex-shrink-0 snap-start">
+                <div className="bg-white rounded-[24px] p-5 sm:p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover hover:-translate-y-2 transition-all duration-500 group h-full">
+                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mb-4 text-charcoal group-hover:bg-coral group-hover:text-white transition-colors duration-500 shadow-sm">
                     {service.icon}
                   </div>
-                  <h3 className="text-xl font-heading font-bold text-charcoal mb-4 group-hover:text-coral transition-colors tracking-tight leading-tight">{service.title}</h3>
-                  <p className="text-charcoal/60 leading-relaxed text-sm font-medium">{service.description}</p>
+                  <h3 className="text-lg font-heading font-bold text-charcoal mb-2 group-hover:text-coral transition-colors tracking-tight leading-tight">{service.title}</h3>
+                  <p className="text-charcoal/60 leading-relaxed text-xs sm:text-sm font-medium">{service.description}</p>
                 </div>
               </div>
             ))}
@@ -278,13 +279,13 @@ export default async function Home() {
       <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max relative z-10">
           <SectionHeading
-            title="Hotels & Resorts"
-            subtitle="Discover handpicked stays from luxury beachfront resorts to cozy eco-camps in the hills."
+            title="Book Hotels & Resorts in Vizag"
+            subtitle="Find the right stay for your journey—from budget-friendly hotels and family stays to premium resorts and beachfront properties across Vizag and nearby destinations."
           />
           <ScrollReveal delay={0.2}>
-            <ScrollCarousel>
+            <ScrollCarousel gap="gap-4">
               {hotels.map((hotel) => (
-                <div key={hotel.id} className="w-[320px] sm:w-[320px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                <div key={hotel.id} className="w-[320px] sm:w-[320px] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1rem)] flex-shrink-0 snap-start">
                   <HotelCard hotel={hotel} />
                 </div>
               ))}
@@ -306,8 +307,8 @@ export default async function Home() {
 
         <div className="container-max relative z-10">
           <SectionHeading
-            title="Top Destinations from Vizag"
-            subtitle="Popular outstation routes with transparent pricing. Book a comfortable cab for temple tours, pilgrimages, and city trips."
+            title="Spiritual & Devotional Tours from Vizag"
+            subtitle="Explore Vizag temples and pilgrimage destinations with comfortable travel, customized itineraries, experienced drivers, and reliable support for a peaceful devotional journey."
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
@@ -332,8 +333,8 @@ export default async function Home() {
       <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max">
           <SectionHeading
-            title="Places to Visit in Vizag"
-            subtitle="Explore the best in-city attractions including serene beaches, beautiful parks, and historic museums."
+            title="Vizag Sightseeing – Top Tourist Places in Visakhapatnam"
+            subtitle="Explore the top tourist attractions in Visakhapatnam, including beautiful beaches, scenic viewpoints, historic museums, temples, parks, and family-friendly destinations."
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
@@ -354,8 +355,8 @@ export default async function Home() {
 
         <div className="container-max relative z-10">
           <SectionHeading
-            title="Hill Station Escapes"
-            subtitle="Leave the city heat behind and explore the misty mountains, coffee plantations, and tribal culture of the Eastern Ghats."
+            title="Near by Eastern Ghats Getaways"
+            subtitle="Experience cool weather, breathtaking mountain views, coffee plantations, waterfalls, valleys, and tribal culture on unforgettable trips from Vizag."
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
@@ -389,8 +390,8 @@ export default async function Home() {
       <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max">
           <SectionHeading
-            title="Travel Guides & Things to Do"
-            subtitle="Expert tips and recommendations to make the most of your Vizag vacation."
+            title="Vizag Travel Guide – Things to Do & Places to Visit"
+            subtitle="Plan your Visakhapatnam trip with helpful guides covering tourist places, beaches, sightseeing, local food, best time to visit, travel tips, and nearby destinations."
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
@@ -409,8 +410,8 @@ export default async function Home() {
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-sand rounded-full blur-[120px] opacity-50 -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
         <div className="container-max relative z-10">
           <SectionHeading
-            title="Upcoming Events in 2026"
-            subtitle="Plan your trip around these exciting activities and mega events happening in Vizag."
+            title="Upcoming Activities & Events in Vizag (Visakhapatnam) – 2026"
+            subtitle="Stay updated with Vizag’s upcoming festivals, cultural celebrations, tourism events, exhibitions, and special activities—then plan your perfect trip around them."
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
@@ -463,8 +464,8 @@ export default async function Home() {
 
         <div className="container-max relative z-10">
           <SectionHeading
-            title="Latest Updates & Offers"
-            subtitle="Catch up on the latest travel news and take advantage of our seasonal promotions."
+            title="Vizag Travel Updates, Offers & Tour Deals"
+            subtitle="Stay updated with the latest Vizag travel news, new tour packages, seasonal offers, special deals, and exciting travel opportunities from Vizag to Araku, Vanjangi, Lambasingi, and beyond."
             light
           />
           <div className="grid grid-cols-1 lg:grid-cols-[1fr,1px,1fr] gap-8 lg:gap-12 mt-16">
