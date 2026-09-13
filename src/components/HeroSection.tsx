@@ -3,14 +3,14 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { Map, Hotel, Car, ArrowRight } from "lucide-react";
+import { Map, Hotel, CarFront, ArrowRight } from "lucide-react";
 import { siteInfo, heroCTAs } from "@/data/siteInfo";
 import ScrollReveal from "./ScrollReveal";
 
 const iconMap = {
   Map: Map,
   Hotel: Hotel,
-  Car: Car,
+  CarFront: CarFront,
 };
 
 export default function HeroSection() {
