@@ -40,8 +40,8 @@ export default function ComparisonTable() {
     <section className="section-padding bg-warm-white">
       <div className="container-max max-w-5xl mx-auto">
         <SectionHeading
-          title="How We Compare Head-to-Head"
-          subtitle="See why thousands of travelers choose us over standard aggregators for their Vizag trips."
+          title="Travel Better. Travel with Confidence."
+          subtitle="See how our commitment to safety, comfort, transparency, and customer service sets us apart."
         />
 
         <ScrollReveal delay={0.2}>
@@ -68,7 +68,7 @@ export default function ComparisonTable() {
                     </th>
                   </tr>
                 </thead>
-                
+
                 {/* Table Body */}
                 <tbody className="divide-y divide-charcoal/5">
                   {comparisonData.map((row, idx) => (
@@ -77,7 +77,7 @@ export default function ComparisonTable() {
                       <td className="py-4 px-4 md:py-6 md:px-8 font-bold text-xs md:text-base text-charcoal/80 border-r border-charcoal/5 bg-white group-hover:bg-sand transition-colors tracking-tight">
                         {row.feature}
                       </td>
-                      
+
                       {/* Our Advantage Column (Colored Background) */}
                       <td className="py-4 px-4 md:py-6 md:px-8 border-r border-charcoal/5 bg-teal/5 group-hover:bg-teal/10 transition-colors">
                         <div className="flex items-center justify-center gap-2 md:gap-3">
@@ -87,7 +87,7 @@ export default function ComparisonTable() {
                           <span className="font-bold text-xs md:text-lg text-teal-dark tracking-tight leading-tight">{row.us}</span>
                         </div>
                       </td>
-                      
+
                       {/* Others Column */}
                       <td className="py-4 px-4 md:py-6 md:px-8 bg-charcoal/5 group-hover:bg-charcoal/10 transition-colors">
                         <div className="flex items-center justify-center gap-2 md:gap-3">

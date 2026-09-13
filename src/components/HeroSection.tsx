@@ -54,7 +54,7 @@ export default function HeroSection() {
 
           <ScrollReveal delay={0.2}>
             <p className="text-sm sm:text text-charcoal/60 mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
-              {siteInfo.subtitle} — {siteInfo.intro.slice(0, 160)}
+              {siteInfo.subtitle} — {siteInfo.intro.slice(0, 260)}
             </p>
           </ScrollReveal>
         </div>

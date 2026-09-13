@@ -5,9 +5,10 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 
 interface ScrollCarouselProps {
   children: ReactNode;
+  gap?: string;
 }
 
-export default function ScrollCarousel({ children }: ScrollCarouselProps) {
+export default function ScrollCarousel({ children, gap = "gap-5" }: ScrollCarouselProps) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +52,7 @@ export default function ScrollCarousel({ children }: ScrollCarouselProps) {
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 hide-scrollbar"
+        className={`flex ${gap} overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 hide-scrollbar`}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {children}
