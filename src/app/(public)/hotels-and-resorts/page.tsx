@@ -20,7 +20,8 @@ export default async function HotelsPage() {
     location: r.location,
     price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
     image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
-    amenities: r.amenities || []
+    amenities: r.amenities || [],
+    reviews: r.review_count || 120
   }));
 
   return (
