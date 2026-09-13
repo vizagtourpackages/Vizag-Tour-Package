@@ -17,7 +17,7 @@ export default function PackageCard({ pkg }: PackageCardProps) {
     <div className="bg-white border border-charcoal/5 rounded-[32px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden group">
       {/* Image */}
       <div className="relative p-2">
-        <div className="relative overflow-hidden rounded-[24px]">
+        <Link href={`/packages/${pkg.slug || pkg.id}`} className="relative overflow-hidden rounded-[24px] block">
           {pkg.imageUrl ? (
             <div className="relative h-48 sm:h-56 w-full">
               <img 
@@ -35,22 +35,24 @@ export default function PackageCard({ pkg }: PackageCardProps) {
               overlay
             />
           )}
-        </div>
+        </Link>
         {pkg.badge && (
-          <span className="absolute top-6 left-6 badge bg-coral text-white shadow-sm border border-coral/20 tracking-tight">
+          <span className="absolute top-6 left-6 badge bg-coral text-white shadow-sm border border-coral/20 tracking-tight z-10">
             {pkg.badge}
           </span>
         )}
-        <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md rounded-full px-4 py-2 shadow-sm border border-charcoal/5">
+        <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md rounded-full px-4 py-2 shadow-sm border border-charcoal/5 z-10">
           <span className="text-xl font-black text-charcoal tracking-tight">{pkg.priceLabel}</span>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-5 sm:p-7 flex flex-col flex-1 min-w-0">
-        <h3 className="font-heading text-2xl font-bold text-charcoal mb-4 leading-tight break-words group-hover:text-coral transition-colors tracking-tight">
-          {pkg.title}
-        </h3>
+        <Link href={`/packages/${pkg.slug || pkg.id}`} className="group-hover:text-coral transition-colors">
+          <h3 className="font-heading text-2xl font-bold text-charcoal mb-4 leading-tight break-words tracking-tight">
+            {pkg.title}
+          </h3>
+        </Link>
 
         {/* Duration & People */}
         <div className="flex items-center gap-4 mb-5 text-sm text-charcoal/60 font-medium flex-wrap">
@@ -128,7 +130,7 @@ export default function PackageCard({ pkg }: PackageCardProps) {
             Book Now
           </a>
           <Link
-            href="/tour-packages"
+            href={`/packages/${pkg.slug || pkg.id}`}
             className="btn-secondary !py-3 !px-4 justify-center shrink-0 border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/5 text-charcoal"
             aria-label={`View itinerary for ${pkg.title}`}
           >

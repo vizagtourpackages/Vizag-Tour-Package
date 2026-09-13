@@ -35,12 +35,18 @@ export default async function Home() {
     .from('tour_packages')
     .select('*')
     .eq('is_published', true)
-    .eq('category', 'trending')
     .order('created_at', { ascending: false })
     .limit(4);
 
   const { data: dbEvents } = await supabase
     .from('upcoming_events')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false })
+    .limit(6);
+
+  const { data: dbHotels } = await supabase
+    .from('hotels_resorts')
     .select('*')
     .eq('is_published', true)
     .order('created_at', { ascending: false })
@@ -57,7 +63,7 @@ export default async function Home() {
       imageGradient: 'from-purple-500 to-pink-600', // fallback
       imageUrl: evt.image_url
     }))
-    : events;
+    : [];
 
   const { data: dbGuides } = await supabase
     .from('travel_guides')
@@ -81,7 +87,7 @@ export default async function Home() {
       imageGradient: 'from-emerald-400 to-teal-600', // fallback
       imageUrl: guide.image_url
     }))
-    : guides;
+    : [];
 
   const displayFaqs = dbFaqs && dbFaqs.length > 0
     ? dbFaqs.map(faq => ({
@@ -89,7 +95,7 @@ export default async function Home() {
       q: faq.question,
       a: faq.answer,
     }))
-    : undefined;
+    : [];
 
   const { data: dbDestinations } = await supabase
     .from('top_destinations')
@@ -115,7 +121,7 @@ export default async function Home() {
       imageGradient: 'from-amber-400 to-orange-600', // fallback
       imageUrl: dest.image_url
     }))
-    : topPlaces;
+    : [];
 
   const displayPlaces = dbPlaces && dbPlaces.length > 0
     ? dbPlaces.map(place => ({
@@ -126,12 +132,13 @@ export default async function Home() {
       imageGradient: 'from-blue-400 to-ocean', // fallback
       imageUrl: place.image_url
     }))
-    : vizagPlaces;
+    : [];
 
   // Map DB rows to match the existing Package interface, with a fallback
   const displayPackages = dbPackages && dbPackages.length > 0
     ? dbPackages.map(pkg => ({
       id: pkg.id,
+      slug: pkg.slug,
       title: pkg.title,
       price: pkg.price,
       priceLabel: pkg.price_label,
@@ -143,9 +150,23 @@ export default async function Home() {
       excludes: pkg.excludes,
       category: pkg.category,
       imageGradient: 'from-teal to-blue-600', // fallback
-      imageUrl: pkg.image_url
+      imageUrl: pkg.cover_image_url || pkg.image_url
     }))
-    : trendingPackages;
+    : [];
+
+  const displayHotels = dbHotels && dbHotels.length > 0
+    ? dbHotels.map(r => ({
+      id: r.id,
+      name: r.name,
+      slug: r.slug,
+      type: r.category || 'Resorts',
+      rating: r.rating || 4.5,
+      location: r.location,
+      price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
+      image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
+      amenities: r.amenities || []
+    }))
+    : [];
 
   return (
     <>
@@ -166,13 +187,13 @@ export default async function Home() {
             subtitle="Explore our most popular, handpicked itineraries designed for the perfect Vizag experience."
           />
           <ScrollReveal delay={0.2}>
-            <div className="mobile-carousel-container gap-4">
+            <ScrollCarousel gap="gap-4">
               {displayPackages.map((pkg: any) => (
-                <div key={pkg.id} className="mobile-carousel-item w-[90vw] max-w-[370px] sm:max-w-none sm:w-[370px]">
+                <div key={pkg.id} className="w-[320px] sm:w-[320px] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start">
                   <PackageCard pkg={pkg} />
                 </div>
               ))}
-            </div>
+            </ScrollCarousel>
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="mt-16 text-center">
@@ -284,9 +305,9 @@ export default async function Home() {
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel gap="gap-4">
-              {hotels.map((hotel) => (
+              {displayHotels.map((hotel) => (
                 <div key={hotel.id} className="w-[320px] sm:w-[320px] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1rem)] flex-shrink-0 snap-start">
-                  <HotelCard hotel={hotel} />
+                  <HotelCard hotel={hotel as any} />
                 </div>
               ))}
             </ScrollCarousel>
@@ -520,9 +541,6 @@ export default async function Home() {
           <TestimonialsSection />
         </div>
       </section>
-
-      {/* NEW: Community CTA */}
-      <CommunityCTA />
     </>
   );
 }

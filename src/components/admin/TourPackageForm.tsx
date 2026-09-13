@@ -8,6 +8,29 @@ import Link from 'next/link'
 export default function TourPackageForm({ initialData, id }: { initialData?: any, id: string }) {
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || '')
   const [loading, setLoading] = useState(false)
+  const [title, setTitle] = useState(initialData?.title || '')
+  const [slug, setSlug] = useState(initialData?.slug || '')
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!initialData?.slug)
+
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    if (!isSlugManuallyEdited) {
+      setSlug(generateSlug(newTitle));
+    }
+  };
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSlug(e.target.value);
+    setIsSlugManuallyEdited(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -35,7 +58,11 @@ export default function TourPackageForm({ initialData, id }: { initialData?: any
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-              <input type="text" name="title" defaultValue={initialData?.title} required className="w-full p-2.5 border rounded-lg" />
+              <input type="text" name="title" value={title} onChange={handleTitleChange} required className="w-full p-2.5 border rounded-lg" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+              <input type="text" name="slug" value={slug} onChange={handleSlugChange} required className="w-full p-2.5 border rounded-lg" placeholder="auto-generated-from-title" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
