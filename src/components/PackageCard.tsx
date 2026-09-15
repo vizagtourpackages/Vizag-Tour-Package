@@ -1,17 +1,16 @@
+'use client'
 import Link from "next/link";
 import { Check, X, ArrowRight, Clock, Users } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Package } from "@/data/packages";
-import { siteInfo } from "@/data/siteInfo";
+import { useBooking } from "./booking/BookingContext";
 
 interface PackageCardProps {
   pkg: Package;
 }
 
 export default function PackageCard({ pkg }: PackageCardProps) {
-  const whatsappMessage = encodeURIComponent(
-    `Hi! I'm interested in the "${pkg.title}" package (${pkg.priceLabel}). Could you share more details?`
-  );
+  const { openBooking } = useBooking();
 
   return (
     <div className="bg-white border border-charcoal/5 rounded-[32px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden group">
@@ -42,7 +41,7 @@ export default function PackageCard({ pkg }: PackageCardProps) {
           </span>
         )}
         <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md rounded-full px-4 py-2 shadow-sm border border-charcoal/5 z-10">
-          <span className="text-xl font-black text-charcoal tracking-tight">{pkg.priceLabel}</span>
+          <span className="text-xl font-black text-charcoal tracking-tight">₹{pkg.price}</span>
         </div>
       </div>
 
@@ -119,16 +118,13 @@ export default function PackageCard({ pkg }: PackageCardProps) {
           </div>
         </div>
 
-        {/* CTAs */}
         <div className="flex gap-3 mt-auto min-w-0">
-          <a
-            href={`${siteInfo.whatsappLink}?text=${whatsappMessage}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => openBooking('package', pkg)}
             className="btn-whatsapp flex-1 !text-sm !py-3 !px-4 justify-center text-center whitespace-nowrap min-w-0 bg-teal hover:bg-teal-dark"
           >
             Book Now
-          </a>
+          </button>
           <Link
             href={`/packages/${pkg.slug || pkg.id}`}
             className="btn-secondary !py-3 !px-4 justify-center shrink-0 border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/5 text-charcoal"

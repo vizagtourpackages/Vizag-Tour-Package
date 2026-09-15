@@ -9,7 +9,6 @@ CREATE TABLE tour_packages (
     title TEXT NOT NULL,
     description TEXT,
     price INTEGER NOT NULL,
-    price_label TEXT DEFAULT 'per person',
     duration TEXT NOT NULL,
     people TEXT NOT NULL,
     badge TEXT,
@@ -217,3 +216,75 @@ CREATE POLICY "Public view site-images" ON storage.objects FOR SELECT USING (buc
 CREATE POLICY "Admin upload site-images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'site-images');
 CREATE POLICY "Admin update site-images" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'site-images');
 CREATE POLICY "Admin delete site-images" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'site-images');
+
+-- ==========================================
+-- BOOKINGS TABLES
+-- ==========================================
+
+CREATE TABLE package_bookings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    status TEXT DEFAULT 'pending', -- pending, confirmed, cancelled
+    
+    package_name TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    contact_number TEXT NOT NULL,
+    whatsapp_number TEXT,
+    email TEXT,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    vehicle_preference TEXT,
+    accommodation_type TEXT,
+    guests INTEGER NOT NULL,
+    rooms INTEGER NOT NULL,
+    special_requests TEXT
+);
+
+CREATE TABLE resort_bookings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    status TEXT DEFAULT 'pending',
+    
+    resort_name TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    contact_number TEXT NOT NULL,
+    whatsapp_number TEXT,
+    email TEXT,
+    check_in DATE NOT NULL,
+    check_out DATE NOT NULL,
+    guests INTEGER NOT NULL,
+    room_type TEXT NOT NULL,
+    special_requests TEXT
+);
+
+CREATE TABLE cab_bookings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    status TEXT DEFAULT 'pending',
+    
+    full_name TEXT NOT NULL,
+    phone_number TEXT NOT NULL,
+    pickup_location TEXT NOT NULL,
+    drop_location TEXT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    adults INTEGER NOT NULL,
+    kids INTEGER DEFAULT 0,
+    vehicle_type TEXT NOT NULL
+);
+
+-- Enable RLS for bookings
+ALTER TABLE package_bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE resort_bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cab_bookings ENABLE ROW LEVEL SECURITY;
+
+-- Allow public to insert bookings (since it's a public form)
+CREATE POLICY "Public insert package bookings" ON package_bookings FOR INSERT TO public WITH CHECK (true);
+CREATE POLICY "Public insert resort bookings" ON resort_bookings FOR INSERT TO public WITH CHECK (true);
+CREATE POLICY "Public insert cab bookings" ON cab_bookings FOR INSERT TO public WITH CHECK (true);
+
+-- Admin full access to bookings
+CREATE POLICY "Admin full access package bookings" ON package_bookings FOR ALL TO authenticated USING (true);
+CREATE POLICY "Admin full access resort bookings" ON resort_bookings FOR ALL TO authenticated USING (true);
+CREATE POLICY "Admin full access cab bookings" ON cab_bookings FOR ALL TO authenticated USING (true);
+

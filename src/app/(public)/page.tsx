@@ -109,6 +109,18 @@ export default async function Home() {
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
+  const { data: dbHillStations } = await supabase
+    .from('hill_station_escapes')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+
+  const { data: dbNewsOffers } = await supabase
+    .from('latest_updates_offers')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+
   const displayDestinations = dbDestinations && dbDestinations.length > 0
     ? dbDestinations.map(dest => ({
       id: dest.id,
@@ -167,6 +179,41 @@ export default async function Home() {
       amenities: r.amenities || []
     }))
     : [];
+
+  const displayHillStations = dbHillStations && dbHillStations.length > 0
+    ? dbHillStations.map(station => ({
+      id: station.id,
+      name: station.name,
+      description: station.description,
+      category: station.category || 'Hill Station',
+      imageGradient: 'from-emerald-400 to-teal-600',
+      imageUrl: station.image_url
+    }))
+    : [];
+
+  const displayPromotions = dbNewsOffers?.filter(item => item.type === 'Offer').map(item => ({
+    id: item.id,
+    type: item.type,
+    title: item.title,
+    description: item.description,
+    badgeText: item.badge_text,
+    date: item.date,
+    imageUrl: item.image_url,
+    linkText: item.link_text,
+    href: item.href
+  })) || [];
+
+  const displayNews = dbNewsOffers?.filter(item => item.type === 'News').map(item => ({
+    id: item.id,
+    type: item.type,
+    title: item.title,
+    description: item.description,
+    badgeText: item.badge_text,
+    date: item.date,
+    imageUrl: item.image_url,
+    linkText: item.link_text,
+    href: item.href
+  })) || [];
 
   return (
     <>
@@ -381,20 +428,11 @@ export default async function Home() {
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
-              {Object.values(destinationDetails).map((d) => {
-                const hillStationData = {
-                  id: d.id,
-                  name: d.name,
-                  description: d.description,
-                  category: "Hill Station",
-                  imageGradient: d.imageGradient,
-                };
-                return (
-                  <div key={d.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
-                    <DestinationCard destination={hillStationData} />
+              {displayHillStations.map((station) => (
+                  <div key={station.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                    <DestinationCard destination={station} />
                   </div>
-                );
-              })}
+              ))}
             </ScrollCarousel>
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
@@ -497,7 +535,7 @@ export default async function Home() {
                   <span className="badge bg-coral/20 text-coral border border-coral/30 tracking-widest text-[10px]">LIMITED</span>
                 </div>
                 <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
-                  {promotionsData.map((promo) => (
+                  {displayPromotions.map((promo) => (
                     <div key={promo.id} className="w-[85vw] max-w-[300px] lg:max-w-none lg:w-[85%] shrink-0 snap-start">
                       <NewsPromoCard item={promo} />
                     </div>
@@ -516,7 +554,7 @@ export default async function Home() {
                   <span className="badge bg-teal/20 text-teal border border-teal/30 tracking-widest text-[10px]">UPDATES</span>
                 </div>
                 <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
-                  {newsData.map((news) => (
+                  {displayNews.map((news) => (
                     <div key={news.id} className="w-[85vw] max-w-[300px] lg:max-w-none lg:w-[85%] shrink-0 snap-start">
                       <NewsPromoCard item={news} />
                     </div>

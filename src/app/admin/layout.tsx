@@ -1,37 +1,18 @@
-import Link from 'next/link';
-import { 
-  LayoutDashboard, 
-  Map, 
-  Building2, 
-  MapPin, 
-  Navigation, 
-  Mountain, 
-  BookOpen, 
-  Calendar, 
-  Megaphone, 
-  HelpCircle,
-  LogOut 
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { logout } from '@/app/login/actions';
+import { createClient } from '@/lib/supabase/server';
+import SidebarNav from '@/components/admin/SidebarNav';
 
-const navigation = [
-  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Tour Packages', href: '/admin/tour-packages', icon: Map },
-  { name: 'Hotels & Resorts', href: '/admin/hotels-resorts', icon: Building2 },
-  { name: 'Top Destinations', href: '/admin/top-destinations', icon: MapPin },
-  { name: 'Places to Visit', href: '/admin/places-to-visit', icon: Navigation },
-  { name: 'Hill Stations', href: '/admin/hill-stations', icon: Mountain },
-  { name: 'Travel Guides', href: '/admin/travel-guides', icon: BookOpen },
-  { name: 'Upcoming Events', href: '/admin/upcoming-events', icon: Calendar },
-  { name: 'Updates & Offers', href: '/admin/updates-offers', icon: Megaphone },
-  { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
-];
-
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+  const { count: pkgCount } = await supabase.from('package_bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+  const { count: resCount } = await supabase.from('resort_bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+  const { count: cabCount } = await supabase.from('cab_bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+  const totalPending = (pkgCount || 0) + (resCount || 0) + (cabCount || 0);
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -43,21 +24,12 @@ export default function AdminLayout({
           <span className="font-bold text-lg tracking-tight">Admin Panel</span>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors group"
-              >
-                <Icon className="w-5 h-5 mr-3 text-white/50 group-hover:text-coral transition-colors" />
-                {item.name}
-              </Link>
-            );
-          })}
-        </nav>
+        <SidebarNav 
+          pkgCount={pkgCount || 0} 
+          resCount={resCount || 0} 
+          cabCount={cabCount || 0} 
+          totalPending={totalPending} 
+        />
 
         <div className="p-4 border-t border-white/10">
           <form action={logout}>

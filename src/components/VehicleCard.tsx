@@ -4,14 +4,20 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { ChevronRight, ChevronLeft, User } from "lucide-react";
 import type { Vehicle } from "@/data/vehicles";
+import { useBooking } from "./booking/BookingContext";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
 }
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
+  const { openBooking } = useBooking();
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden">
+    <div 
+      onClick={() => openBooking('cab', vehicle)}
+      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden cursor-pointer group"
+    >
       {/* Model name pill */}
       <div className="p-5 pb-0">
         <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 px-3 py-1.5 rounded-full uppercase tracking-wide">

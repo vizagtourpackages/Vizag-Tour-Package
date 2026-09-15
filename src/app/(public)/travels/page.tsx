@@ -1,10 +1,14 @@
+'use client'
 import { Shield, Car, MapPin, Clock, Phone, MessageCircle } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import FleetSection from "@/components/VehicleCard";
 import { vehicles } from "@/data/vehicles";
 import { siteInfo } from "@/data/siteInfo";
+import { useBooking } from "@/components/booking/BookingContext";
 
 export default function TravelsPage() {
+  const { openBooking } = useBooking();
+
   return (
     <div className="bg-warm-white min-h-screen pb-24 pt-16">
       {/* Ready to Book Your Ride Hero Section */}
@@ -35,12 +39,12 @@ export default function TravelsPage() {
 
           {/* Action Buttons */}
           <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
-            <a 
-              href="/contact"
+            <button 
+              onClick={() => openBooking('cab', null)}
               className="w-full bg-[#0D6EFD] hover:bg-[#0b5ed7] text-white py-4 px-8 rounded-full font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-lg shadow-blue-500/30"
             >
               <Car size={24} /> Book Your Taxi Now
-            </a>
+            </button>
             
             <div className="flex w-full gap-4">
               <a 
