@@ -1,9 +1,12 @@
+'use client'
 import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, CheckCircle2 } from "lucide-react";
 import type { Hotel } from "@/data/hotels";
+import { useBooking } from "./booking/BookingContext";
 
 export default function HotelCard({ hotel }: { hotel: Hotel }) {
+  const { openBooking } = useBooking();
   return (
     <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 h-full flex flex-col overflow-hidden group">
       <Link href={`/resorts/${hotel.slug || hotel.id}`} className="w-full aspect-[16/10] sm:aspect-[4/3] relative p-2 block group-hover:scale-[1.01] transition-transform">
@@ -51,9 +54,9 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
             <span className="text-2xl font-black text-charcoal tracking-tight">{hotel.price}</span>
             <span className="text-xs text-charcoal/50 font-medium"> / night</span>
           </div>
-          <Link href={`/resorts/${hotel.slug || hotel.id}`} className="btn-primary py-2.5 px-6 text-sm rounded-full bg-charcoal hover:bg-coral">
+          <button onClick={() => openBooking('resort', hotel)} className="btn-primary py-2.5 px-6 text-sm rounded-full bg-charcoal hover:bg-coral">
             Book Now
-          </Link>
+          </button>
         </div>
       </div>
     </div>

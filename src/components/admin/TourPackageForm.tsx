@@ -199,10 +199,6 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
             <label className="block text-sm font-bold text-gray-700 mb-2">MRP (₹)</label>
             <input type="number" name="mrp" defaultValue={initialData?.mrp} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="Strikethrough price" />
           </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Price Label</label>
-            <input type="text" name="price_label" defaultValue={initialData?.price_label || 'per person'} className="w-full p-3 border rounded-lg bg-gray-50" />
-          </div>
 
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Duration *</label>
@@ -435,11 +431,11 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
                   </div>
                   <div className="lg:col-span-1">
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Lat (Optional)</label>
-                    <input type="text" value={hotel.latitude} onChange={e => updateHotel(hIdx, 'latitude', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
+                    <input type="text" value={hotel.latitude || ''} onChange={e => updateHotel(hIdx, 'latitude', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
                   </div>
                   <div className="lg:col-span-1">
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Lng (Optional)</label>
-                    <input type="text" value={hotel.longitude} onChange={e => updateHotel(hIdx, 'longitude', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
+                    <input type="text" value={hotel.longitude || ''} onChange={e => updateHotel(hIdx, 'longitude', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
                   </div>
 
                   <div className="lg:col-span-1">

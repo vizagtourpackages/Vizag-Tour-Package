@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import EnquiryDrawer from "@/components/EnquiryDrawer";
+import { BookingProvider } from "@/components/booking/BookingContext";
+import BookingModalController from "@/components/booking/BookingModalController";
 
 export const metadata: Metadata = {
   title: {
@@ -21,7 +23,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <BookingProvider>
       <Navbar />
       <main className="flex-1 pt-[72px] overflow-x-hidden">{children}</main>
       <Footer />
@@ -30,6 +32,7 @@ export default function PublicLayout({
       </div>
       <MobileBottomNav />
       <EnquiryDrawer />
-    </>
+      <BookingModalController />
+    </BookingProvider>
   );
 }
