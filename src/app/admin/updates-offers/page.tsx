@@ -77,7 +77,12 @@ export default async function UpdatesOffersPage() {
                     <Link href={`/admin/updates-offers/${item.id}`} className="p-2 text-gray-400 hover:text-coral transition-colors">
                       <Edit className="w-4 h-4" />
                     </Link>
-                    <DeleteButton id={item.id} action={deleteUpdateOffer} />
+                    <form action={async () => {
+                      'use server'
+                      await deleteUpdateOffer(item.id)
+                    }}>
+                      <DeleteButton />
+                    </form>
                   </div>
                 </td>
               </tr>

@@ -70,7 +70,12 @@ export default async function HillStationsPage() {
                     <Link href={`/admin/hill-stations/${station.id}`} className="p-2 text-gray-400 hover:text-coral transition-colors">
                       <Edit className="w-4 h-4" />
                     </Link>
-                    <DeleteButton id={station.id} action={deleteHillStation} />
+                    <form action={async () => {
+                      'use server'
+                      await deleteHillStation(station.id)
+                    }}>
+                      <DeleteButton />
+                    </form>
                   </div>
                 </td>
               </tr>
