@@ -13,7 +13,7 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
     destination.id
   );
 
-  const href = hasDedicatedPage ? `/${destination.id}` : "/route-map";
+  const href = destination.customLink || (hasDedicatedPage ? `/${destination.id}` : "/route-map");
 
   return (
     <Link href={href} className="group block h-full">

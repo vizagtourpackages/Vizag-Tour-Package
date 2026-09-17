@@ -46,6 +46,10 @@ export default function PlaceToVisitForm({ initialData, id }: { initialData?: an
               <input type="text" name="location" defaultValue={initialData?.location} className="w-full p-2.5 border rounded-lg" />
             </div>
             <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Custom Link (Optional)</label>
+              <input type="text" name="custom_link" defaultValue={initialData?.custom_link} placeholder="e.g. /packages/vizag-local or https://google.com" className="w-full p-2.5 border rounded-lg" />
+            </div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
               <textarea name="description" defaultValue={initialData?.description} required rows={3} className="w-full p-2.5 border rounded-lg" />
             </div>

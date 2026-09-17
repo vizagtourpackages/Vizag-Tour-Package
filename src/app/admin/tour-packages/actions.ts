@@ -37,7 +37,6 @@ export async function saveTourPackage(formData: FormData) {
     overview_description: formData.get('overview_description') as string,
     price: formData.get('price') ? parseInt(formData.get('price') as string) : null,
     mrp: formData.get('mrp') ? parseInt(formData.get('mrp') as string) : null,
-    price_label: formData.get('price_label') as string,
     duration: formData.get('duration') as string,
     type: formData.get('type') as string,
     setting: formData.get('setting') as string,

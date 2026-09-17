@@ -190,19 +190,17 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                 <h3 className="font-heading text-2xl font-bold mb-6 text-charcoal">Room Options</h3>
                 <div className="space-y-4">
                   {roomTypes.map((rt: any) => (
-                    <div key={rt.id} className={`flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-2xl border ${rt.is_available ? 'border-charcoal/10 bg-white' : 'border-gray-200 bg-gray-50 opacity-75'}`}>
+                    <div key={rt.id} className={`flex justify-between items-start sm:items-center p-5 rounded-2xl border ${rt.is_available ? 'border-charcoal/10 bg-white shadow-sm' : 'border-gray-200 bg-gray-50 opacity-75'}`}>
                       <div>
-                        <h4 className="font-bold text-lg text-charcoal mb-1">{rt.room_type}</h4>
-                        <div className="flex items-center gap-3 text-sm text-charcoal/60 font-medium">
-                          {rt.has_ac && <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs border border-blue-100">AC Included</span>}
-                          {!rt.is_available && <span className="text-red-500 font-bold">Currently Unavailable</span>}
+                        <h4 className="font-bold text-base sm:text-lg text-charcoal mb-2 leading-tight">{rt.room_type}</h4>
+                        <div className="flex items-center gap-2 text-sm text-charcoal/60 font-medium">
+                          {rt.has_ac && <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold border border-blue-100 uppercase tracking-widest">AC Included</span>}
+                          {!rt.is_available && <span className="text-red-500 font-bold text-[10px] sm:text-xs uppercase tracking-widest">Unavailable</span>}
                         </div>
                       </div>
-                      <div className="mt-4 sm:mt-0 flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="text-xs font-bold text-charcoal/50 uppercase tracking-widest">Price</div>
-                          <div className="font-heading font-black text-2xl text-charcoal">₹{rt.price}</div>
-                        </div>
+                      <div className="text-right shrink-0 ml-4">
+                        <div className="text-[10px] font-bold text-charcoal/50 uppercase tracking-widest mb-1">Price</div>
+                        <div className="font-heading font-black text-xl sm:text-2xl text-charcoal">₹{rt.price}</div>
                       </div>
                     </div>
                   ))}

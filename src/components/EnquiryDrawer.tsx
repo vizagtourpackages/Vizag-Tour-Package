@@ -11,11 +11,11 @@ export default function EnquiryDrawer() {
   return (
     <>
       {/* Side Tab Button */}
-      <div className="fixed left-0 top-1/2 -translate-y-1/2 z-[200]">
+      <div className="fixed right-0 top-32 z-[200]">
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-coral text-white font-bold uppercase text-xs tracking-widest py-3 px-2 rounded-r-xl shadow-float hover:bg-coral-light hover:pr-4 transition-all duration-300 flex items-center justify-center border border-coral/20"
-          style={{ writingMode: "vertical-rl" }}
+          className="bg-coral text-white font-bold uppercase text-xs tracking-widest py-4 px-2 rounded-r-xl shadow-float hover:bg-coral-light hover:pl-4 transition-all duration-300 flex items-center justify-center border border-coral/20 pr-3"
+          style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
         >
           Enquiry Now
         </button>
@@ -87,7 +87,7 @@ export default function EnquiryDrawer() {
               <div className="space-y-2">
                 <label className="text-xs font-bold text-white/50 uppercase tracking-widest block">Adults</label>
                 <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-2 h-[48px]">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setAdults(Math.max(1, adults - 1))}
                     className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
@@ -95,7 +95,7 @@ export default function EnquiryDrawer() {
                     <Minus size={16} />
                   </button>
                   <span className="font-bold text-white text-sm">{adults}</span>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setAdults(adults + 1)}
                     className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
@@ -107,7 +107,7 @@ export default function EnquiryDrawer() {
               <div className="space-y-2">
                 <label className="text-xs font-bold text-white/50 uppercase tracking-widest block">Children</label>
                 <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-2 h-[48px]">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setChildren(Math.max(0, children - 1))}
                     className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
@@ -115,7 +115,7 @@ export default function EnquiryDrawer() {
                     <Minus size={16} />
                   </button>
                   <span className="font-bold text-white text-sm">{children}</span>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setChildren(children + 1)}
                     className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-coral hover:text-white transition-colors"
