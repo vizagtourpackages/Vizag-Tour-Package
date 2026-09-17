@@ -32,6 +32,7 @@ export async function savePlace(formData: FormData) {
     location: formData.get('location') as string,
     image_url: formData.get('image_url') as string,
     is_published: formData.get('is_published') === 'true',
+    custom_link: formData.get('custom_link') as string,
   }
 
   if (id === 'new') {

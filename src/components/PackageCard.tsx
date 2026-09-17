@@ -66,20 +66,15 @@ export default function PackageCard({ pkg }: PackageCardProps) {
         </div>
 
         {/* Highlights */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {pkg.highlights.slice(0, 5).map((h) => (
+        <div className="flex overflow-x-auto gap-2 mb-6 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {pkg.highlights.map((h) => (
             <span
               key={h}
-              className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 break-words"
+              className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 whitespace-nowrap shrink-0"
             >
               {h}
             </span>
           ))}
-          {pkg.highlights.length > 5 && (
-            <span className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/50">
-              +{pkg.highlights.length - 5} more
-            </span>
-          )}
         </div>
 
         {/* Includes / Excludes */}

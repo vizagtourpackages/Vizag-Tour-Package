@@ -19,6 +19,7 @@ export default function CabBookingModal({ data, onClose }: { data: any, onClose:
     endDate: '',
     adults: 2,
     kids: 0,
+    placesToVisit: '',
   })
   
   const [loading, setLoading] = useState(false)
@@ -38,7 +39,7 @@ export default function CabBookingModal({ data, onClose }: { data: any, onClose:
       full_name: formData.fullName,
       phone_number: formData.phoneNumber,
       pickup_location: formData.pickupLocation,
-      drop_location: formData.dropLocation,
+      drop_location: formData.placesToVisit ? `${formData.dropLocation} (Places to visit: ${formData.placesToVisit})` : formData.dropLocation,
       start_date: formData.startDate,
       end_date: formData.endDate,
       adults: formData.adults,
@@ -155,8 +156,13 @@ Passengers: ${bookingData.adults} Adults, ${bookingData.kids} Kids`
                 </div>
                 <div>
                   <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Drop Location *</label>
-                  <input type="text" required value={formData.dropLocation} onChange={e => setFormData({...formData, dropLocation: e.target.value})} className="w-full p-2 border rounded-lg text-sm" placeholder="e.g. Araku Valley" />
+                  <input type="text" required value={formData.dropLocation} onChange={e => setFormData({...formData, dropLocation: e.target.value})} className="w-full p-2 border rounded-lg text-sm" placeholder="e.g. Hotel in Vizag" />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Places to Visit (Optional)</label>
+                <input type="text" value={formData.placesToVisit} onChange={e => setFormData({...formData, placesToVisit: e.target.value})} className="w-full p-2 border rounded-lg text-sm" placeholder="e.g. RK Beach, Araku Valley, Kailasagiri" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

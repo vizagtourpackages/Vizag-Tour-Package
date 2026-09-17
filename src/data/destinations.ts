@@ -8,6 +8,7 @@ export interface Destination {
   distance?: string;
   duration?: string;
   imageUrl?: string;
+  customLink?: string;
 }
 
 export const topPlaces: Destination[] = [

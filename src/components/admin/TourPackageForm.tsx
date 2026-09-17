@@ -5,7 +5,7 @@ import { saveTourPackage } from '@/app/admin/tour-packages/actions'
 import ImageUpload from './ImageUpload'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, X, Trash2 } from 'lucide-react'
+import { Plus, X, Trash2, AlertCircle } from 'lucide-react'
 
 export default function TourPackageForm({ initialData, id, initialDays = [], initialHotels = [] }: { initialData?: any, id: string, initialDays?: any[], initialHotels?: any[] }) {
   const [imageUrl, setImageUrl] = useState(initialData?.cover_image_url || initialData?.image_url || '')
@@ -287,7 +287,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
           <div className="space-y-2 mb-4">
             {importantNotes.map((note, idx) => (
               <div key={idx} className="flex items-start gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                <span className="mt-0.5">🚙</span>
+                <AlertCircle size={16} className="text-coral shrink-0 mt-0.5" />
                 <span className="flex-1 text-sm">{note.replace('🚙 ', '')}</span>
                 <button type="button" onClick={() => removeFromArray(setImportantNotes, importantNotes, idx)} className="text-gray-400 hover:text-red-500"><X size={16}/></button>
               </div>
@@ -298,11 +298,11 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
               type="text" 
               value={noteInput} 
               onChange={e => setNoteInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addToArray(setImportantNotes, importantNotes, `🚙 ${noteInput}`, setNoteInput))}
+              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addToArray(setImportantNotes, importantNotes, noteInput, setNoteInput))}
               placeholder="e.g. Borra Caves entry ticket is extra." 
               className="flex-1 p-3 border rounded-lg bg-gray-50 text-sm" 
             />
-            <button type="button" onClick={() => addToArray(setImportantNotes, importantNotes, `🚙 ${noteInput}`, setNoteInput)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold text-sm hover:bg-gray-300">Add</button>
+            <button type="button" onClick={() => addToArray(setImportantNotes, importantNotes, noteInput, setNoteInput)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold text-sm hover:bg-gray-300">Add</button>
           </div>
         </div>
 
@@ -454,7 +454,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
 
                 <div className="mt-4">
                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Amenities (Comma separated)</label>
-                   <input type="text" value={hotel.amenities?.join(', ')} onChange={e => updateHotel(hIdx, 'amenities', e.target.value.split(',').map(s=>s.trim()).filter(Boolean))} placeholder="Pool, WiFi, Sea View" className="w-full p-2 border rounded-md text-sm" />
+                   <input type="text" defaultValue={hotel.amenities?.join(', ')} onChange={e => updateHotel(hIdx, 'amenities', e.target.value.split(',').map(s=>s.trim()).filter(Boolean))} placeholder="Pool, WiFi, Sea View" className="w-full p-2 border rounded-md text-sm" />
                 </div>
               </div>
             ))}

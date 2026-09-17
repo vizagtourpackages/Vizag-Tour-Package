@@ -131,7 +131,8 @@ export default async function Home() {
       distance: dest.distance_km,
       duration: dest.duration,
       imageGradient: 'from-amber-400 to-orange-600', // fallback
-      imageUrl: dest.image_url
+      imageUrl: dest.image_url,
+      customLink: dest.custom_link
     }))
     : [];
 
@@ -142,7 +143,8 @@ export default async function Home() {
       description: place.description,
       category: place.category || 'Place',
       imageGradient: 'from-blue-400 to-ocean', // fallback
-      imageUrl: place.image_url
+      imageUrl: place.image_url,
+      customLink: place.custom_link
     }))
     : [];
 
@@ -187,7 +189,8 @@ export default async function Home() {
       description: station.description,
       category: station.category || 'Hill Station',
       imageGradient: 'from-emerald-400 to-teal-600',
-      imageUrl: station.image_url
+      imageUrl: station.image_url,
+      customLink: station.custom_link
     }))
     : [];
 
