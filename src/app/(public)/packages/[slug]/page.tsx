@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Users, Check, X, ArrowRight, ChevronRight, Home } from "lucide-react";
 import PackageCard from "@/components/PackageCard";
+import PackageBookingButton from "@/components/PackageBookingButton";
 import { siteInfo } from "@/data/siteInfo";
 import { Metadata } from "next";
 
@@ -150,6 +151,58 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
               </div>
             )}
 
+            {/* Rate Plan Options */}
+            {pkg.rate_plans && pkg.rate_plans.length > 0 && (
+              <div className="bg-white rounded-[32px] border border-charcoal/10 overflow-hidden shadow-sm">
+                <div className="p-6 bg-blue-50/50 border-b border-charcoal/10 flex items-center justify-between">
+                  <h3 className="font-heading text-xl font-bold text-charcoal">Rate Plan Options</h3>
+                </div>
+                <div className="divide-y divide-charcoal/10">
+                  {pkg.rate_plans.map((plan: any, i: number) => (
+                    <div key={i} className="p-6 sm:p-8 hover:bg-gray-50 transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+                        <div className="flex-1">
+                          {plan.badge && (
+                            <span className="inline-block px-3 py-1 bg-teal/10 text-teal text-xs font-bold rounded-full mb-3 border border-teal/20">
+                              {plan.badge}
+                            </span>
+                          )}
+                          <h4 className="font-heading text-lg font-bold text-charcoal mb-4">
+                            {plan.title}
+                          </h4>
+                          {plan.features && plan.features.length > 0 && (
+                            <ul className="space-y-3">
+                              {plan.features.map((feat: string, fIdx: number) => (
+                                <li key={fIdx} className="flex items-start gap-3 text-sm text-charcoal/80">
+                                  <Check size={16} className="text-teal mt-0.5 shrink-0" />
+                                  <span className="leading-relaxed">{feat}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                        
+                        <div className="sm:text-right shrink-0 min-w-[140px] flex flex-col justify-end h-full">
+                          <div className="mb-4 text-left sm:text-right">
+                            {plan.mrp && (
+                              <div className="text-sm text-charcoal/40 line-through font-medium mb-1">
+                                ₹{plan.mrp.toLocaleString('en-IN')}
+                              </div>
+                            )}
+                            <div className="text-2xl font-black font-heading text-charcoal tracking-tight">
+                              ₹{(plan.price || 0).toLocaleString('en-IN')}
+                            </div>
+                            <div className="text-xs text-charcoal/50 font-medium mt-1">per Adult</div>
+                          </div>
+                          <PackageBookingButton pkg={pkg} plan={plan} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Includes / Excludes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 bg-sand/30 p-8 rounded-[32px] border border-charcoal/5">
               <div>
@@ -199,14 +252,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="space-y-4">
-                <a
-                  href={`${siteInfo.whatsappLink}?text=${whatsappMessage}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-whatsapp w-full justify-center text-center text-lg py-4 shadow-md hover:shadow-lg bg-teal hover:bg-teal-dark"
-                >
-                  Enquire on WhatsApp
-                </a>
+                <PackageBookingButton pkg={pkg} />
                 <Link
                   href="/contact"
                   className="btn-secondary w-full justify-center text-center text-lg py-4 border-charcoal/10 rounded-full bg-charcoal/5 hover:bg-charcoal/10 transition-colors font-bold"

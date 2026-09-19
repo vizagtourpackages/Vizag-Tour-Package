@@ -28,6 +28,7 @@ export async function saveHotelResort(formData: FormData) {
   // Parse highlights and amenities from JSON strings (since they are arrays of tags)
   let highlights = []
   let amenities = []
+  let galleryImages = []
   let nearbyPlaces = null
   let roomTypes = []
   
@@ -37,6 +38,9 @@ export async function saveHotelResort(formData: FormData) {
       
     const amenitiesData = formData.get('amenities') as string
     if (amenitiesData) amenities = JSON.parse(amenitiesData)
+      
+    const galleryImagesData = formData.get('gallery_images') as string
+    if (galleryImagesData) galleryImages = JSON.parse(galleryImagesData).filter(Boolean)
       
     const nearbyPlacesData = formData.get('nearby_places') as string
     if (nearbyPlacesData) nearbyPlaces = JSON.parse(nearbyPlacesData)
@@ -66,6 +70,7 @@ export async function saveHotelResort(formData: FormData) {
     meta_keywords: formData.get('meta_keywords') as string,
     og_image_url: formData.get('og_image_url') as string,
     is_published: formData.get('is_published') === 'true',
+    gallery_images: galleryImages,
     highlights,
     amenities,
     nearby_places: nearbyPlaces
