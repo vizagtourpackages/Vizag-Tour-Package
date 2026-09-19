@@ -7,34 +7,30 @@ export async function fetchNearbyPlaces(latitude: number, longitude: number) {
     throw new Error('MAPBOX_ACCESS_TOKEN is not configured in the environment variables.')
   }
 
-  // Search for famous places and attractions
   try {
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/tourism.json?proximity=${longitude},${latitude}&limit=10&access_token=${token}`
-    
-    const response = await fetch(url)
-    
-    if (!response.ok) {
-      throw new Error(`Mapbox API error: ${response.statusText}`)
-    }
-    
-    const data = await response.json()
-    
-    // Process and simplify the results
-    const places = data.features.map((feature: any) => {
-      // Basic distance calculation is possible, but Mapbox returns a distance property if proximity is used
-      // Mapbox Geocoding returns it in meters in some endpoints, but let's just grab the basic info
-      return {
-        id: feature.id,
-        name: feature.text,
-        category: feature.properties.category || feature.place_type[0] || 'Place',
-        // In Geocoding v5, distance from proximity point is provided in meters if proximity is passed
-        distance_meters: feature.properties.distance || null,
-        latitude: feature.center[1],
-        longitude: feature.center[0],
+    const queries = [
+      { id: 'attractions', categories: 'tourist_attraction,landmark', limit: 8, keepMax: 5 },
+      { id: 'nature', categories: 'waterfall,natural_feature,beach', limit: 6, keepMax: 4 },
+      { id: 'historic', categories: 'historic', limit: 4, keepMax: 3 },
+      { id: 'transport', categories: 'bus_station,train_station', limit: 4, keepMax: 3 },
+      { id: 'food', categories: 'restaurant,cafe', limit: 8, keepMax: 5 }
+    ];
+
+    const fetchGroup = async (group: any) => {
+      const url = `https://api.mapbox.com/search/searchbox/v1/category/${group.categories}?proximity=${longitude},${latitude}&limit=${group.limit}&access_token=${token}`
+      try {
+        const response = await fetch(url)
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data.features.map((f: any) => ({ ...f, _groupId: group.id }));
+      } catch (e) {
+        return [];
       }
-    })
+    };
+
+    const resultsArray = await Promise.all(queries.map(fetchGroup));
+    const allFeatures = resultsArray.flat();
     
-    // If distance_meters is missing, we can optionally calculate it here using haversine
     const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
       const R = 6371; // km
       const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -43,24 +39,76 @@ export async function fetchNearbyPlaces(latitude: number, longitude: number) {
                 Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                 Math.sin(dLon/2) * Math.sin(dLon/2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return R * c; // returns km
+      return R * c;
     }
     
-    const processedPlaces = places.map((p: any) => {
-      if (!p.distance_meters) {
-        p.distance_km = calculateDistance(latitude, longitude, p.latitude, p.longitude).toFixed(1)
+    let processedPlaces = allFeatures.map((feature: any) => {
+      const pLat = feature.geometry.coordinates[1];
+      const pLon = feature.geometry.coordinates[0];
+      
+      let distKm = 0;
+      if (feature.properties.distance) {
+        distKm = feature.properties.distance / 1000;
       } else {
-        p.distance_km = (p.distance_meters / 1000).toFixed(1)
+        distKm = calculateDistance(latitude, longitude, pLat, pLon);
       }
-      return p
+
+      const name = feature.properties.name || '';
+      const isGeneric = name.toLowerCase().includes('tourism office') || name.toLowerCase().includes('tourismusbüro') || name.toLowerCase().includes('tourist district');
+
+      return {
+        id: feature.properties.mapbox_id || feature.id,
+        name: name,
+        category: (feature.properties.poi_category && feature.properties.poi_category[0]) || feature.properties.maki || 'Place',
+        distance_km: parseFloat(distKm.toFixed(1)),
+        latitude: pLat,
+        longitude: pLon,
+        isGeneric,
+        groupId: feature._groupId
+      }
     })
     
-    // Sort by distance
-    processedPlaces.sort((a: any, b: any) => parseFloat(a.distance_km) - parseFloat(b.distance_km))
+    // 1. Filter out generic places, empty names, and strict 20km radius limit
+    processedPlaces = processedPlaces.filter((p: any) => p.distance_km <= 20.0 && !p.isGeneric && p.name.trim().length > 0)
+    
+    // 2. Deduplicate by normalized name
+    const seenNames = new Set<string>();
+    const deduplicated = [];
+    for (const p of processedPlaces) {
+      // Normalize name: lowercase, trim, remove special chars to catch "Red Bowl- Pan Asian" vs "Red Bowl Pan Asian"
+      const normName = p.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!seenNames.has(normName)) {
+        seenNames.add(normName);
+        deduplicated.push(p);
+      }
+    }
+    processedPlaces = deduplicated;
+
+    // 3. Group by query id and take top N for each category (they are already naturally sorted by distance by Mapbox)
+    const groupedResults: Record<string, any[]> = {};
+    queries.forEach(q => groupedResults[q.id] = []);
+    
+    // Sort all by distance first to ensure we grab the closest when filling quotas
+    processedPlaces.sort((a: any, b: any) => a.distance_km - b.distance_km);
+
+    processedPlaces.forEach((p: any) => {
+      if (groupedResults[p.groupId]) {
+        groupedResults[p.groupId].push(p);
+      }
+    });
+
+    let finalBalancedPlaces: any[] = [];
+    queries.forEach(q => {
+      const groupItems = groupedResults[q.id] || [];
+      finalBalancedPlaces.push(...groupItems.slice(0, q.keepMax));
+    });
+
+    // 4. Final global sort by distance
+    finalBalancedPlaces.sort((a: any, b: any) => a.distance_km - b.distance_km);
 
     return {
       success: true,
-      places: processedPlaces
+      places: finalBalancedPlaces
     }
     
   } catch (error: any) {

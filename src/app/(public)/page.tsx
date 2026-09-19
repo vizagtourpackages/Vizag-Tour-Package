@@ -163,6 +163,7 @@ export default async function Home() {
       includes: pkg.includes,
       excludes: pkg.excludes,
       category: pkg.category,
+      rate_plans: pkg.rate_plans || [],
       imageGradient: 'from-teal to-blue-600', // fallback
       imageUrl: pkg.cover_image_url || pkg.image_url
     }))

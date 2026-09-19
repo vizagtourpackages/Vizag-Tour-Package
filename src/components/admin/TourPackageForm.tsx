@@ -35,6 +35,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
   // Nested structures
   const [days, setDays] = useState<any[]>(initialDays.length > 0 ? initialDays : [])
   const [hotels, setHotels] = useState<any[]>(initialHotels.length > 0 ? initialHotels : [])
+  const [ratePlans, setRatePlans] = useState<any[]>(initialData?.rate_plans || [])
 
   // SEO Defaults
   const [metaTitle, setMetaTitle] = useState(initialData?.meta_title || '')
@@ -142,6 +143,46 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
     setHotels(hotels.filter((_, i) => i !== hotelIndex))
   }
 
+  // Rate Plans Logic
+  const addRatePlan = () => {
+    setRatePlans([...ratePlans, {
+      id: `temp-plan-${Date.now()}`,
+      title: '',
+      badge: '',
+      price: '',
+      mrp: '',
+      features: []
+    }])
+  }
+
+  const updateRatePlan = (planIndex: number, field: string, value: any) => {
+    const newPlans = [...ratePlans]
+    newPlans[planIndex][field] = value
+    setRatePlans(newPlans)
+  }
+
+  const removeRatePlan = (planIndex: number) => {
+    setRatePlans(ratePlans.filter((_, i) => i !== planIndex))
+  }
+
+  const addRatePlanFeature = (planIndex: number) => {
+    const newPlans = [...ratePlans]
+    newPlans[planIndex].features.push('')
+    setRatePlans(newPlans)
+  }
+
+  const updateRatePlanFeature = (planIndex: number, featureIndex: number, value: string) => {
+    const newPlans = [...ratePlans]
+    newPlans[planIndex].features[featureIndex] = value
+    setRatePlans(newPlans)
+  }
+
+  const removeRatePlanFeature = (planIndex: number, featureIndex: number) => {
+    const newPlans = [...ratePlans]
+    newPlans[planIndex].features = newPlans[planIndex].features.filter((_: any, i: number) => i !== featureIndex)
+    setRatePlans(newPlans)
+  }
+
   // Form Submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -160,6 +201,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
     // Nested Data
     formData.append('days', JSON.stringify(days))
     formData.append('hotels', JSON.stringify(hotels))
+    formData.append('rate_plans', JSON.stringify(ratePlans))
     
     try {
       const result = await saveTourPackage(formData)
@@ -455,6 +497,65 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
                 <div className="mt-4">
                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Amenities (Comma separated)</label>
                    <input type="text" defaultValue={hotel.amenities?.join(', ')} onChange={e => updateHotel(hIdx, 'amenities', e.target.value.split(',').map(s=>s.trim()).filter(Boolean))} placeholder="Pool, WiFi, Sea View" className="w-full p-2 border rounded-md text-sm" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Rate Plans (Optional) */}
+      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+          <h3 className="text-xl font-heading font-bold">Rate Plans / Options</h3>
+          <button type="button" onClick={addRatePlan} className="flex items-center gap-1 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition-colors">
+            <Plus size={16} /> Add Rate Plan
+          </button>
+        </div>
+        
+        {ratePlans.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+            <p className="text-gray-500 mb-4">No custom rate plans added. (The default package price will be used)</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {ratePlans.map((plan, pIdx) => (
+              <div key={pIdx} className="bg-gray-50 p-6 rounded-xl border border-gray-200 relative">
+                <button type="button" onClick={() => removeRatePlan(pIdx)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 flex items-center gap-1 text-sm"><Trash2 size={16}/> Delete</button>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
+                  <div className="lg:col-span-2">
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Plan Title</label>
+                    <input type="text" value={plan.title} onChange={e => updateRatePlan(pIdx, 'title', e.target.value)} placeholder="e.g. With AC DELUXE ROOM" className="w-full p-2 border rounded-md text-sm font-bold" />
+                  </div>
+                  <div className="lg:col-span-1">
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Badge (Optional)</label>
+                    <input type="text" value={plan.badge || ''} onChange={e => updateRatePlan(pIdx, 'badge', e.target.value)} placeholder="e.g. Bestseller, PROMO" className="w-full p-2 border rounded-md text-sm" />
+                  </div>
+                  
+                  <div className="lg:col-span-1">
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Selling Price (₹)</label>
+                    <input type="number" value={plan.price || ''} onChange={e => updateRatePlan(pIdx, 'price', e.target.value)} placeholder="e.g. 5049" className="w-full p-2 border rounded-md text-sm font-bold text-emerald-600" />
+                  </div>
+                  <div className="lg:col-span-1">
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">MRP Price (₹)</label>
+                    <input type="number" value={plan.mrp || ''} onChange={e => updateRatePlan(pIdx, 'mrp', e.target.value)} placeholder="e.g. 5728" className="w-full p-2 border rounded-md text-sm" />
+                  </div>
+                </div>
+
+                <div className="mt-4 border-t border-gray-200 pt-4">
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Features / Highlights</label>
+                  <div className="space-y-2 mb-2">
+                    {plan.features?.map((feat: string, fIdx: number) => (
+                      <div key={fIdx} className="flex items-center gap-2">
+                        <input type="text" value={feat} onChange={e => updateRatePlanFeature(pIdx, fIdx, e.target.value)} placeholder="e.g. Inc Complimentary Breakfast" className="flex-1 p-2 border rounded-md text-sm" />
+                        <button type="button" onClick={() => removeRatePlanFeature(pIdx, fIdx)} className="text-gray-400 hover:text-red-500"><X size={16}/></button>
+                      </div>
+                    ))}
+                  </div>
+                  <button type="button" onClick={() => addRatePlanFeature(pIdx)} className="flex items-center gap-1 text-sm font-bold text-charcoal hover:text-blue-600 transition-colors">
+                    <Plus size={14}/> Add Feature
+                  </button>
                 </div>
               </div>
             ))}

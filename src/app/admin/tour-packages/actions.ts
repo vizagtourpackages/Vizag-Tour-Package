@@ -50,6 +50,7 @@ export async function saveTourPackage(formData: FormData) {
     includes: parseJSON('includes'),
     excludes: parseJSON('excludes'),
     highlights: parseJSON('highlights'),
+    rate_plans: parseJSON('rate_plans'),
     
     cover_image_url: formData.get('cover_image_url') as string,
     transportation: formData.get('transportation') as string,

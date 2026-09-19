@@ -10,6 +10,7 @@ import { Plus, X, MapPin, Loader2, BedDouble } from 'lucide-react'
 
 export default function HotelResortForm({ initialData, id, initialRoomTypes = [] }: { initialData?: any, id: string, initialRoomTypes?: any[] }) {
   const [imageUrl, setImageUrl] = useState(initialData?.cover_image_url || '')
+  const [galleryImages, setGalleryImages] = useState<string[]>(initialData?.gallery_images || [])
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState(initialData?.name || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
@@ -95,14 +96,15 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
     
     setFetchingPlaces(true)
     try {
-      const res = await fetchNearbyPlaces(parseFloat(latitude), parseFloat(longitude))
-      if (res.success) {
-        setNearbyPlaces(res.places)
+      const data = await fetchNearbyPlaces(parseFloat(latitude), parseFloat(longitude))
+      if (data.success && data.places) {
+        setNearbyPlaces(data.places)
+        alert(`Successfully fetched ${data.places.length} top places within 20km!`)
       } else {
-        alert(res.error)
+        alert(data.error || "Failed to fetch nearby places")
       }
-    } catch (err: any) {
-      alert("Error fetching places: " + err.message)
+    } catch (error: any) {
+      alert(error.message || "An error occurred while fetching places")
     } finally {
       setFetchingPlaces(false)
     }
@@ -131,6 +133,7 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
     const formData = new FormData(e.currentTarget)
     formData.append('id', id)
     formData.append('cover_image_url', imageUrl)
+    formData.append('gallery_images', JSON.stringify(galleryImages))
     formData.append('highlights', JSON.stringify(highlights))
     formData.append('amenities', JSON.stringify(amenities))
     formData.append('nearby_places', JSON.stringify(nearbyPlaces))
@@ -230,6 +233,48 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
               defaultImage={imageUrl} 
               onUpload={setImageUrl} 
             />
+          </div>
+
+          <div className="md:col-span-2 pt-4 border-t border-gray-100">
+            <div className="flex justify-between items-center mb-4">
+              <label className="block text-sm font-semibold text-gray-700">Gallery Images</label>
+              <button 
+                type="button" 
+                onClick={() => setGalleryImages([...galleryImages, ''])}
+                className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1"
+              >
+                <Plus size={14} /> Add Image
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {galleryImages.map((img, idx) => (
+                <div key={idx} className="relative group">
+                  <ImageUpload 
+                    bucket="site-images" 
+                    folder="hotels/gallery" 
+                    defaultImage={img} 
+                    onUpload={(url) => {
+                      const newArr = [...galleryImages];
+                      newArr[idx] = url;
+                      setGalleryImages(newArr);
+                    }} 
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setGalleryImages(galleryImages.filter((_, i) => i !== idx))}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+              {galleryImages.length === 0 && (
+                <div className="col-span-full text-center py-8 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 text-gray-500 text-sm">
+                  Click 'Add Image' to start adding photos to the resort gallery.
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Highlights */}
@@ -356,7 +401,7 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
       {/* Mapbox Integration */}
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
         <h4 className="font-bold text-gray-900 mb-2">Nearby Places API Integration</h4>
-        <p className="text-sm text-gray-600 mb-4">Uses Mapbox API to find attractions, restaurants, beaches, etc. within 60km based on the Latitude/Longitude above.</p>
+        <p className="text-sm text-gray-600 mb-4">Uses Mapbox API to find attractions, restaurants, beaches, etc. within 20km based on the Latitude/Longitude above.</p>
         
         <button 
           type="button" 
@@ -365,7 +410,7 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           className="flex items-center gap-2 px-4 py-2 border border-emerald-700 text-emerald-700 bg-emerald-50 rounded-lg font-medium hover:bg-emerald-100 transition-colors"
         >
           {fetchingPlaces ? <Loader2 size={16} className="animate-spin" /> : <MapPin size={16} />}
-          Fetch Nearby Places
+          Fetch Nearby Places (Top 15 within 20km)
         </button>
 
         {nearbyPlaces && nearbyPlaces.length > 0 && (

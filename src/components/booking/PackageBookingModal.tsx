@@ -13,7 +13,9 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
     startDate: '',
     endDate: '',
     vehiclePreference: 'Sedan/Hatchback 4+1',
-    accommodationType: 'Not Required',
+    accommodationType: (data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D') 
+      ? 'Not Required' 
+      : (data?.selected_plan || ((data?.rate_plans && data.rate_plans.length > 0) ? '' : 'Not Required')),
     guests: 2,
     rooms: 1,
     specialRequests: ''
@@ -21,6 +23,15 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  
+  const hasRatePlans = data?.rate_plans && data.rate_plans.length > 0;
+  const isOneDayPackage = data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D';
+  
+  // State for Rate Plan Selector step
+  const [showPlanSelector, setShowPlanSelector] = useState(
+    hasRatePlans && !isOneDayPackage && !data?.selected_plan
+  );
+  const [selectedPlan, setSelectedPlan] = useState(data?.selected_plan || '');
 
   // Auto-calculate end date
   useEffect(() => {
@@ -114,18 +125,61 @@ Special Requests: ${bookingData.special_requests || 'None'}`
       <div className="relative mx-auto w-full max-w-2xl bg-white rounded-2xl p-5 sm:p-6 shadow-xl mt-4 mb-4 sm:mt-10 sm:mb-10">
         <button type="button" onClick={onClose} className="absolute top-4 right-4 z-10 text-gray-400 hover:text-charcoal bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
         
-        <div className="mb-5 mt-1 pr-10">
-          <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-0.5">Book Your Trip</h2>
-          <p className="text-charcoal/60 text-xs sm:text-sm">Fill in details and we'll confirm shortly</p>
-        </div>
-
-        {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div>
-            <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">Package Name</label>
-            <input type="text" readOnly value={data?.title || ''} className="w-full p-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 font-medium" />
+        {showPlanSelector ? (
+          <div className="animate-fade-in">
+            <div className="mb-6 mt-2 pr-10">
+              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-1">Select Rate Plan</h2>
+              <p className="text-charcoal/60 text-sm">Choose your preferred accommodation option for this package.</p>
+            </div>
+            
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              {data.rate_plans.map((plan: any, i: number) => (
+                <div key={i} className="border border-charcoal/10 rounded-xl p-4 hover:border-teal/50 hover:bg-teal/5 cursor-pointer transition-all flex flex-col sm:flex-row gap-4 justify-between"
+                     onClick={() => {
+                       setSelectedPlan(plan.title);
+                       setFormData(prev => ({ ...prev, accommodationType: plan.title }));
+                       setShowPlanSelector(false);
+                     }}>
+                  <div>
+                    {plan.badge && (
+                      <span className="inline-block px-2 py-0.5 bg-teal/10 text-teal text-[10px] font-bold rounded-full mb-2">
+                        {plan.badge}
+                      </span>
+                    )}
+                    <h3 className="font-bold text-charcoal text-base mb-1">{plan.title}</h3>
+                    {plan.features && plan.features.length > 0 && (
+                      <div className="text-xs text-charcoal/60 line-clamp-2">
+                        {plan.features.join(' • ')}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0">
+                    <div className="text-right">
+                      {plan.mrp && <div className="text-[10px] text-charcoal/40 line-through">₹{plan.mrp.toLocaleString('en-IN')}</div>}
+                      <div className="font-black text-charcoal text-lg">₹{plan.price?.toLocaleString('en-IN') || 0}</div>
+                    </div>
+                    <button className="sm:mt-2 px-4 py-1.5 bg-charcoal text-white text-xs font-bold rounded-lg group-hover:bg-teal transition-colors">
+                      Select
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+        ) : (
+          <div className="animate-fade-in">
+            <div className="mb-5 mt-1 pr-10">
+              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-0.5">Book Your Trip</h2>
+              <p className="text-charcoal/60 text-xs sm:text-sm">Fill in details and we'll confirm shortly</p>
+            </div>
+
+            {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">{error}</div>}
+
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div>
+                <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">Package Name</label>
+                <input type="text" readOnly value={selectedPlan ? `${data?.title} - ${selectedPlan}` : (data?.title || '')} className="w-full p-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 font-medium" />
+              </div>
 
           <div>
             <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Full Name *</label>
@@ -200,11 +254,22 @@ Special Requests: ${bookingData.special_requests || 'None'}`
 
             <div>
               <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Accommodation *</label>
-              <select required value={formData.accommodationType} onChange={e => setFormData({...formData, accommodationType: e.target.value})} className="w-full p-2 border rounded-lg text-sm bg-white">
-                <option value="Not Required">Not Required</option>
-                <option value="Standard (2/3 Star)">Standard (2/3 Star)</option>
-                <option value="Premium (4 Star)">Premium (4 Star)</option>
-                <option value="Luxury (5 Star / Resort)">Luxury (5 Star / Resort)</option>
+              <select required value={formData.accommodationType} disabled={isOneDayPackage} onChange={e => setFormData({...formData, accommodationType: e.target.value})} className="w-full p-2 border rounded-lg text-sm bg-white disabled:bg-gray-100 disabled:text-gray-500">
+                <option value="Not Required" disabled={data?.rate_plans && data.rate_plans.length > 0}>Not Required</option>
+                {data?.rate_plans && data.rate_plans.length > 0 ? (
+                  <>
+                    <option value="" disabled>Select Room from Rate Plan</option>
+                    {data.rate_plans.map((plan: any, i: number) => (
+                      <option key={i} value={plan.title}>{plan.title}</option>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <option value="Standard (2/3 Star)">Standard (2/3 Star)</option>
+                    <option value="Premium (4 Star)">Premium (4 Star)</option>
+                    <option value="Luxury (5 Star / Resort)">Luxury (5 Star / Resort)</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
@@ -214,10 +279,12 @@ Special Requests: ${bookingData.special_requests || 'None'}`
             <textarea value={formData.specialRequests} onChange={e => setFormData({...formData, specialRequests: e.target.value})} className="w-full p-2 border rounded-lg text-sm h-16 resize-none" placeholder="Any specific requirements..."></textarea>
           </div>
 
-          <button type="submit" disabled={loading} className="w-full btn-primary !py-2.5 !rounded-lg disabled:opacity-70 disabled:cursor-not-allowed mt-2">
-            {loading ? 'Processing...' : 'Submit Booking Request'}
-          </button>
-        </form>
+              <button type="submit" disabled={loading} className="w-full btn-primary !py-2.5 !rounded-lg disabled:opacity-70 disabled:cursor-not-allowed mt-2">
+                {loading ? 'Processing...' : 'Submit Booking Request'}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   )
