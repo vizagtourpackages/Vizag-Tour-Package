@@ -1,4 +1,5 @@
 import { Calendar } from "lucide-react";
+import Image from "next/image";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Event } from "@/data/events";
 
@@ -13,7 +14,7 @@ export default function EventCard({ event }: EventCardProps) {
         <div className="relative overflow-hidden rounded-[16px] bg-sand">
           {event.imageUrl ? (
             <div className="relative h-48 w-full">
-              <img 
+              <Image fill 
                 src={event.imageUrl} 
                 alt={event.title}
                 className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"

@@ -36,6 +36,9 @@ export async function saveTourPackage(formData: FormData) {
     slug: formData.get('slug') as string,
     overview_description: formData.get('overview_description') as string,
     price: formData.get('price') ? parseInt(formData.get('price') as string) : null,
+    price_label: formData.get('price_label') as string,
+    price_per_couple: formData.get('price_per_couple') ? parseInt(formData.get('price_per_couple') as string) : null,
+    original_price: formData.get('original_price') ? parseInt(formData.get('original_price') as string) : null,
     mrp: formData.get('mrp') ? parseInt(formData.get('mrp') as string) : null,
     duration: formData.get('duration') as string,
     type: formData.get('type') as string,
@@ -46,6 +49,7 @@ export async function saveTourPackage(formData: FormData) {
     
     // Arrays
     destination_tags: parseJSON('destination_tags'),
+    pickup_location: formData.get('pickup_location') as string,
     important_notes: parseJSON('important_notes'),
     includes: parseJSON('includes'),
     excludes: parseJSON('excludes'),

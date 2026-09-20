@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
 
 export default function ResortGallery({
@@ -20,7 +21,7 @@ export default function ResortGallery({
     <div className="w-full px-4 md:px-0">
       {/* Mobile Hero (Padded) */}
       <div className="md:hidden relative w-full h-[50vh] min-h-[400px] rounded-[24px] overflow-hidden mt-4 shadow-sm">
-        <img src={activeImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover" />
+        <Image fill src={activeImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1E]/90 via-[#1C1C1E]/30 to-transparent pointer-events-none"></div>
 
         {/* Top floating buttons */}
@@ -51,9 +52,9 @@ export default function ResortGallery({
               key={i}
               onClick={() => setActiveImage(img)}
               style={{ width: '80px', height: '80px' }}
-              className={`shrink-0 snap-center rounded-[16px] overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-y-1 ${activeImage === img ? 'border-emerald-600' : 'border-[#E8DDD4] hover:border-emerald-300'}`}
+              className={`relative shrink-0 snap-center rounded-[16px] overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-y-1 ${activeImage === img ? 'border-emerald-600' : 'border-[#E8DDD4] hover:border-emerald-300'}`}
             >
-              <img src={img} alt="" className="w-full h-full object-cover" />
+              <Image fill src={img} alt="" className="w-full h-full object-cover" />
             </div>
           ))}
         </div>
@@ -68,7 +69,7 @@ export default function ResortGallery({
 
         {/* Main Cover Image */}
         <div className="relative rounded-[24px] overflow-hidden group h-full flex-1">
-          <img src={activeImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <Image fill src={activeImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1E]/90 via-[#1C1C1E]/30 to-transparent pointer-events-none"></div>
 
           <div className="absolute inset-0 flex flex-col justify-end p-8 z-10 pointer-events-none">
@@ -93,9 +94,9 @@ export default function ResortGallery({
                 key={i}
                 onClick={() => setActiveImage(img)}
                 style={{ height: '85px', minHeight: '85px' }}
-                className={`w-full shrink-0 rounded-[16px] overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-x-1 ${activeImage === img ? 'border-emerald-600' : 'border-[#E8DDD4] hover:border-emerald-300'}`}
+                className={`relative w-full shrink-0 rounded-[16px] overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-x-1 ${activeImage === img ? 'border-emerald-600' : 'border-[#E8DDD4] hover:border-emerald-300'}`}
               >
-                <img src={img} alt="" className="w-full h-full object-cover" />
+                <Image fill src={img} alt="" className="w-full h-full object-cover" />
               </div>
             ))}
           </div>

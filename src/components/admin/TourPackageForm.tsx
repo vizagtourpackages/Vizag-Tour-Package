@@ -238,6 +238,18 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
             <input type="number" name="price" defaultValue={initialData?.price} required className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
           <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Price Label</label>
+            <input type="text" name="price_label" defaultValue={initialData?.price_label || 'Per Couple'} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="e.g. Per Person, Per Couple" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Price per Couple (₹)</label>
+            <input type="number" name="price_per_couple" defaultValue={initialData?.price_per_couple} className="w-full p-3 border rounded-lg bg-gray-50" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Original Price (₹)</label>
+            <input type="number" name="original_price" defaultValue={initialData?.original_price} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="Strikethrough price" />
+          </div>
+          <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">MRP (₹)</label>
             <input type="number" name="mrp" defaultValue={initialData?.mrp} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="Strikethrough price" />
           </div>
@@ -264,6 +276,10 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
               <option value="Group">Group</option>
               <option value="Semi-Private">Semi-Private</option>
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Pickup Location</label>
+            <input type="text" name="pickup_location" defaultValue={initialData?.pickup_location || 'Visakhapatnam (Vizag)'} className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
 
           <div>

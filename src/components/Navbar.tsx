@@ -40,12 +40,12 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${showSolid
           ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-charcoal/5 py-4"
-          : "bg-transparent py-6"
+          : "bg-gradient-to-b from-black/60 to-transparent py-6"
           }`}
       >
         <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group" onClick={() => setIsOpen(false)}>
+          <Link href="/" prefetch={true} className="flex items-center gap-3 shrink-0 group" onClick={() => setIsOpen(false)}>
             <div className="w-12 h-12 rounded-[16px] bg-white flex items-center justify-center transition-colors duration-500 shadow-sm border border-charcoal/5 group-hover:bg-coral">
               <span className="text-charcoal font-black text-xl group-hover:text-white transition-colors">V</span>
             </div>
@@ -89,6 +89,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href!}
+                  prefetch={true}
                   className={`px-3 py-2 rounded-full text-[11px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
                     ? "text-charcoal/80 hover:text-charcoal hover:bg-charcoal/5"
                     : "text-white/90 hover:text-white hover:bg-white/10"
@@ -131,7 +132,7 @@ export default function Navbar() {
           }`}
       >
         <div className="flex items-center justify-between p-6 border-b border-charcoal/5 bg-sand/30">
-          <Link href="/" className="flex items-center gap-3 group" onClick={() => setIsOpen(false)}>
+          <Link href="/" prefetch={true} className="flex items-center gap-3 group" onClick={() => setIsOpen(false)}>
             <div className="w-10 h-10 rounded-[12px] bg-white flex items-center justify-center shadow-sm border border-charcoal/5 group-hover:bg-coral transition-colors">
               <span className="text-charcoal font-black group-hover:text-white transition-colors">V</span>
             </div>
@@ -176,6 +177,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href!}
+                prefetch={true}
                 className="block px-8 py-4 mb-2 text-sm font-bold text-charcoal hover:bg-sand hover:text-coral rounded-[16px] transition-colors"
                 onClick={() => setIsOpen(false)}
               >

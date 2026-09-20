@@ -13,6 +13,7 @@ export interface Package {
   category: "trending" | "one-day" | "pilgrimage" | "multi-day";
   imageGradient: string;
   imageUrl?: string;
+  originalPrice?: number;
 }
 
 export const trendingPackages: Package[] = [

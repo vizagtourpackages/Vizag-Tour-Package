@@ -31,7 +31,8 @@ export default async function TourPackagesPage() {
       category: pkg.category || pkg.type || '',
       rate_plans: pkg.rate_plans || [],
       imageGradient: 'from-teal to-blue-600', // fallback
-      imageUrl: pkg.cover_image_url || pkg.image_url
+      imageUrl: pkg.cover_image_url || pkg.image_url,
+      originalPrice: pkg.original_price || pkg.mrp
     }))
     : [];
 

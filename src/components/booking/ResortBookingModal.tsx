@@ -43,7 +43,7 @@ export default function ResortBookingModal({ data, onClose }: { data: any, onClo
       
       // Auto-skip if no rooms in DB to prevent blocking
       if (!rooms || rooms.length === 0) {
-        setSelectedRoom({ room_type: 'Standard Room (Fallback)' })
+        setSelectedRoom({ room_type: 'Standard Room' })
         setStep(2)
       }
     }
@@ -124,24 +124,46 @@ Special Requests: ${bookingData.special_requests || 'None'}`
             </div>
             
             {loadingRooms ? (
-              <div className="py-12 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-coral border-t-transparent rounded-full"></div></div>
+              <div className="py-12 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-teal border-t-transparent rounded-full"></div></div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {roomTypes.map(room => (
-                  <button 
+                  <div 
                     key={room.id}
-                    onClick={() => handleRoomSelect(room)}
-                    className="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-coral hover:shadow-md transition-all flex justify-between items-center group"
+                    className="border border-charcoal/10 rounded-[20px] p-5 sm:p-6 hover:border-teal/50 hover:shadow-md transition-all bg-white"
                   >
-                    <div>
-                      <h4 className="font-bold text-charcoal">{room.room_type}</h4>
-                      <p className="text-sm text-gray-500 mt-1">{room.has_ac ? 'AC Room' : 'Non-AC Room'}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        {room.has_ac ? (
+                          <span className="inline-block px-3 py-1 bg-teal/10 text-teal text-[10px] font-bold rounded-full mb-3 border border-teal/20 uppercase tracking-wider">
+                            AC Room
+                          </span>
+                        ) : (
+                          <span className="inline-block px-3 py-1 bg-charcoal/5 text-charcoal/60 text-[10px] font-bold rounded-full mb-3 border border-charcoal/10 uppercase tracking-wider">
+                            Non-AC Room
+                          </span>
+                        )}
+                        <h4 className="font-heading text-lg font-bold text-charcoal mb-1">
+                          {room.room_type}
+                        </h4>
+                      </div>
+                      
+                      <div className="sm:text-right shrink-0 flex flex-col justify-center mt-2 sm:mt-0">
+                        <div className="mb-3 text-left sm:text-right flex items-end sm:flex-col gap-3 sm:gap-0">
+                          <div className="text-2xl font-black font-heading text-charcoal tracking-tight">
+                            ₹{(room.price || 0).toLocaleString('en-IN')}
+                          </div>
+                          <div className="text-[10px] text-charcoal/50 font-bold uppercase sm:mt-1 pb-1 sm:pb-0">per night</div>
+                        </div>
+                        <button 
+                          onClick={() => handleRoomSelect(room)}
+                          className="btn-primary !py-2.5 !px-6 !text-sm rounded-full w-full sm:w-auto hover:scale-[1.02] transition-transform shadow-sm bg-charcoal hover:bg-teal text-white"
+                        >
+                          Select Room
+                        </button>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-coral">₹{room.price}</p>
-                      <span className="text-xs text-gray-400 group-hover:text-coral/80">Select →</span>
-                    </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             )}

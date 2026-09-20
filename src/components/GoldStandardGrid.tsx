@@ -5,7 +5,7 @@ const reasons = [
   {
     icon: <ShieldCheck size={24} />,
     title: "Safe & Secure",
-    description: "Live trip monitoring.",
+    description: "Reliable vehicles, Live Trip monitoring, and trusted stays.",
     color: "text-teal bg-teal/10",
   },
   {
