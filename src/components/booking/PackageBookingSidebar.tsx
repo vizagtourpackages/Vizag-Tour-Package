@@ -32,6 +32,9 @@ export default function PackageBookingSidebar({
         <div className="text-charcoal/60 font-bold text-sm uppercase tracking-wider">
           {pkg.price_label || 'Per Couple'}
         </div>
+        <div className="text-charcoal/50 text-xs font-medium mt-1">
+          (Taxes included)
+        </div>
       </div>
 
       <div className="h-px bg-charcoal/10 w-full" />

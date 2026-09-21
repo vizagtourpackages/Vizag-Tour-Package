@@ -24,6 +24,7 @@ const mainNavigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Tour Packages', href: '/admin/tour-packages', icon: Map },
   { name: 'Hotels & Resorts', href: '/admin/hotels-resorts', icon: Building2 },
+  { name: 'Travels', href: '/admin/travels', icon: Car },
   { name: 'Top Destinations', href: '/admin/top-destinations', icon: MapPin },
   { name: 'Places to Visit', href: '/admin/places-to-visit', icon: Navigation },
   { name: 'Hill Stations', href: '/admin/hill-stations', icon: Mountain },
