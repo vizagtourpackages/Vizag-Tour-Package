@@ -22,7 +22,7 @@ import {
 import { topPlaces, vizagPlaces, destinationDetails } from "@/data/destinations";
 import { guides } from "@/data/guides";
 import { events } from "@/data/events";
-import { vehicles } from "@/data/vehicles";
+
 import { hotels } from "@/data/hotels";
 import HotelCard from "@/components/HotelCard";
 import NewsPromoCard from "@/components/NewsPromoCard";
@@ -121,6 +121,12 @@ export default async function Home() {
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
+  const { data: dbTravels } = await supabase
+    .from('travels')
+    .select('*')
+    .eq('is_published', true)
+    .order('display_order', { ascending: true });
+
   const displayDestinations = dbDestinations && dbDestinations.length > 0
     ? dbDestinations.map(dest => ({
       id: dest.id,
@@ -181,6 +187,18 @@ export default async function Home() {
       price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
       image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
       amenities: r.amenities || []
+    }))
+    : [];
+
+  const displayTravels = dbTravels && dbTravels.length > 0
+    ? dbTravels.map(t => ({
+      id: t.id,
+      model: t.model,
+      pricePerKm: t.price_per_km,
+      pax: t.pax,
+      amenities: t.amenities || [],
+      image: t.image,
+      minKmNote: t.min_km_note
     }))
     : [];
 
@@ -271,7 +289,7 @@ export default async function Home() {
             title="Best Travels for Vizag Tours & Outstation Trips"
             subtitle="Book reliable Vizag tour vehicles including Sedans, SUVs, Tempo Travellers, Urbania, and Buses for local and outstation travel."
           />
-          <FleetSection vehicles={vehicles} />
+          <FleetSection vehicles={displayTravels} />
         </div>
       </section>
 
