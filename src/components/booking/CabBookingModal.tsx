@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Image from 'next/image'
 import { siteInfo } from '@/data/siteInfo'
 import { submitCabBooking } from '@/app/actions/booking'
 import { vehicles } from '@/data/vehicles'
@@ -95,8 +96,8 @@ Passengers: ${bookingData.adults} Adults, ${bookingData.kids} Kids`
                   onClick={() => handleVehicleSelect(v)}
                   className="w-full text-left p-3 border border-gray-200 rounded-xl hover:border-coral hover:shadow-md transition-all flex gap-4 items-center group"
                 >
-                  <div className="w-20 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-                    <img src={v.image} alt={v.model} className="w-full h-full object-cover mix-blend-multiply" />
+                  <div className="relative w-20 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                    <Image fill src={v.image} alt={v.model} className="w-full h-full object-cover mix-blend-multiply" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-charcoal leading-tight">{v.model}</h4>

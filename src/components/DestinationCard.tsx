@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MapPin, ArrowRight, Clock, IndianRupee } from "lucide-react";
+import Image from "next/image";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Destination } from "@/data/destinations";
 
@@ -21,7 +22,7 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
         <div className="relative overflow-hidden">
           {destination.imageUrl ? (
             <div className="relative h-48 sm:h-56 w-full">
-              <img 
+              <Image fill 
                 src={destination.imageUrl} 
                 alt={destination.name}
                 className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"

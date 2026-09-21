@@ -1,5 +1,6 @@
 'use client'
 import Link from "next/link";
+import Image from "next/image";
 import { Check, X, ArrowRight, Clock, Users } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Package } from "@/data/packages";
@@ -12,14 +13,18 @@ interface PackageCardProps {
 export default function PackageCard({ pkg }: PackageCardProps) {
   const { openBooking } = useBooking();
 
+  const discountPercent = pkg.originalPrice && pkg.originalPrice > pkg.price
+    ? Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)
+    : 0;
+
   return (
-    <div className="bg-white border border-charcoal/5 rounded-[32px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden group">
+    <div className="bg-white border border-charcoal/5 rounded-[32px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden group h-full">
       {/* Image */}
       <div className="relative p-2">
         <Link href={`/packages/${pkg.slug || pkg.id}`} className="relative overflow-hidden rounded-[24px] block">
           {pkg.imageUrl ? (
             <div className="relative h-48 sm:h-56 w-full">
-              <img 
+              <Image fill 
                 src={pkg.imageUrl} 
                 alt={pkg.title}
                 className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
@@ -35,13 +40,26 @@ export default function PackageCard({ pkg }: PackageCardProps) {
             />
           )}
         </Link>
-        {pkg.badge && (
+        {pkg.badge && !pkg.badge.match(/\d+\s*[DN]/i) && (
           <span className="absolute top-6 left-6 badge bg-coral text-white shadow-sm border border-coral/20 tracking-tight z-10">
             {pkg.badge}
           </span>
         )}
-        <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md rounded-full px-4 py-2 shadow-sm border border-charcoal/5 z-10">
-          <span className="text-xl font-black text-charcoal tracking-tight">₹{pkg.price}</span>
+        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-sm border border-charcoal/5 z-10 flex flex-col items-end min-w-[100px]">
+          {discountPercent > 0 && (
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <span className="text-[10px] sm:text-xs text-charcoal/40 line-through font-bold">
+                ₹{pkg.originalPrice?.toLocaleString('en-IN')}
+              </span>
+              <span className="bg-emerald-100 text-emerald-700 text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+                {discountPercent}% OFF
+              </span>
+            </div>
+          )}
+          <div className="flex items-baseline">
+            <span className="text-base sm:text-lg font-black text-charcoal tracking-tight leading-none">₹{pkg.price.toLocaleString('en-IN')}</span>
+            <span className="text-[8px] sm:text-[10px] font-bold text-charcoal/60 uppercase tracking-wider ml-0.5">/{pkg.priceLabel || 'PER COUPLE'}</span>
+          </div>
         </div>
       </div>
 
@@ -114,12 +132,12 @@ export default function PackageCard({ pkg }: PackageCardProps) {
         </div>
 
         <div className="flex gap-3 mt-auto min-w-0">
-          <button
-            onClick={() => openBooking('package', pkg)}
+          <Link
+            href={`/packages/${pkg.slug || pkg.id}`}
             className="btn-whatsapp flex-1 !text-sm !py-3 !px-4 justify-center text-center whitespace-nowrap min-w-0 bg-teal hover:bg-teal-dark"
           >
             Book Now
-          </button>
+          </Link>
           <Link
             href={`/packages/${pkg.slug || pkg.id}`}
             className="btn-secondary !py-3 !px-4 justify-center shrink-0 border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/5 text-charcoal"

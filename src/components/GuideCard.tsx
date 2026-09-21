@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Guide } from "@/data/guides";
@@ -14,7 +15,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
         <div className="relative overflow-hidden rounded-[16px]">
           {guide.imageUrl ? (
             <div className="relative h-48 sm:h-56 w-full">
-              <img 
+              <Image fill 
                 src={guide.imageUrl} 
                 alt={guide.title}
                 className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"

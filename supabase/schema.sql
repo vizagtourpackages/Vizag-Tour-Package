@@ -8,15 +8,65 @@ CREATE TABLE tour_packages (
     slug TEXT UNIQUE NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
+    overview_description TEXT,
     price INTEGER NOT NULL,
+    price_label TEXT DEFAULT 'Per Couple',
+    price_per_couple INTEGER,
+    original_price INTEGER,
+    mrp INTEGER,
     duration TEXT NOT NULL,
+    type TEXT,
+    setting TEXT,
+    rating NUMERIC,
+    review_count INTEGER,
     people TEXT NOT NULL,
     badge TEXT,
-    highlights TEXT[],
-    includes TEXT[],
-    excludes TEXT[],
+    highlights JSONB,
+    destination_tags JSONB,
+    pickup_location TEXT DEFAULT 'Visakhapatnam (Vizag)',
+    important_notes JSONB,
+    includes JSONB,
+    excludes JSONB,
+    rate_plans JSONB,
     category TEXT NOT NULL,
-    image_url TEXT NOT NULL
+    image_url TEXT,
+    cover_image_url TEXT,
+    transportation TEXT,
+    meals_included TEXT,
+    meta_title TEXT,
+    meta_description TEXT,
+    meta_keywords TEXT
+);
+
+CREATE TABLE package_itinerary_days (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    package_id UUID NOT NULL REFERENCES tour_packages(id) ON DELETE CASCADE,
+    day_number INTEGER NOT NULL,
+    day_summary_headline TEXT
+);
+
+CREATE TABLE package_itinerary_stops (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    day_id UUID NOT NULL REFERENCES package_itinerary_days(id) ON DELETE CASCADE,
+    place_name TEXT NOT NULL,
+    description TEXT,
+    display_order INTEGER DEFAULT 0
+);
+
+CREATE TABLE package_hotels (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    package_id UUID NOT NULL REFERENCES tour_packages(id) ON DELETE CASCADE,
+    day_label TEXT,
+    hotel_name TEXT NOT NULL,
+    location_name TEXT,
+    latitude NUMERIC,
+    longitude NUMERIC,
+    star_category TEXT,
+    room_type TEXT,
+    check_in_time TEXT,
+    check_out_time TEXT,
+    hotel_image_url TEXT,
+    amenities JSONB
 );
 
 -- 2. Hotels & Resorts

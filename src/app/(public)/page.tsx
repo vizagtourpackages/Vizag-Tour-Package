@@ -165,7 +165,8 @@ export default async function Home() {
       category: pkg.category,
       rate_plans: pkg.rate_plans || [],
       imageGradient: 'from-teal to-blue-600', // fallback
-      imageUrl: pkg.cover_image_url || pkg.image_url
+      imageUrl: pkg.cover_image_url || pkg.image_url,
+      originalPrice: pkg.original_price || pkg.mrp
     }))
     : [];
 
@@ -234,13 +235,13 @@ export default async function Home() {
 
         <div className="container-max relative z-10">
           <SectionHeading
-            title="Trending Packages"
-            subtitle="Explore our most popular, handpicked itineraries designed for the perfect Vizag experience."
+            title="Vizag Tour Packages & Itineraries"
+            subtitle="Explore the best Vizag tour packages to Araku Valley, Vanjangi and Lambasingi with perfect itineraries, comfortable vehicles, hotels and resorts. Book customized Vizag to Araku tours today."
           />
           <ScrollReveal delay={0.2}>
             <ScrollCarousel gap="gap-4">
               {displayPackages.map((pkg: any) => (
-                <div key={pkg.id} className="w-[320px] sm:w-[320px] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start">
+                <div key={pkg.id} className="w-[320px] sm:w-[320px] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start h-auto flex flex-col">
                   <PackageCard pkg={pkg} />
                 </div>
               ))}
@@ -433,9 +434,9 @@ export default async function Home() {
           <ScrollReveal delay={0.2}>
             <ScrollCarousel>
               {displayHillStations.map((station) => (
-                  <div key={station.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
-                    <DestinationCard destination={station} />
-                  </div>
+                <div key={station.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                  <DestinationCard destination={station} />
+                </div>
               ))}
             </ScrollCarousel>
           </ScrollReveal>

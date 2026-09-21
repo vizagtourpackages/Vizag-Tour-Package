@@ -5,6 +5,7 @@ import { submitPackageBooking } from '@/app/actions/booking'
 
 export default function PackageBookingModal({ data, onClose }: { data: any, onClose: () => void }) {
   const [formData, setFormData] = useState({
+    packageName: data?.title || '',
     fullName: '',
     contactNumber: '',
     whatsappNumber: '',
@@ -13,9 +14,9 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
     startDate: '',
     endDate: '',
     vehiclePreference: 'Sedan/Hatchback 4+1',
-    accommodationType: (data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D') 
+    accommodationType: data?.isCustomEnquiry ? 'Standard (2/3 Star)' : ((data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D') 
       ? 'Not Required' 
-      : (data?.selected_plan || ((data?.rate_plans && data.rate_plans.length > 0) ? '' : 'Not Required')),
+      : (data?.selected_plan || ((data?.rate_plans && data.rate_plans.length > 0) ? '' : 'Not Required'))),
     guests: 2,
     rooms: 1,
     specialRequests: ''
@@ -35,7 +36,7 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
 
   // Auto-calculate end date
   useEffect(() => {
-    if (!formData.startDate || !data?.duration) return
+    if (!formData.startDate || !data?.duration || data?.isCustomEnquiry) return
 
     const startDateObj = new Date(formData.startDate)
     if (isNaN(startDateObj.getTime())) return
@@ -74,7 +75,7 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
     setError('')
 
     const bookingData = {
-      package_name: data?.title || 'Unknown Package',
+      package_name: formData.packageName || 'Unknown Package',
       full_name: formData.fullName,
       contact_number: formData.contactNumber,
       whatsapp_number: formData.whatsappNumber,
@@ -178,7 +179,13 @@ Special Requests: ${bookingData.special_requests || 'None'}`
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">Package Name</label>
-                <input type="text" readOnly value={selectedPlan ? `${data?.title} - ${selectedPlan}` : (data?.title || '')} className="w-full p-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 font-medium" />
+                <input 
+                  type="text" 
+                  readOnly={!data?.isCustomEnquiry} 
+                  value={data?.isCustomEnquiry ? formData.packageName : (selectedPlan ? `${data?.title} - ${selectedPlan}` : (data?.title || ''))} 
+                  onChange={e => setFormData({...formData, packageName: e.target.value})}
+                  className={`w-full p-2 border rounded-lg text-sm font-medium ${!data?.isCustomEnquiry ? 'bg-gray-100 border-gray-200 text-gray-600' : 'bg-white border-gray-300 text-charcoal'}`} 
+                />
               </div>
 
           <div>
@@ -217,8 +224,16 @@ Special Requests: ${bookingData.special_requests || 'None'}`
               <input type="date" required value={formData.startDate} min={new Date().toISOString().split('T')[0]} onChange={e => setFormData({...formData, startDate: e.target.value})} className="w-full p-2 border rounded-lg text-sm" />
             </div>
             <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">End Date</label>
-              <input type="date" readOnly value={formData.endDate} className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500" />
+              <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">End Date {data?.isCustomEnquiry && '*'}</label>
+              <input 
+                type="date" 
+                readOnly={!data?.isCustomEnquiry}
+                required={data?.isCustomEnquiry}
+                min={data?.isCustomEnquiry && formData.startDate ? formData.startDate : undefined}
+                value={formData.endDate} 
+                onChange={e => setFormData({...formData, endDate: e.target.value})}
+                className={`w-full p-2 border rounded-lg text-sm ${!data?.isCustomEnquiry ? 'bg-gray-50 border-gray-200 text-gray-500' : 'bg-white border-gray-300'}`} 
+              />
             </div>
           </div>
 
@@ -254,9 +269,15 @@ Special Requests: ${bookingData.special_requests || 'None'}`
 
             <div>
               <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Accommodation *</label>
-              <select required value={formData.accommodationType} disabled={isOneDayPackage} onChange={e => setFormData({...formData, accommodationType: e.target.value})} className="w-full p-2 border rounded-lg text-sm bg-white disabled:bg-gray-100 disabled:text-gray-500">
-                <option value="Not Required" disabled={data?.rate_plans && data.rate_plans.length > 0}>Not Required</option>
-                {data?.rate_plans && data.rate_plans.length > 0 ? (
+              <select 
+                required 
+                value={formData.accommodationType} 
+                disabled={!data?.isCustomEnquiry && isOneDayPackage} 
+                onChange={e => setFormData({...formData, accommodationType: e.target.value})} 
+                className="w-full p-2 border rounded-lg text-sm bg-white disabled:bg-gray-100 disabled:text-gray-500"
+              >
+                {!data?.isCustomEnquiry && <option value="Not Required" disabled={data?.rate_plans && data.rate_plans.length > 0}>Not Required</option>}
+                {!data?.isCustomEnquiry && data?.rate_plans && data.rate_plans.length > 0 ? (
                   <>
                     <option value="" disabled>Select Room from Rate Plan</option>
                     {data.rate_plans.map((plan: any, i: number) => (
@@ -268,6 +289,7 @@ Special Requests: ${bookingData.special_requests || 'None'}`
                     <option value="Standard (2/3 Star)">Standard (2/3 Star)</option>
                     <option value="Premium (4 Star)">Premium (4 Star)</option>
                     <option value="Luxury (5 Star / Resort)">Luxury (5 Star / Resort)</option>
+                    {data?.isCustomEnquiry && <option value="Not Required">Not Required</option>}
                   </>
                 )}
               </select>

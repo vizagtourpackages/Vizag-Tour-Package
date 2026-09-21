@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { Clock, Users, Check, X, ArrowRight, ChevronRight, Home } from "lucide-react";
+import { Clock, Users, Check, X, ChevronRight, Home, Star, MessageCircle, ChevronDown } from "lucide-react";
 import PackageCard from "@/components/PackageCard";
 import PackageBookingButton from "@/components/PackageBookingButton";
+import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
+import PackageBookingSidebar from "@/components/booking/PackageBookingSidebar";
+import PackageTabs from "@/components/PackageTabs";
 import { siteInfo } from "@/data/siteInfo";
 import { Metadata } from "next";
 
@@ -30,11 +32,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function PackageDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const supabase = await createClient();
-  
+
   // Fetch current package
   const { data: pkg } = await supabase
     .from("tour_packages")
-    .select("*")
+    .select(`
+      *,
+      package_itinerary_days (
+        *,
+        package_itinerary_stops (*)
+      ),
+      package_hotels (*)
+    `)
     .eq("slug", resolvedParams.slug)
     .single();
 
@@ -52,7 +61,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
 
   // Fetch similar packages (just a few others in the same category/type)
   const categoryMatch = pkg.category || pkg.type;
-  
+
   const { data: similarPackages } = categoryMatch ? await supabase
     .from("tour_packages")
     .select("*")
@@ -60,139 +69,115 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
     .neq("slug", resolvedParams.slug)
     .limit(3) : { data: [] };
 
-  const whatsappMessage = encodeURIComponent(
-    `Hi! I'm interested in the "${pkg.title}" package. Could you share more details?`
-  );
+  const originalPrice = pkg.original_price || pkg.mrp;
+  const discountPercent = originalPrice && originalPrice > pkg.price
+    ? Math.round(((originalPrice - pkg.price) / originalPrice) * 100)
+    : 0;
 
   return (
     <div className="bg-white min-h-screen pt-24 pb-24">
-      {/* Breadcrumbs */}
-      <div className="container-max px-4 sm:px-6 lg:px-8 mb-8">
-        <nav className="flex items-center gap-2 text-sm font-medium text-charcoal/60 overflow-x-auto hide-scrollbar whitespace-nowrap">
-          <Link href="/" className="hover:text-teal flex items-center gap-1.5"><Home size={14} /> Home</Link>
-          <ChevronRight size={14} className="shrink-0" />
-          <Link href="/tour-packages" className="hover:text-teal">Tour Packages</Link>
-          <ChevronRight size={14} className="shrink-0" />
-          <span className="text-charcoal truncate">{pkg.title}</span>
-        </nav>
-      </div>
-
       <div className="container-max px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          
+
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-12">
             {/* Hero Image */}
-            <div className="relative aspect-[4/3] sm:aspect-video rounded-[32px] overflow-hidden bg-sand shadow-sm">
-              <img 
-                src={pkg.cover_image_url || pkg.image_url} 
-                alt={pkg.title} 
-                className="w-full h-full object-cover"
+            <div className="relative aspect-[4/3] md:aspect-[50/30] max-h-[500px] rounded-[32px] overflow-hidden bg-sand shadow-sm flex flex-col justify-end">
+              <img
+                src={pkg.cover_image_url || pkg.image_url}
+                alt={pkg.title}
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              {pkg.badge && (
-                <div className="absolute top-6 left-6 badge bg-coral text-white shadow-sm border border-coral/20">
-                  {pkg.badge}
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/30 to-transparent pointer-events-none" />
+
+              <div className="absolute top-6 left-6 z-20">
+                <Link href="/tour-packages" className="inline-flex items-center gap-1.5 text-xs font-bold text-charcoal hover:text-teal transition-colors bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-sm">
+                  <ChevronRight size={14} className="rotate-180" /> Back to Tour Packages
+                </Link>
+              </div>
+
+              <div className="relative z-10 p-6 sm:p-10 w-full">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {pkg.badge && !pkg.badge.match(/\d+\s*[DN]/i) && (
+                    <span className="text-[10px] sm:text-xs font-black tracking-widest uppercase px-3 py-1.5 rounded-full bg-coral text-white shadow-sm border border-coral/20">
+                      {pkg.badge}
+                    </span>
+                  )}
+                  <span className="text-[10px] sm:text-xs font-black tracking-widest uppercase px-3 py-1.5 rounded-full bg-teal text-white shadow-sm">
+                    {pkg.duration}
+                  </span>
+                </div>
+                <h1 className="text-2xl sm:text-2xl md:text-4xl font-heading font-black text-white leading-tight tracking-tight drop-shadow-md max-w-3xl">
+                  {pkg.title}
+                </h1>
+              </div>
+            </div>
+
+
+            {/* Quick Info & Highlights */}
+            <div>
+
+              {/* Destination Tags / Highlights (Pills) */}
+              {(pkg.destination_tags || pkg.highlights) && (pkg.destination_tags?.length > 0 || pkg.highlights?.length > 0) && (
+                <div className="mb-8">
+                  <h3 className="text-sm font-bold text-charcoal/50 uppercase tracking-wider mb-3">Must Visit Places</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(pkg.destination_tags || pkg.highlights).map((tag: string, i: number) => (
+                      <span
+                        key={i}
+                        className="px-4 py-2 bg-teal/5 text-teal font-bold text-sm rounded-full tracking-wide capitalize whitespace-normal border border-teal/10"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Title & Quick Info */}
-            <div>
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="text-xs font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-teal">
-                  {(pkg.category || pkg.type || 'Tour Package').replace('-', ' ')}
-                </span>
-              </div>
-              <h1 className="text-4xl sm:text-5xl font-heading font-black text-charcoal mb-6 leading-tight tracking-tight">
-                {pkg.title}
-              </h1>
-              
-              <div className="flex flex-wrap items-center gap-6 sm:gap-8 text-charcoal/70 font-medium">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-teal/10 flex items-center justify-center text-teal">
-                    <Clock size={20} />
-                  </div>
-                  <div>
-                    <div className="text-xs text-charcoal/50 uppercase tracking-wider font-bold">Duration</div>
-                    <div>{pkg.duration}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-coral/10 flex items-center justify-center text-coral">
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <div className="text-xs text-charcoal/50 uppercase tracking-wider font-bold">Group Size</div>
-                    <div>{pkg.people}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            {pkg.description && (
-              <div className="prose prose-lg prose-charcoal max-w-none">
-                <h3 className="font-heading text-2xl font-bold mb-4">Overview</h3>
-                <p className="text-charcoal/80 leading-relaxed">{pkg.description}</p>
-              </div>
-            )}
-
-            {/* Highlights */}
-            {pkg.highlights && pkg.highlights.length > 0 && (
-              <div>
-                <h3 className="font-heading text-2xl font-bold mb-6">Key Highlights</h3>
-                <div className="flex flex-wrap gap-3">
-                  {pkg.highlights.map((h: string, i: number) => (
-                    <span key={i} className="px-4 py-2 bg-sand text-charcoal/80 font-bold text-sm rounded-full tracking-wide">
-                      {h}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Rate Plan Options */}
+            {/* Rate Plan Options (Compressed) */}
             {pkg.rate_plans && pkg.rate_plans.length > 0 && (
-              <div className="bg-white rounded-[32px] border border-charcoal/10 overflow-hidden shadow-sm">
-                <div className="p-6 bg-blue-50/50 border-b border-charcoal/10 flex items-center justify-between">
-                  <h3 className="font-heading text-xl font-bold text-charcoal">Rate Plan Options</h3>
-                </div>
+              <details className="bg-white rounded-[24px] border border-charcoal/10 overflow-hidden shadow-sm group">
+                <summary className="p-4 sm:p-5 bg-blue-50/50 border-b border-charcoal/10 flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-blue-100/50 transition-colors">
+                  <h3 className="font-heading text-lg font-bold text-charcoal">Rate Plan Options</h3>
+                  <ChevronDown className="text-charcoal/50 transition-transform duration-300 group-open:rotate-180" size={20} />
+                </summary>
                 <div className="divide-y divide-charcoal/10">
                   {pkg.rate_plans.map((plan: any, i: number) => (
-                    <div key={i} className="p-6 sm:p-8 hover:bg-gray-50 transition-colors">
-                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+                    <div key={i} className="p-4 sm:p-5 hover:bg-gray-50 transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex-1">
                           {plan.badge && (
-                            <span className="inline-block px-3 py-1 bg-teal/10 text-teal text-xs font-bold rounded-full mb-3 border border-teal/20">
+                            <span className="inline-block px-2 py-1 bg-teal/10 text-teal text-[10px] font-bold rounded-full mb-2 border border-teal/20 uppercase tracking-wider">
                               {plan.badge}
                             </span>
                           )}
-                          <h4 className="font-heading text-lg font-bold text-charcoal mb-4">
+                          <h4 className="font-heading text-base font-bold text-charcoal mb-2">
                             {plan.title}
                           </h4>
                           {plan.features && plan.features.length > 0 && (
-                            <ul className="space-y-3">
+                            <ul className="space-y-1">
                               {plan.features.map((feat: string, fIdx: number) => (
-                                <li key={fIdx} className="flex items-start gap-3 text-sm text-charcoal/80">
-                                  <Check size={16} className="text-teal mt-0.5 shrink-0" />
-                                  <span className="leading-relaxed">{feat}</span>
+                                <li key={fIdx} className="flex items-start gap-2 text-xs text-charcoal/70">
+                                  <Check size={14} className="text-teal shrink-0 mt-0.5" />
+                                  <span className="leading-snug">{feat}</span>
                                 </li>
                               ))}
                             </ul>
                           )}
                         </div>
-                        
-                        <div className="sm:text-right shrink-0 min-w-[140px] flex flex-col justify-end h-full">
-                          <div className="mb-4 text-left sm:text-right">
+
+                        <div className="sm:text-right shrink-0 flex flex-col justify-center">
+                          <div className="mb-3 text-left sm:text-right">
                             {plan.mrp && (
-                              <div className="text-sm text-charcoal/40 line-through font-medium mb-1">
+                              <div className="text-xs text-charcoal/40 line-through font-medium mb-0.5">
                                 ₹{plan.mrp.toLocaleString('en-IN')}
                               </div>
                             )}
-                            <div className="text-2xl font-black font-heading text-charcoal tracking-tight">
+                            <div className="text-xl font-black font-heading text-charcoal tracking-tight">
                               ₹{(plan.price || 0).toLocaleString('en-IN')}
                             </div>
-                            <div className="text-xs text-charcoal/50 font-medium mt-1">per Adult</div>
+                            <div className="text-[10px] text-charcoal/50 font-bold uppercase mt-1">per Adult</div>
                           </div>
                           <PackageBookingButton pkg={pkg} plan={plan} />
                         </div>
@@ -200,70 +185,23 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                     </div>
                   ))}
                 </div>
-              </div>
+              </details>
             )}
 
-            {/* Includes / Excludes */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 bg-sand/30 p-8 rounded-[32px] border border-charcoal/5">
-              <div>
-                <h4 className="font-heading text-xl font-bold text-charcoal mb-6 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-teal/20 flex items-center justify-center text-teal">
-                    <Check size={16} />
-                  </div>
-                  What's Included
-</h4>
-                <ul className="space-y-4">
-                  {pkg.includes?.map((item: string, i: number) => (
-                    <li key={i} className="flex items-start gap-3 text-charcoal/80">
-                      <Check size={18} className="text-teal mt-0.5 shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-heading text-xl font-bold text-charcoal mb-6 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-coral/20 flex items-center justify-center text-coral">
-                    <X size={16} />
-                  </div>
-                  What's Excluded
-</h4>
-                <ul className="space-y-4">
-                  {pkg.excludes?.map((item: string, i: number) => (
-                    <li key={i} className="flex items-start gap-3 text-charcoal/80">
-                      <X size={18} className="text-coral mt-0.5 shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Mobile Booking Card (shown after Rate Plans, hidden on desktop) */}
+            <div className="block lg:hidden">
+              <PackageBookingSidebar pkg={pkg} originalPrice={originalPrice} discountPercent={discountPercent} />
             </div>
+
+            {/* Package Tabs (Summary, Itinerary, Hotels) */}
+            <PackageTabs pkg={pkg} />
+
           </div>
 
           {/* Sidebar / Sticky Booking Card */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-white border border-charcoal/10 shadow-xl rounded-[32px] p-6 sm:p-8">
-              <div className="mb-8 pb-8 border-b border-charcoal/10">
-                <div className="text-sm font-bold text-charcoal/50 uppercase tracking-widest mb-2">Starting from</div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-heading font-black tracking-tight text-charcoal">₹{pkg.price.toLocaleString('en-IN')}</span>
-                  <span className="text-charcoal/60 font-medium">{pkg.price_label}</span>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <PackageBookingButton pkg={pkg} />
-                <Link
-                  href="/contact"
-                  className="btn-secondary w-full justify-center text-center text-lg py-4 border-charcoal/10 rounded-full bg-charcoal/5 hover:bg-charcoal/10 transition-colors font-bold"
-                >
-                  Request Callback
-                </Link>
-              </div>
-              
-              <div className="mt-6 text-center text-sm font-medium text-charcoal/50">
-                No payment required at this step.
-              </div>
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="sticky top-24">
+              <PackageBookingSidebar pkg={pkg} originalPrice={originalPrice} discountPercent={discountPercent} />
             </div>
           </div>
         </div>
@@ -274,8 +212,8 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
             <h2 className="font-heading text-3xl font-black text-charcoal mb-10 tracking-tight">You might also like</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {similarPackages.map((p: any) => (
-                <PackageCard 
-                  key={p.id} 
+                <PackageCard
+                  key={p.id}
                   pkg={{
                     id: p.slug,
                     slug: p.slug,
@@ -290,8 +228,9 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                     excludes: p.excludes || [],
                     category: p.category as any,
                     imageUrl: p.image_url,
-                    imageGradient: "from-sky-400 to-teal-500" // fallback
-                  }} 
+                    imageGradient: "from-sky-400 to-teal-500", // fallback
+                    originalPrice: p.original_price || p.mrp
+                  }}
                 />
               ))}
             </div>

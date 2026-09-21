@@ -36,8 +36,8 @@ export default function TourPackagesClient({ initialPackages }: { initialPackage
       <div className="container-max px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            title="Explore Our Tour Packages"
-            subtitle="From quick day trips to immersive multi-day adventures, find the perfect Vizag itinerary."
+            title="Vizag Tour Packages & Itineraries"
+            subtitle="Explore the best Vizag tour packages to Araku Valley, Vanjangi and Lambasingi with perfect itineraries, comfortable vehicles, hotels and resorts. Book customized Vizag to Araku tours today."
           />
         </ScrollReveal>
 

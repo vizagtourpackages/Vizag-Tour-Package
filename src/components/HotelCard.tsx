@@ -12,13 +12,13 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
       <Link href={`/resorts/${hotel.slug || hotel.id}`} className="w-full aspect-[16/10] sm:aspect-[4/3] relative p-2 block group-hover:scale-[1.01] transition-transform">
         <div className="relative w-full h-full rounded-[16px] overflow-hidden bg-sand">
           <Image
-            src={hotel.image}
-            alt={hotel.name}
+            src={hotel.image || '/placeholder.jpg'}
+            alt={hotel.name || 'Resort'}
             fill
             className="object-cover transform transition-transform duration-700 group-hover:scale-105"
           />
         </div>
-        <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-charcoal shadow-sm border border-charcoal/5 z-10">
+        <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-charcoal shadow-sm border border-charcoal/5 z-20">
           {hotel.type}
         </div>
       </Link>
@@ -54,9 +54,9 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
             <span className="text-2xl font-black text-charcoal tracking-tight">{hotel.price}</span>
             <span className="text-xs text-charcoal/50 font-medium"> / night</span>
           </div>
-          <button onClick={() => openBooking('resort', hotel)} className="btn-primary py-2.5 px-6 text-sm rounded-full bg-charcoal hover:bg-coral">
+          <Link href={`/resorts/${hotel.slug || hotel.id}`} className="btn-primary py-2.5 px-6 text-sm rounded-full bg-charcoal hover:bg-coral inline-block text-center">
             Book Now
-          </button>
+          </Link>
         </div>
       </div>
     </div>
