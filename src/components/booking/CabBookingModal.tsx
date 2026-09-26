@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { siteInfo } from '@/data/siteInfo'
 import { submitCabBooking } from '@/app/actions/booking'
