@@ -71,3 +71,26 @@ export async function updateCabBookingStatus(id: string, status: string) {
   revalidatePath('/admin/layout')
   revalidatePath('/admin/bookings/cabs')
 }
+
+export async function submitCustomEnquiry(data: any) {
+  const supabase = await createClient()
+  const { error } = await supabase.from('custom_enquiries').insert([{
+    ...data,
+    status: 'pending'
+  }])
+
+  if (error) {
+    console.error('Error saving custom enquiry:', error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath('/admin/bookings/custom-enquiries')
+  return { success: true }
+}
+
+export async function updateCustomEnquiryStatus(id: string, status: string) {
+  const supabase = await createClient()
+  await supabase.from('custom_enquiries').update({ status }).eq('id', id)
+  revalidatePath('/admin/layout')
+  revalidatePath('/admin/bookings/custom-enquiries')
+}

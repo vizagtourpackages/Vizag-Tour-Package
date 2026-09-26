@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { siteInfo } from "@/data/siteInfo";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LatestUpdatesSection from "@/components/LatestUpdatesSection";
+import LatestUpdatesWrapper from "@/components/LatestUpdatesWrapper";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import EnquiryDrawer from "@/components/EnquiryDrawer";
@@ -26,6 +28,9 @@ export default function PublicLayout({
     <BookingProvider>
       <Navbar />
       <main className="flex-1 pt-[72px] overflow-x-hidden">{children}</main>
+      <LatestUpdatesWrapper>
+        <LatestUpdatesSection />
+      </LatestUpdatesWrapper>
       <Footer />
       <div className="hidden md:block">
         <WhatsAppFAB />

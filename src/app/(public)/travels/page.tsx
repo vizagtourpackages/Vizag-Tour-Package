@@ -22,5 +22,20 @@ export default async function TravelsPage() {
     }))
     : [];
 
-  return <TravelsClient vehicles={displayTravels} />;
+  const { data: dbTrustPoints } = await supabase
+    .from('travel_trust_points')
+    .select('*')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+
+  const { data: dbNotes } = await supabase
+    .from('travel_notes')
+    .select('*')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+
+  const trustPoints = dbTrustPoints || [];
+  const notes = dbNotes || [];
+
+  return <TravelsClient vehicles={displayTravels} trustPoints={trustPoints} notes={notes} />;
 }

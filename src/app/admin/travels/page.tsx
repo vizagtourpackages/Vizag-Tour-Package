@@ -25,6 +25,12 @@ export default async function TravelsPage() {
         </Link>
       </div>
 
+      <div className="flex gap-4 mb-6 border-b border-gray-200 pb-2">
+        <Link href="/admin/travels" className="text-teal font-bold border-b-2 border-teal px-2 pb-2 -mb-[10px]">Fleet</Link>
+        <Link href="/admin/travels/trust-points" className="text-gray-500 hover:text-gray-900 font-medium px-2 pb-2">Trust Points</Link>
+        <Link href="/admin/travels/notes" className="text-gray-500 hover:text-gray-900 font-medium px-2 pb-2">Notes</Link>
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>

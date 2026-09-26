@@ -38,16 +38,6 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
           >
             Itinerary
           </button>
-          <button
-            onClick={() => setActiveTab('hotels')}
-            className={`px-6 py-2.5 sm:px-8 sm:py-3 text-sm sm:text-base font-bold whitespace-nowrap rounded-full transition-all duration-300 ${
-              activeTab === 'hotels' 
-                ? 'bg-white text-teal shadow-sm' 
-                : 'text-charcoal/60 hover:text-charcoal hover:bg-white/50'
-            }`}
-          >
-            Hotels
-          </button>
         </div>
       </div>
 
@@ -188,54 +178,6 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
           </div>
         )}
 
-        {/* 3. Hotels Tab */}
-        {activeTab === 'hotels' && (
-          <div className="animate-fade-in">
-            {hotels.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {hotels.map((hotel: any) => (
-                  <div key={hotel.id} className="bg-white rounded-[24px] border border-charcoal/5 shadow-sm overflow-hidden flex flex-col">
-                    {hotel.hotel_image_url && (
-                      <div className="aspect-video w-full relative">
-                        <Image fill src={hotel.hotel_image_url} alt={hotel.hotel_name} className="w-full h-full object-cover" />
-                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-xs font-bold text-charcoal flex items-center gap-1 shadow-sm">
-                          <Star size={12} className="text-amber-500 fill-amber-500" />
-                          {hotel.star_category}
-                        </div>
-                      </div>
-                    )}
-                    <div className="p-5 flex-1 flex flex-col">
-                      {hotel.day_label && (
-                        <span className="text-[10px] font-bold text-teal uppercase tracking-widest mb-2">{hotel.day_label}</span>
-                      )}
-                      <h4 className="font-heading text-lg font-bold text-charcoal mb-1">{hotel.hotel_name}</h4>
-                      {hotel.location_name && (
-                        <div className="flex items-center gap-1 text-sm text-charcoal/50 mb-4">
-                          <MapPin size={14} /> {hotel.location_name}
-                        </div>
-                      )}
-                      
-                      <div className="mt-auto pt-4 border-t border-charcoal/5 space-y-2">
-                        {hotel.room_type && (
-                          <div className="flex items-center gap-2 text-sm text-charcoal/80">
-                            <Bed size={16} className="text-charcoal/40" />
-                            <span className="font-medium">Room:</span> {hotel.room_type}
-                          </div>
-                        )}
-                        <div className="flex items-center gap-2 text-sm text-charcoal/80">
-                          <Calendar size={16} className="text-charcoal/40" />
-                          <span className="font-medium">Check-in:</span> {hotel.check_in_time || '12:00 PM'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-charcoal/50 text-center py-12">Hotel details are not available for this package.</p>
-            )}
-          </div>
-        )}
       </div>
     </div>
   )

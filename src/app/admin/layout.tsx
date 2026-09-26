@@ -12,7 +12,8 @@ export default async function AdminLayout({
   const { count: pkgCount } = await supabase.from('package_bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending');
   const { count: resCount } = await supabase.from('resort_bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending');
   const { count: cabCount } = await supabase.from('cab_bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending');
-  const totalPending = (pkgCount || 0) + (resCount || 0) + (cabCount || 0);
+  const { count: enqCount } = await supabase.from('custom_enquiries').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+  const totalPending = (pkgCount || 0) + (resCount || 0) + (cabCount || 0) + (enqCount || 0);
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -28,6 +29,7 @@ export default async function AdminLayout({
           pkgCount={pkgCount || 0} 
           resCount={resCount || 0} 
           cabCount={cabCount || 0} 
+          enqCount={enqCount || 0}
           totalPending={totalPending} 
         />
 

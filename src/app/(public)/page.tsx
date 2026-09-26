@@ -8,13 +8,15 @@ import DestinationCard from "@/components/DestinationCard";
 import GuideCard from "@/components/GuideCard";
 import EventCard from "@/components/EventCard";
 import FleetSection from "@/components/VehicleCard";
-import MobileTrustBanner from "@/components/MobileTrustBanner";
+
 import CustomizeTourForm from "@/components/CustomizeTourForm";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ScrollCarousel from "@/components/ScrollCarousel";
 import GoldStandardGrid from "@/components/GoldStandardGrid";
 import ComparisonTable from "@/components/ComparisonTable";
 import FAQAccordion from "@/components/FAQAccordion";
+import TrustedPartners from "@/components/TrustedPartners";
+import PromoBannerSection from "@/components/PromoBannerSection";
 import CommunityCTA from "@/components/CommunityCTA";
 import {
   trendingPackages,
@@ -169,7 +171,6 @@ export default async function Home() {
       includes: pkg.includes,
       excludes: pkg.excludes,
       category: pkg.category,
-      rate_plans: pkg.rate_plans || [],
       imageGradient: 'from-teal to-blue-600', // fallback
       imageUrl: pkg.cover_image_url || pkg.image_url,
       originalPrice: pkg.original_price || pkg.mrp
@@ -243,8 +244,8 @@ export default async function Home() {
       {/* 1. Home/Hero section */}
       <HeroSection />
 
-      {/* Mobile Trust Banner */}
-      <MobileTrustBanner />
+      {/* NEW: Promotional Banner */}
+      <PromoBannerSection />
 
       {/* 2. Trending Packages */}
       <section className="section-padding bg-warm-white relative overflow-hidden ">
@@ -267,7 +268,7 @@ export default async function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="mt-16 text-center">
-              <Link href="/tour-packages" className="btn-secondary">
+              <Link href="/tour-packages" className="btn-secondary !px-6 !py-2.5 !text-sm">
                 View All Packages <ArrowRight size={18} />
               </Link>
             </div>
@@ -276,6 +277,34 @@ export default async function Home() {
       </section>
 
 
+
+      {/* 7. Top Destinations from Vizag */}
+      <section className="section-padding bg-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-sand rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+
+        <div className="container-max relative z-10">
+          <SectionHeading
+            title="Spiritual & Devotional Tours from Vizag"
+            subtitle="Explore Vizag temples and pilgrimage destinations with comfortable travel, customized itineraries, experienced drivers, and reliable support for a peaceful devotional journey."
+          />
+          <ScrollReveal delay={0.2}>
+            <ScrollCarousel>
+              {displayDestinations.map((destination) => (
+                <div key={destination.id} className="min-w-[280px] w-[280px] sm:w-[calc(25%-15px)] flex-shrink-0 snap-start">
+                  <DestinationCard destination={destination as any} />
+                </div>
+              ))}
+            </ScrollCarousel>
+          </ScrollReveal>
+          <ScrollReveal delay={0.3}>
+            <div className="mt-16 text-center">
+              <Link href="/route-map" className="btn-secondary !px-6 !py-2.5 !text-sm">
+                View All Routes <ArrowRight size={18} />
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
 
       {/* 4. Our Premium Fleet */}
       <section className="section-padding bg-warm-white relative overflow-hidden">
@@ -293,11 +322,118 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* NEW: Gold Standard */}
-      <GoldStandardGrid />
+      {/* 6. Hotels & Resorts */}
+      <section className="section-padding bg-warm-white relative overflow-hidden">
+        <div className="container-max relative z-10">
+          <SectionHeading
+            title="Book Hotels & Resorts in Vizag"
+            subtitle="Find the right stay for your journey—from budget-friendly hotels and family stays to premium resorts and beachfront properties across Vizag and nearby destinations."
+          />
+          <ScrollReveal delay={0.2}>
+            <ScrollCarousel gap="gap-4">
+              {displayHotels.map((hotel) => (
+                <div key={hotel.id} className="w-[320px] sm:w-[320px] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1rem)] flex-shrink-0 snap-start">
+                  <HotelCard hotel={hotel as any} />
+                </div>
+              ))}
+            </ScrollCarousel>
+          </ScrollReveal>
+          <ScrollReveal delay={0.3}>
+            <div className="mt-16 text-center">
+              <Link href="/hotels-and-resorts" className="btn-secondary !px-6 !py-2.5 !text-sm">
+                View All Hotels <ArrowRight size={18} />
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
 
-      {/* NEW: Comparison Table */}
-      <ComparisonTable />
+      {/* NEW: Hill Station Destinations */}
+      <section className="section-padding bg-white relative overflow-hidden">
+        {/* Background Decorative Blob */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-teal/5 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/4 pointer-events-none -z-10"></div>
+
+        <div className="container-max relative z-10">
+          <SectionHeading
+            title="Near by Eastern Ghats Getaways"
+            subtitle="Experience cool weather, breathtaking mountain views, coffee plantations, waterfalls, valleys, and tribal culture on unforgettable trips from Vizag."
+          />
+          <ScrollReveal delay={0.2}>
+            <ScrollCarousel>
+              {displayHillStations.map((station) => (
+                <div key={station.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                  <DestinationCard destination={station} />
+                </div>
+              ))}
+            </ScrollCarousel>
+          </ScrollReveal>
+          <ScrollReveal delay={0.3}>
+            <div className="mt-16 text-center">
+              <Link href="/tour-packages/araku-valley" className="btn-secondary !px-6 !py-2.5 !text-sm">
+                View Hill Station Packages <ArrowRight size={18} />
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* 8. Places to Visit in Vizag */}
+      <section className="section-padding bg-warm-white relative overflow-hidden">
+        <div className="container-max">
+          <SectionHeading
+            title="Vizag Sightseeing – Top Tourist Places in Visakhapatnam"
+            subtitle="Explore the top tourist attractions in Visakhapatnam, including beautiful beaches, scenic viewpoints, historic museums, temples, parks, and family-friendly destinations."
+          />
+          <ScrollReveal delay={0.2}>
+            <ScrollCarousel>
+              {displayPlaces.map((destination) => (
+                <div key={destination.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                  <DestinationCard destination={destination as any} />
+                </div>
+              ))}
+            </ScrollCarousel>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* 9. Travel Guides */}
+      <section className="section-padding bg-warm-white relative overflow-hidden">
+        <div className="container-max">
+          <SectionHeading
+            title="Vizag Travel Guide – Things to Do & Places to Visit"
+            subtitle="Plan your Visakhapatnam trip with helpful guides covering tourist places, beaches, sightseeing, local food, best time to visit, travel tips, and nearby destinations."
+          />
+          <ScrollReveal delay={0.2}>
+            <ScrollCarousel>
+              {displayGuides.map((guide: any) => (
+                <div key={guide.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                  <GuideCard guide={guide} />
+                </div>
+              ))}
+            </ScrollCarousel>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* 10. Upcoming Events */}
+      <section className="section-padding bg-white relative overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-sand rounded-full blur-[120px] opacity-50 -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+        <div className="container-max relative z-10">
+          <SectionHeading
+            title="Upcoming Activities & Events in Vizag (Visakhapatnam) – 2026"
+            subtitle="Stay updated with Vizag’s upcoming festivals, cultural celebrations, tourism events, exhibitions, and special activities—then plan your perfect trip around them."
+          />
+          <ScrollReveal delay={0.2}>
+            <ScrollCarousel>
+              {displayEvents.map((event: any) => (
+                <div key={event.id} className="w-[260px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
+                  <EventCard event={event} />
+                </div>
+              ))}
+            </ScrollCarousel>
+          </ScrollReveal>
+        </div>
+      </section>
 
       {/* 5. What We Offer */}
       <section className="section-padding bg-white relative overflow-hidden">
@@ -366,146 +502,11 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 6. Hotels & Resorts */}
-      <section className="section-padding bg-warm-white relative overflow-hidden">
-        <div className="container-max relative z-10">
-          <SectionHeading
-            title="Book Hotels & Resorts in Vizag"
-            subtitle="Find the right stay for your journey—from budget-friendly hotels and family stays to premium resorts and beachfront properties across Vizag and nearby destinations."
-          />
-          <ScrollReveal delay={0.2}>
-            <ScrollCarousel gap="gap-4">
-              {displayHotels.map((hotel) => (
-                <div key={hotel.id} className="w-[320px] sm:w-[320px] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1rem)] flex-shrink-0 snap-start">
-                  <HotelCard hotel={hotel as any} />
-                </div>
-              ))}
-            </ScrollCarousel>
-          </ScrollReveal>
-          <ScrollReveal delay={0.3}>
-            <div className="mt-16 text-center">
-              <Link href="/hotels-and-resorts" className="btn-secondary">
-                View All Hotels <ArrowRight size={18} />
-              </Link>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      {/* NEW: Gold Standard */}
+      <GoldStandardGrid />
 
-      {/* 7. Top Destinations from Vizag */}
-      <section className="section-padding bg-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-sand rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-
-        <div className="container-max relative z-10">
-          <SectionHeading
-            title="Spiritual & Devotional Tours from Vizag"
-            subtitle="Explore Vizag temples and pilgrimage destinations with comfortable travel, customized itineraries, experienced drivers, and reliable support for a peaceful devotional journey."
-          />
-          <ScrollReveal delay={0.2}>
-            <ScrollCarousel>
-              {displayDestinations.map((destination) => (
-                <div key={destination.id} className="min-w-[280px] w-[280px] sm:w-[calc(25%-15px)] flex-shrink-0 snap-start">
-                  <DestinationCard destination={destination as any} />
-                </div>
-              ))}
-            </ScrollCarousel>
-          </ScrollReveal>
-          <ScrollReveal delay={0.3}>
-            <div className="mt-16 text-center">
-              <Link href="/route-map" className="btn-secondary">
-                View All Routes <ArrowRight size={18} />
-              </Link>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* 8. Places to Visit in Vizag */}
-      <section className="section-padding bg-warm-white relative overflow-hidden">
-        <div className="container-max">
-          <SectionHeading
-            title="Vizag Sightseeing – Top Tourist Places in Visakhapatnam"
-            subtitle="Explore the top tourist attractions in Visakhapatnam, including beautiful beaches, scenic viewpoints, historic museums, temples, parks, and family-friendly destinations."
-          />
-          <ScrollReveal delay={0.2}>
-            <ScrollCarousel>
-              {displayPlaces.map((destination) => (
-                <div key={destination.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
-                  <DestinationCard destination={destination as any} />
-                </div>
-              ))}
-            </ScrollCarousel>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* NEW: Hill Station Destinations */}
-      <section className="section-padding bg-white relative overflow-hidden">
-        {/* Background Decorative Blob */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-teal/5 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/4 pointer-events-none -z-10"></div>
-
-        <div className="container-max relative z-10">
-          <SectionHeading
-            title="Near by Eastern Ghats Getaways"
-            subtitle="Experience cool weather, breathtaking mountain views, coffee plantations, waterfalls, valleys, and tribal culture on unforgettable trips from Vizag."
-          />
-          <ScrollReveal delay={0.2}>
-            <ScrollCarousel>
-              {displayHillStations.map((station) => (
-                <div key={station.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
-                  <DestinationCard destination={station} />
-                </div>
-              ))}
-            </ScrollCarousel>
-          </ScrollReveal>
-          <ScrollReveal delay={0.3}>
-            <div className="mt-16 text-center">
-              <Link href="/tour-packages/araku-valley" className="btn-secondary">
-                View Hill Station Packages <ArrowRight size={18} />
-              </Link>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* 9. Travel Guides */}
-      <section className="section-padding bg-warm-white relative overflow-hidden">
-        <div className="container-max">
-          <SectionHeading
-            title="Vizag Travel Guide – Things to Do & Places to Visit"
-            subtitle="Plan your Visakhapatnam trip with helpful guides covering tourist places, beaches, sightseeing, local food, best time to visit, travel tips, and nearby destinations."
-          />
-          <ScrollReveal delay={0.2}>
-            <ScrollCarousel>
-              {displayGuides.map((guide: any) => (
-                <div key={guide.id} className="w-[280px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
-                  <GuideCard guide={guide} />
-                </div>
-              ))}
-            </ScrollCarousel>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* 10. Upcoming Events */}
-      <section className="section-padding bg-white relative overflow-hidden">
-        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-sand rounded-full blur-[120px] opacity-50 -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-        <div className="container-max relative z-10">
-          <SectionHeading
-            title="Upcoming Activities & Events in Vizag (Visakhapatnam) – 2026"
-            subtitle="Stay updated with Vizag’s upcoming festivals, cultural celebrations, tourism events, exhibitions, and special activities—then plan your perfect trip around them."
-          />
-          <ScrollReveal delay={0.2}>
-            <ScrollCarousel>
-              {displayEvents.map((event: any) => (
-                <div key={event.id} className="w-[260px] sm:w-[280px] md:w-[calc(33.333%-1.25rem)] lg:w-[calc(25%-1.25rem)] flex-shrink-0 snap-start">
-                  <EventCard event={event} />
-                </div>
-              ))}
-            </ScrollCarousel>
-          </ScrollReveal>
-        </div>
-      </section>
+      {/* NEW: Comparison Table */}
+      <ComparisonTable />
 
       {/* Your Trusted Travel Partner (Redesigned) */}
       <section className="py-16 bg-white border-y border-charcoal/5">
@@ -589,6 +590,9 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Your Trusted Travel Partner (Redesigned) */}
+      <TrustedPartners />
+
       {/* NEW: FAQ Section */}
       <FAQAccordion faqs={displayFaqs} />
 
@@ -602,6 +606,8 @@ export default async function Home() {
           <TestimonialsSection />
         </div>
       </section>
+
+
     </>
   );
 }

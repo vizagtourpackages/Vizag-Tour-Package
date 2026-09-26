@@ -6,6 +6,7 @@ import { motion, useInView } from "framer-motion";
 import { Map, Hotel, CarFront, ArrowRight } from "lucide-react";
 import { siteInfo, heroCTAs } from "@/data/siteInfo";
 import ScrollReveal from "./ScrollReveal";
+import MobileTrustBanner from "./MobileTrustBanner";
 
 const iconMap = {
   Map: Map,
@@ -18,7 +19,14 @@ export default function HeroSection() {
   const isInView = useInView(ref, { once: true });
 
   return (
-    <section className="-lg:mt-[100px] pt-[2px] relative min-h-[600px] flex items-center overflow-hidden bg-warm-white">
+    <section
+      className="relative w-full min-h-[85dvh] md:min-h-0 md:h-[calc(105dvh-72px)] flex items-center overflow-hidden bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: "url('/hero-bg.png')",
+      }}
+    >
+      {/* Dark Overlay for readability */}
+      <div className="absolute inset-0 bg-black/40 z-0" />
       {/* Decorative Elements */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sand rounded-full blur-[100px] opacity-60" />
       <div className="absolute bottom-20 left-10 w-[400px] h-[400px] bg-coral/5 rounded-full blur-[80px]" />
@@ -35,55 +43,69 @@ export default function HeroSection() {
       </div>
 
       {/* Content */}
-      <div ref={ref} className="relative z-10 container-max px-4 sm:px-6 lg:px-8 pt-32 pb-8 sm:pb-40">
-        <div className="max-w-4xl mx-auto text-center lg:text-left lg:mx-0">
-          <ScrollReveal delay={0}>
-            <span className="inline-block badge border border-charcoal/10 text-charcoal/70 bg-white mb-8 tracking-widest px-4 py-1.5 shadow-sm">
-              🌊 THE CITY OF DESTINY
-            </span>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.1}>
-            <h1 className="text-4xl sm:text-6xl lg:text-[80px] font-heading font-bold text-charcoal leading-[1.1] sm:leading-[1] mb-6 tracking-tight">
-              {siteInfo.tagline.split("—")[0]}
-              <span className="block text-coral mt-2">
-                — {siteInfo.tagline.split("—")[1]?.trim()}
+      <div ref={ref} className="relative z-10 container-max px-4 sm:px-6 lg:px-8 pt-6 sm:pt-16 pb-20 sm:pb-24 w-full h-full flex flex-col">
+        {/* Main Content centered in available space */}
+        <div className="flex flex-col justify-center flex-1">
+          <div className="max-w-4xl mx-auto text-center lg:text-left lg:mx-0">
+            <ScrollReveal delay={0}>
+              <span className="inline-block badge border border-white/20 text-white bg-black/20 backdrop-blur-sm mb-3 sm:mb-8 tracking-widest px-4 py-1.5 shadow-sm text-[10px] sm:text-xs">
+                🌊 THE CITY OF DESTINY
               </span>
-            </h1>
-          </ScrollReveal>
+            </ScrollReveal>
 
-          <ScrollReveal delay={0.2}>
-            <p className="text-sm sm:text text-charcoal/60 mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
-              {siteInfo.subtitle} — {siteInfo.intro.slice(0, 260)}
-            </p>
-          </ScrollReveal>
-        </div>
+            <ScrollReveal delay={0.1}>
+              <h1 className="text-4xl sm:text-6xl lg:text-[80px] font-heading font-bold text-white leading-[1.1] sm:leading-[1] mb-2 sm:mb-6 tracking-tight drop-shadow-lg">
+                {siteInfo.tagline.split("—")[0]}
+                <span className="block text-coral-light text-coral mt-1 sm:mt-2 text-[26px] sm:text-[1em] drop-shadow-md">
+                  — {siteInfo.tagline.split("—")[1]?.trim()}
+                </span>
+              </h1>
+            </ScrollReveal>
 
-        {/* CTA Cards */}
-        <ScrollReveal delay={0.3}>
-          <div className="grid grid-cols-3 gap-2 sm:gap-6 max-w-4xl mx-auto lg:mx-0 mt-8">
-            {heroCTAs.map((cta) => {
-              const Icon = iconMap[cta.icon];
-              return (
-                <Link
-                  key={cta.title}
-                  href={cta.href}
-                  className="group relative bg-white border border-charcoal/5 rounded-[16px] sm:rounded-[32px] p-3 sm:p-8 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-2 flex flex-col items-center lg:items-start text-center lg:text-left"
-                >
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-sand flex items-center justify-center mb-2 sm:mb-6 group-hover:scale-110 group-hover:bg-coral/10 transition-transform duration-500">
-                    <Icon size={24} className="text-charcoal group-hover:text-coral transition-colors w-[18px] h-[18px] sm:w-[24px] sm:h-[24px]" />
-                  </div>
-                  <h3 className="text-charcoal font-bold text-[11px] sm:text-xl mb-0 sm:mb-2 tracking-tight leading-tight">
-                    {cta.title}
-                  </h3>
-                  <p className="hidden sm:block text-charcoal/50 text-sm leading-relaxed">{cta.description}</p>
-                  <ArrowRight
-                    size={20}
-                    className="hidden sm:block absolute top-8 right-8 text-charcoal/20 group-hover:text-coral group-hover:translate-x-1 transition-all"
-                  />
-                </Link>
-              );
-            })}
+            <ScrollReveal delay={0.2}>
+              <p className="text-[13px] sm:text-base text-white/90 mb-4 sm:mb-12 max-w-2xl mx-auto lg:mx-0 leading-snug sm:leading-relaxed font-medium drop-shadow-md">
+                {siteInfo.subtitle} — {siteInfo.intro.slice(0, 260)}
+              </p>
+            </ScrollReveal>
+          </div>
+
+          {/* CTA Cards */}
+          <ScrollReveal delay={0.3}>
+            <div className="grid grid-cols-3 gap-2 sm:gap-6 max-w-4xl mx-auto lg:mx-0 mt-2 sm:mt-8 ">
+              {heroCTAs.map((cta) => {
+                const Icon = iconMap[cta.icon];
+                return (
+                  <Link
+                    key={cta.title}
+                    href={cta.href}
+                    className="group relative bg-white border border-charcoal/5 rounded-[16px] sm:rounded-[32px] p-2 sm:p-8 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-2 flex flex-col items-center lg:items-start text-center lg:text-left"
+                  >
+                    <div className="w-8 h-8 sm:w-14 sm:h-14 rounded-full bg-sand flex items-center justify-center mb-1.5 sm:mb-6 group-hover:scale-110 group-hover:bg-coral/10 transition-transform duration-500">
+                      {'imageUrl' in cta ? (
+                        <img src={cta.imageUrl} alt={cta.title} className="w-[18px] h-[18px] sm:w-[28px] sm:h-[28px] object-contain group-hover:scale-110 transition-transform" />
+                      ) : (
+                        <Icon size={24} className="text-charcoal group-hover:text-coral transition-colors w-[16px] h-[16px] sm:w-[24px] sm:h-[24px]" />
+                      )}
+                    </div>
+                    <h3 className="text-charcoal font-bold text-[10px] sm:text-xl mb-0 sm:mb-2 tracking-tight leading-tight">
+                      {cta.title}
+                    </h3>
+                    <p className="hidden sm:block text-charcoal/50 text-sm leading-relaxed">{cta.description}</p>
+                    <ArrowRight
+                      size={20}
+                      className="hidden sm:block absolute top-8 right-8 text-charcoal/20 group-hover:text-coral group-hover:translate-x-1 transition-all"
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          </ScrollReveal>
+        </div> {/* Close flex-1 wrapper */}
+
+        {/* Bottom Banner */}
+        <ScrollReveal delay={0.4} className="mt-auto w-full md:hidden z-20 relative pt-4 pb-8">
+          <div className="w-full flex justify-center">
+            <MobileTrustBanner />
           </div>
         </ScrollReveal>
       </div>

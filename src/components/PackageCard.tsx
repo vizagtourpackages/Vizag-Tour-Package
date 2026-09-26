@@ -23,7 +23,7 @@ export default function PackageCard({ pkg }: PackageCardProps) {
       <div className="relative p-2">
         <Link href={`/packages/${pkg.slug || pkg.id}`} className="relative overflow-hidden rounded-[24px] block">
           {pkg.imageUrl ? (
-            <div className="relative h-48 sm:h-56 w-full">
+            <div className="relative w-full" style={{ aspectRatio: '3/2' }}>
               <Image fill 
                 src={pkg.imageUrl} 
                 alt={pkg.title}
@@ -32,12 +32,14 @@ export default function PackageCard({ pkg }: PackageCardProps) {
               <div className="absolute inset-0 bg-black/20" />
             </div>
           ) : (
-            <PlaceholderImage
-              gradient={pkg.imageGradient}
-              alt={pkg.title}
-              className="h-48 sm:h-56 w-full transform transition-transform duration-700 group-hover:scale-105"
-              overlay
-            />
+            <div style={{ aspectRatio: '3/2' }} className="w-full relative">
+              <PlaceholderImage
+                gradient={pkg.imageGradient}
+                alt={pkg.title}
+                className="w-full h-full transform transition-transform duration-700 group-hover:scale-105 absolute inset-0"
+                overlay
+              />
+            </div>
           )}
         </Link>
         {pkg.badge && !pkg.badge.match(/\d+\s*[DN]/i) && (
@@ -57,8 +59,8 @@ export default function PackageCard({ pkg }: PackageCardProps) {
             </div>
           )}
           <div className="flex items-baseline">
-            <span className="text-base sm:text-lg font-black text-charcoal tracking-tight leading-none">₹{pkg.price.toLocaleString('en-IN')}</span>
-            <span className="text-[8px] sm:text-[10px] font-bold text-charcoal/60 uppercase tracking-wider ml-0.5">/{pkg.priceLabel || 'PER COUPLE'}</span>
+            <span className="text-sm sm:text-base font-black text-charcoal tracking-tight leading-none">₹{pkg.price.toLocaleString('en-IN')}</span>
+            <span className="text-[8px] font-bold text-charcoal/60 uppercase tracking-wider ml-0.5">/{pkg.priceLabel || 'PER COUPLE'}</span>
           </div>
         </div>
       </div>
@@ -83,16 +85,35 @@ export default function PackageCard({ pkg }: PackageCardProps) {
           </span>
         </div>
 
-        {/* Highlights */}
-        <div className="flex overflow-x-auto gap-2 mb-6 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {pkg.highlights.map((h) => (
-            <span
-              key={h}
-              className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 whitespace-nowrap shrink-0"
-            >
-              {h}
-            </span>
-          ))}
+        {/* Highlights - Marquee */}
+        <div className="flex overflow-hidden relative w-full mb-6 pb-2 group/marquee">
+          <div className="flex gap-2 animate-marquee group-hover/marquee:[animation-play-state:paused] whitespace-nowrap shrink-0">
+            {pkg.highlights.map((h, i) => (
+              <span
+                key={`${h}-${i}`}
+                className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 inline-block"
+              >
+                {h}
+              </span>
+            ))}
+            {/* Duplicate for seamless loop if there are only a few items, though usually there's enough. We'll duplicate them just in case. */}
+            {pkg.highlights.map((h, i) => (
+              <span
+                key={`${h}-dup-${i}`}
+                className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 inline-block"
+              >
+                {h}
+              </span>
+            ))}
+            {pkg.highlights.map((h, i) => (
+              <span
+                key={`${h}-dup2-${i}`}
+                className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 inline-block"
+              >
+                {h}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Includes / Excludes */}

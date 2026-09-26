@@ -149,6 +149,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
       id: `temp-plan-${Date.now()}`,
       title: '',
       badge: '',
+      is_best_value: false,
       price: '',
       mrp: '',
       features: []
@@ -239,19 +240,11 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Price Label</label>
-            <input type="text" name="price_label" defaultValue={initialData?.price_label || 'Per Couple'} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="e.g. Per Person, Per Couple" />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Price per Couple (₹)</label>
-            <input type="number" name="price_per_couple" defaultValue={initialData?.price_per_couple} className="w-full p-3 border rounded-lg bg-gray-50" />
+            <input type="text" name="price_label" defaultValue={initialData?.price_label || 'Per Couple'} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="e.g. Per Couple, Per Day" />
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Original Price (₹)</label>
             <input type="number" name="original_price" defaultValue={initialData?.original_price} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="Strikethrough price" />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">MRP (₹)</label>
-            <input type="number" name="mrp" defaultValue={initialData?.mrp} className="w-full p-3 border rounded-lg bg-gray-50" placeholder="Strikethrough price" />
           </div>
 
           <div>
@@ -280,6 +273,10 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Pickup Location</label>
             <input type="text" name="pickup_location" defaultValue={initialData?.pickup_location || 'Visakhapatnam (Vizag)'} className="w-full p-3 border rounded-lg bg-gray-50" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Drop Location</label>
+            <input type="text" name="drop_location" defaultValue={initialData?.drop_location || 'Visakhapatnam (Vizag)'} className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
 
           <div>
@@ -547,6 +544,12 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
                   <div className="lg:col-span-1">
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Badge (Optional)</label>
                     <input type="text" value={plan.badge || ''} onChange={e => updateRatePlan(pIdx, 'badge', e.target.value)} placeholder="e.g. Bestseller, PROMO" className="w-full p-2 border rounded-md text-sm" />
+                  </div>
+                  <div className="lg:col-span-1 flex items-center mt-6">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={plan.is_best_value || false} onChange={e => updateRatePlan(pIdx, 'is_best_value', e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-teal focus:ring-teal" />
+                      <span className="text-xs font-bold text-gray-700 uppercase">Best Value (Green)</span>
+                    </label>
                   </div>
                   
                   <div className="lg:col-span-1">

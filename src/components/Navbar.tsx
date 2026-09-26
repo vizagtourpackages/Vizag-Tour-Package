@@ -33,7 +33,7 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
-  const showSolid = !isHome || scrolled;
+  const showSolid = true; // Always solid so hero section can start after it
 
   return (
     <>
