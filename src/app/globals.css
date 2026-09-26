@@ -156,7 +156,7 @@ h6 {
 
 /* --- Utility classes --- */
 .section-padding {
-  @apply px-4 sm:px-6 lg:px-8 py-8 sm:py-16 lg:py-24;
+  @apply px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16;
 }
 
 .container-max {

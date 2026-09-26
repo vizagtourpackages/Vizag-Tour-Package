@@ -67,5 +67,6 @@ export const heroCTAs = [
     description: "Reliable vehicles for any group size",
     href: "/travels",
     icon: "CarFront" as const,
+    imageUrl: "/image.png",
   },
 ] as const;

@@ -3,13 +3,29 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { siteInfo } from '@/data/siteInfo'
 import { submitCabBooking } from '@/app/actions/booking'
-import { vehicles } from '@/data/vehicles'
+import { createClient } from '@/lib/supabase/client'
 import { Users, Briefcase } from 'lucide-react'
 
 export default function CabBookingModal({ data, onClose }: { data: any, onClose: () => void }) {
-  // If no specific vehicle was passed, we start at step 1 to choose one
   const [step, setStep] = useState<1 | 2>(data ? 2 : 1)
   const [selectedVehicle, setSelectedVehicle] = useState<any>(data)
+  const [vehicles, setVehicles] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchVehicles() {
+      const supabase = createClient()
+      const { data: travelsData } = await supabase
+        .from('travels')
+        .select('*')
+        .eq('is_published', true)
+        .order('display_order', { ascending: true })
+      
+      if (travelsData) {
+        setVehicles(travelsData)
+      }
+    }
+    fetchVehicles()
+  }, [])
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -97,7 +113,7 @@ Passengers: ${bookingData.adults} Adults, ${bookingData.kids} Kids`
                   className="w-full text-left p-3 border border-gray-200 rounded-xl hover:border-coral hover:shadow-md transition-all flex gap-4 items-center group"
                 >
                   <div className="relative w-20 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-                    <Image fill src={v.image} alt={v.model} className="w-full h-full object-cover mix-blend-multiply" />
+                    {v.image && <Image fill src={v.image} alt={v.model} className="w-full h-full object-cover mix-blend-multiply" />}
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-charcoal leading-tight">{v.model}</h4>

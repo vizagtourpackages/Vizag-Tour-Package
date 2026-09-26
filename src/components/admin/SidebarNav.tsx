@@ -17,7 +17,9 @@ import {
   Inbox,
   ChevronDown,
   ChevronRight,
-  Car
+  Car,
+  Image as ImageIcon,
+  Settings
 } from 'lucide-react';
 
 const mainNavigation = [
@@ -31,18 +33,22 @@ const mainNavigation = [
   { name: 'Travel Guides', href: '/admin/travel-guides', icon: BookOpen },
   { name: 'Upcoming Events', href: '/admin/upcoming-events', icon: Calendar },
   { name: 'Updates & Offers', href: '/admin/updates-offers', icon: Megaphone },
+  { name: 'Promo Banner', href: '/admin/promo-banner', icon: ImageIcon },
   { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export default function SidebarNav({ 
   pkgCount, 
   resCount, 
   cabCount, 
+  enqCount,
   totalPending 
 }: { 
   pkgCount: number, 
   resCount: number, 
   cabCount: number, 
+  enqCount: number,
   totalPending: number 
 }) {
   const pathname = usePathname();
@@ -83,6 +89,10 @@ export default function SidebarNav({
             <Link href="/admin/bookings/packages" className={`flex items-center justify-between py-2 px-3 text-sm rounded-lg transition-colors ${pathname === '/admin/bookings/packages' ? 'text-white bg-white/5' : 'text-white/60 hover:text-white hover:bg-white/5'}`}>
               <span className="flex items-center gap-2"><Map className="w-4 h-4 text-white/40" /> Packages</span>
               {pkgCount > 0 && <span className="bg-white/20 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">{pkgCount}</span>}
+            </Link>
+            <Link href="/admin/bookings/custom-enquiries" className={`flex items-center justify-between py-2 px-3 text-sm rounded-lg transition-colors ${pathname === '/admin/bookings/custom-enquiries' ? 'text-white bg-white/5' : 'text-white/60 hover:text-white hover:bg-white/5'}`}>
+              <span className="flex items-center gap-2"><HelpCircle className="w-4 h-4 text-white/40" /> Custom Enquiries</span>
+              {enqCount > 0 && <span className="bg-white/20 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">{enqCount}</span>}
             </Link>
             <Link href="/admin/bookings/resorts" className={`flex items-center justify-between py-2 px-3 text-sm rounded-lg transition-colors ${pathname === '/admin/bookings/resorts' ? 'text-white bg-white/5' : 'text-white/60 hover:text-white hover:bg-white/5'}`}>
               <span className="flex items-center gap-2"><Building2 className="w-4 h-4 text-white/40" /> Resorts</span>

@@ -7,7 +7,17 @@ import { siteInfo } from "@/data/siteInfo";
 import { useBooking } from "@/components/booking/BookingContext";
 import type { Vehicle } from "@/data/vehicles";
 
-export default function TravelsClient({ vehicles }: { vehicles: Vehicle[] }) {
+import DynamicIcon from "@/components/admin/DynamicIcon";
+
+export default function TravelsClient({ 
+  vehicles,
+  trustPoints = [],
+  notes = []
+}: { 
+  vehicles: Vehicle[],
+  trustPoints?: any[],
+  notes?: any[]
+}) {
   const { openBooking } = useBooking();
 
   return (
@@ -22,21 +32,39 @@ export default function TravelsClient({ vehicles }: { vehicles: Vehicle[] }) {
             Experience hassle-free travel with Vizag Tour Packages. Professional service guaranteed.
           </p>
 
-          {/* Features Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-10">
-            <span className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155]">
-              <Shield size={18} className="text-[#3B82F6]" /> Verified Drivers
-            </span>
-            <span className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155]">
-              <Car size={18} className="text-[#3B82F6]" /> Clean Vehicles
-            </span>
-            <span className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155]">
-              <MapPin size={18} className="text-[#3B82F6]" /> GPS Tracking
-            </span>
-            <span className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155]">
-              <Clock size={18} className="text-[#3B82F6]" /> 24/7 Service
-            </span>
-          </div>
+          {/* Features Marquee */}
+          {trustPoints.length > 0 && (
+            <div className="mb-10 overflow-hidden relative w-full group/marquee">
+              <div className="flex gap-4 w-max animate-marquee group-hover/marquee:[animation-play-state:paused] whitespace-nowrap shrink-0 px-4">
+                {trustPoints.map((tp, i) => (
+                  <span key={i} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {/* Duplicates for seamless loop */}
+                {trustPoints.map((tp, i) => (
+                  <span key={`dup1-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {trustPoints.map((tp, i) => (
+                  <span key={`dup2-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {trustPoints.map((tp, i) => (
+                  <span key={`dup3-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {trustPoints.map((tp, i) => (
+                  <span key={`dup4-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
@@ -46,23 +74,6 @@ export default function TravelsClient({ vehicles }: { vehicles: Vehicle[] }) {
             >
               <Car size={24} /> Book Your Taxi Now
             </button>
-            
-            <div className="flex w-full gap-4">
-              <a 
-                href={`tel:${siteInfo.whatsapp}`}
-                className="flex-1 bg-white hover:bg-gray-50 text-[#334155] py-3.5 px-6 rounded-full font-bold flex items-center justify-center gap-2 transition-colors border border-gray-200 shadow-sm"
-              >
-                <Phone size={20} /> Call Now
-              </a>
-              <a 
-                href={siteInfo.whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-[#128C7E] hover:bg-[#075E54] text-white py-3.5 px-6 rounded-full font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"
-              >
-                <MessageCircle size={20} /> WhatsApp
-              </a>
-            </div>
           </div>
         </div>
       </section>
@@ -75,6 +86,60 @@ export default function TravelsClient({ vehicles }: { vehicles: Vehicle[] }) {
         
         {/* Fleet Section Carousel */}
         <FleetSection vehicles={vehicles} />
+
+        {/* Our Main Cabs / Trust Points */}
+        {trustPoints.length > 0 && (
+          <div className="mt-20">
+            <h2 className="text-2xl md:text-3xl font-heading text-center text-[#1E293B] mb-8">Our Main Cabs</h2>
+            <div className="overflow-hidden relative w-full group/marquee">
+              <div className="flex gap-4 w-max animate-marquee group-hover/marquee:[animation-play-state:paused] whitespace-nowrap shrink-0 px-4">
+                {trustPoints.map((tp, i) => (
+                  <span key={i} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {/* Duplicates for seamless loop */}
+                {trustPoints.map((tp, i) => (
+                  <span key={`main-dup1-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {trustPoints.map((tp, i) => (
+                  <span key={`main-dup2-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {trustPoints.map((tp, i) => (
+                  <span key={`main-dup3-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+                {trustPoints.map((tp, i) => (
+                  <span key={`main-dup4-${i}`} className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-full border border-gray-100 shadow-sm text-sm font-semibold text-[#334155] shrink-0">
+                    <DynamicIcon name={tp.icon} size={18} className="text-[#3B82F6]" /> {tp.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Notes Section */}
+        {notes.length > 0 && (
+          <div className="mt-16 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+              <MessageCircle className="text-blue-600" /> Important Information
+            </h2>
+            <div className="space-y-6">
+              {notes.map((note) => (
+                <div key={note.id} className="bg-gray-50 rounded-2xl p-6">
+                  {note.title && <h3 className="font-bold text-gray-900 mb-2">{note.title}</h3>}
+                  <p className="text-gray-600 leading-relaxed whitespace-pre-line">{note.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

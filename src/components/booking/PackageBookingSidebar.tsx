@@ -67,6 +67,10 @@ export default function PackageBookingSidebar({
           <span className="text-charcoal/60 font-medium">Pickup</span>
           <span className="font-bold text-charcoal text-right max-w-[150px]">{pkg.pickup_location || 'Visakhapatnam (Vizag)'}</span>
         </div>
+        <div className="flex justify-between items-start text-sm">
+          <span className="text-charcoal/60 font-medium">Drop</span>
+          <span className="font-bold text-charcoal text-right max-w-[150px]">{pkg.drop_location || 'Visakhapatnam (Vizag)'}</span>
+        </div>
       </div>
 
       <div className="h-px bg-charcoal/10 w-full" />

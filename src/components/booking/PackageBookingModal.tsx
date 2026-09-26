@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { siteInfo } from '@/data/siteInfo'
 import { submitPackageBooking } from '@/app/actions/booking'
+import { createClient } from '@/lib/supabase/client'
 
 export default function PackageBookingModal({ data, onClose }: { data: any, onClose: () => void }) {
   const [formData, setFormData] = useState({
@@ -21,8 +22,29 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
     rooms: 1,
     specialRequests: ''
   })
-  
   const [loading, setLoading] = useState(false)
+  const [vehicles, setVehicles] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchVehicles() {
+      const supabase = createClient()
+      const { data: travelsData } = await supabase
+        .from('travels')
+        .select('*')
+        .eq('is_published', true)
+        .order('display_order', { ascending: true })
+      
+      if (travelsData && travelsData.length > 0) {
+        setVehicles(travelsData)
+        // If current preference is not in the list, set to first available
+        const hasPref = travelsData.some(v => v.model === formData.vehiclePreference);
+        if (!hasPref) {
+          setFormData(prev => ({ ...prev, vehiclePreference: travelsData[0].model }))
+        }
+      }
+    }
+    fetchVehicles()
+  }, [])
   const [error, setError] = useState('')
   
   const hasRatePlans = data?.rate_plans && data.rate_plans.length > 0;
@@ -86,7 +108,9 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
       accommodation_type: formData.accommodationType,
       guests: formData.guests,
       rooms: formData.rooms,
-      special_requests: formData.specialRequests
+      special_requests: formData.specialRequests,
+      pickup_location: data?.pickup_location || 'Visakhapatnam (Vizag)',
+      drop_location: data?.drop_location || 'Visakhapatnam (Vizag)'
     }
 
     const res = await submitPackageBooking(bookingData)
@@ -106,6 +130,8 @@ Dates: ${bookingData.start_date} to ${bookingData.end_date}
 Guests: ${bookingData.guests} | Rooms: ${bookingData.rooms}
 Vehicle: ${bookingData.vehicle_preference}
 Accommodation: ${bookingData.accommodation_type}
+Pickup: ${bookingData.pickup_location}
+Drop: ${bookingData.drop_location}
 Special Requests: ${bookingData.special_requests || 'None'}`
 
     const encodedMessage = encodeURIComponent(waText)
@@ -260,10 +286,13 @@ Special Requests: ${bookingData.special_requests || 'None'}`
             <div>
               <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Vehicle *</label>
               <select required value={formData.vehiclePreference} onChange={e => setFormData({...formData, vehiclePreference: e.target.value})} className="w-full p-2 border rounded-lg text-sm bg-white">
-                <option value="Sedan/Hatchback 4+1">Sedan/Hatchback 4+1</option>
-                <option value="SUV (Innova/Ertiga) 6+1">SUV (Innova/Ertiga) 6+1</option>
-                <option value="Tempo Traveller (12/17 Seater)">Tempo Traveller (12/17 Seater)</option>
-                <option value="Mini Bus / Bus">Mini Bus / Bus</option>
+                {vehicles.length > 0 ? (
+                  vehicles.map((v, i) => (
+                    <option key={i} value={v.model}>{v.model} ({v.pax} Pax)</option>
+                  ))
+                ) : (
+                  <option value="Sedan/Hatchback 4+1">Sedan/Hatchback 4+1</option>
+                )}
               </select>
             </div>
 

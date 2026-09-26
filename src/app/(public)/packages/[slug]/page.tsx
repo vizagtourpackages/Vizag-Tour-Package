@@ -7,6 +7,7 @@ import PackageBookingButton from "@/components/PackageBookingButton";
 import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
 import PackageBookingSidebar from "@/components/booking/PackageBookingSidebar";
 import PackageTabs from "@/components/PackageTabs";
+import ScrollCarousel from "@/components/ScrollCarousel";
 import { siteInfo } from "@/data/siteInfo";
 import { Metadata } from "next";
 
@@ -59,15 +60,14 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
     );
   }
 
-  // Fetch similar packages (just a few others in the same category/type)
-  const categoryMatch = pkg.category || pkg.type;
-
-  const { data: similarPackages } = categoryMatch ? await supabase
+  // Fetch similar packages
+  let { data: similarPackages } = await supabase
     .from("tour_packages")
     .select("*")
-    .eq("category", categoryMatch)
+    .eq("is_published", true)
     .neq("slug", resolvedParams.slug)
-    .limit(3) : { data: [] };
+    .order("created_at", { ascending: false })
+    .limit(4);
 
   const originalPrice = pkg.original_price || pkg.mrp;
   const discountPercent = originalPrice && originalPrice > pkg.price
@@ -107,7 +107,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                     {pkg.duration}
                   </span>
                 </div>
-                <h1 className="text-2xl sm:text-2xl md:text-4xl font-heading font-black text-white leading-tight tracking-tight drop-shadow-md max-w-3xl">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-white leading-tight tracking-tight drop-shadow-md max-w-3xl">
                   {pkg.title}
                 </h1>
               </div>
@@ -119,13 +119,38 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
 
               {/* Destination Tags / Highlights (Pills) */}
               {(pkg.destination_tags || pkg.highlights) && (pkg.destination_tags?.length > 0 || pkg.highlights?.length > 0) && (
-                <div className="mb-8">
+                <div className="mb-8 overflow-hidden relative w-full group/marquee">
                   <h3 className="text-sm font-bold text-charcoal/50 uppercase tracking-wider mb-3">Must Visit Places</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex gap-2 w-max animate-marquee group-hover/marquee:[animation-play-state:paused] whitespace-nowrap shrink-0">
                     {(pkg.destination_tags || pkg.highlights).map((tag: string, i: number) => (
                       <span
                         key={i}
-                        className="px-4 py-2 bg-teal/5 text-teal font-bold text-sm rounded-full tracking-wide capitalize whitespace-normal border border-teal/10"
+                        className="px-4 py-2 bg-teal/5 text-teal font-bold text-sm rounded-full tracking-wide capitalize border border-teal/10 shrink-0 inline-block"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {/* Duplicate for seamless loop */}
+                    {(pkg.destination_tags || pkg.highlights).map((tag: string, i: number) => (
+                      <span
+                        key={`dup-${i}`}
+                        className="px-4 py-2 bg-teal/5 text-teal font-bold text-sm rounded-full tracking-wide capitalize border border-teal/10 shrink-0 inline-block"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {(pkg.destination_tags || pkg.highlights).map((tag: string, i: number) => (
+                      <span
+                        key={`dup2-${i}`}
+                        className="px-4 py-2 bg-teal/5 text-teal font-bold text-sm rounded-full tracking-wide capitalize border border-teal/10 shrink-0 inline-block"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {(pkg.destination_tags || pkg.highlights).map((tag: string, i: number) => (
+                      <span
+                        key={`dup3-${i}`}
+                        className="px-4 py-2 bg-teal/5 text-teal font-bold text-sm rounded-full tracking-wide capitalize border border-teal/10 shrink-0 inline-block"
                       >
                         {tag}
                       </span>
@@ -135,57 +160,86 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
               )}
             </div>
 
-            {/* Rate Plan Options (Compressed) */}
+            {/* Rate Plan Options (Always Visible) */}
             {pkg.rate_plans && pkg.rate_plans.length > 0 && (
-              <details className="bg-white rounded-[24px] border border-charcoal/10 overflow-hidden shadow-sm group">
-                <summary className="p-4 sm:p-5 bg-blue-50/50 border-b border-charcoal/10 flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-blue-100/50 transition-colors">
+              <div className="bg-white rounded-[24px] border border-charcoal/10 overflow-hidden shadow-sm">
+                <div className="p-4 sm:p-5 bg-blue-50/50 border-b border-charcoal/10 flex items-center justify-between">
                   <h3 className="font-heading text-lg font-bold text-charcoal">Rate Plan Options</h3>
-                  <ChevronDown className="text-charcoal/50 transition-transform duration-300 group-open:rotate-180" size={20} />
-                </summary>
+                </div>
                 <div className="divide-y divide-charcoal/10">
-                  {pkg.rate_plans.map((plan: any, i: number) => (
-                    <div key={i} className="p-4 sm:p-5 hover:bg-gray-50 transition-colors">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          {plan.badge && (
-                            <span className="inline-block px-2 py-1 bg-teal/10 text-teal text-[10px] font-bold rounded-full mb-2 border border-teal/20 uppercase tracking-wider">
-                              {plan.badge}
-                            </span>
-                          )}
-                          <h4 className="font-heading text-base font-bold text-charcoal mb-2">
-                            {plan.title}
-                          </h4>
-                          {plan.features && plan.features.length > 0 && (
-                            <ul className="space-y-1">
-                              {plan.features.map((feat: string, fIdx: number) => (
-                                <li key={fIdx} className="flex items-start gap-2 text-xs text-charcoal/70">
-                                  <Check size={14} className="text-teal shrink-0 mt-0.5" />
-                                  <span className="leading-snug">{feat}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
+                  {pkg.rate_plans.map((plan: any, i: number) => {
+                    const planMrp = plan.mrp || plan.originalPrice;
+                    const planPrice = plan.price || 0;
+                    const planDiscount = planMrp && planMrp > planPrice
+                      ? Math.round(((planMrp - planPrice) / planMrp) * 100)
+                      : 0;
 
-                        <div className="sm:text-right shrink-0 flex flex-col justify-center">
-                          <div className="mb-3 text-left sm:text-right">
-                            {plan.mrp && (
-                              <div className="text-xs text-charcoal/40 line-through font-medium mb-0.5">
-                                ₹{plan.mrp.toLocaleString('en-IN')}
+                    return (
+                      <div key={i} className="p-4 sm:p-5 hover:bg-gray-50 transition-colors">
+                        <div className="grid grid-cols-[1fr_auto] gap-x-4 sm:gap-x-6 gap-y-3 sm:gap-y-2 items-center">
+                          
+                          {/* Row 1, Col 1: Title & Badges */}
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pr-2">
+                            <h4 className="font-heading text-sm sm:text-base font-bold text-charcoal leading-tight">
+                              {plan.title}
+                            </h4>
+                            {plan.is_best_value && (
+                              <span className="px-1.5 sm:px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] sm:text-[10px] font-bold rounded-full uppercase tracking-wider border border-emerald-200">
+                                Our lowest price
+                              </span>
+                            )}
+                            {plan.badge && !plan.is_best_value && (
+                              <span className="px-1.5 sm:px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] sm:text-[10px] font-bold rounded-full uppercase tracking-wider border border-blue-200">
+                                {plan.badge}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Row 1, Col 2: Prices */}
+                          <div className="text-right">
+                            {planMrp && planDiscount > 0 && (
+                              <div className="flex items-center justify-end gap-1 mb-0.5">
+                                <span className="text-[10px] sm:text-xs text-charcoal/40 line-through font-medium">
+                                  ₹{planMrp.toLocaleString('en-IN')}
+                                </span>
+                                <span className="px-1 sm:px-1.5 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] sm:text-[10px] font-bold rounded uppercase tracking-wider">
+                                  {planDiscount}% OFF
+                                </span>
                               </div>
                             )}
-                            <div className="text-xl font-black font-heading text-charcoal tracking-tight">
-                              ₹{(plan.price || 0).toLocaleString('en-IN')}
+                            <div className="flex items-baseline justify-end gap-1">
+                              <span className="text-lg sm:text-xl font-black font-heading text-charcoal tracking-tight leading-none">
+                                ₹{planPrice.toLocaleString('en-IN')}
+                              </span>
+                              <span className="text-[8px] sm:text-[9px] text-charcoal/50 font-bold uppercase leading-none">/{pkg.price_label || 'couple'}</span>
                             </div>
-                            <div className="text-[10px] text-charcoal/50 font-bold uppercase mt-1">per Adult</div>
                           </div>
-                          <PackageBookingButton pkg={pkg} plan={plan} />
+
+                          {/* Row 2, Col 1: Features */}
+                          <div className="self-start pr-2">
+                            {plan.features && plan.features.length > 0 && (
+                              <div className="flex flex-wrap gap-x-3 sm:gap-x-4 gap-y-1.5 mt-0.5">
+                                {plan.features.map((feat: string, fIdx: number) => (
+                                  <div key={fIdx} className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-charcoal/70 shrink-0">
+                                    <Check size={10} className="text-teal sm:w-3 sm:h-3" />
+                                    <span>{feat}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Row 2, Col 2: Button */}
+                          <div className="self-end text-right min-w-[100px] sm:min-w-[130px] [&>button]:w-full [&>button]:py-1.5 sm:[&>button]:py-2 [&>button]:text-xs sm:[&>button]:text-sm">
+                            <PackageBookingButton pkg={pkg} plan={plan} />
+                          </div>
+
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
-              </details>
+              </div>
             )}
 
             {/* Mobile Booking Card (shown after Rate Plans, hidden on desktop) */}
@@ -208,32 +262,33 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
 
         {/* Similar Packages */}
         {similarPackages && similarPackages.length > 0 && (
-          <div className="mt-24 pt-16 border-t border-charcoal/10">
-            <h2 className="font-heading text-3xl font-black text-charcoal mb-10 tracking-tight">You might also like</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="mt-12 pt-12 border-t border-charcoal/10">
+            <h2 className="font-heading text-3xl font-black text-charcoal mb-6 tracking-tight">You might also like</h2>
+            <ScrollCarousel gap="gap-4">
               {similarPackages.map((p: any) => (
-                <PackageCard
-                  key={p.id}
-                  pkg={{
-                    id: p.slug,
-                    slug: p.slug,
-                    title: p.title,
-                    price: p.price,
-                    priceLabel: p.price_label,
-                    duration: p.duration,
-                    people: p.people,
-                    badge: p.badge,
-                    highlights: p.highlights || [],
-                    includes: p.includes || [],
-                    excludes: p.excludes || [],
-                    category: p.category as any,
-                    imageUrl: p.image_url,
-                    imageGradient: "from-sky-400 to-teal-500", // fallback
-                    originalPrice: p.original_price || p.mrp
-                  }}
-                />
+                <div key={p.id} className="w-[320px] sm:w-[320px] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start h-auto flex flex-col">
+                  <PackageCard
+                    pkg={{
+                      id: p.slug,
+                      slug: p.slug,
+                      title: p.title,
+                      price: p.price,
+                      priceLabel: p.price_label,
+                      duration: p.duration,
+                      people: p.people,
+                      badge: p.badge,
+                      highlights: p.highlights || [],
+                      includes: p.includes || [],
+                      excludes: p.excludes || [],
+                      category: p.category as any,
+                      imageUrl: p.cover_image_url || p.image_url,
+                      imageGradient: "from-sky-400 to-teal-500", // fallback
+                      originalPrice: p.original_price || p.mrp
+                    }}
+                  />
+                </div>
               ))}
-            </div>
+            </ScrollCarousel>
           </div>
         )}
       </div>

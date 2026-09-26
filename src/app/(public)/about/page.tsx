@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ScrollReveal from "@/components/ScrollReveal";
 import PlaceholderImage from "@/components/PlaceholderImage";
+import TrustedPartners from "@/components/TrustedPartners";
 import { siteInfo, stats } from "@/data/siteInfo";
 
 export const metadata: Metadata = {
@@ -162,6 +163,9 @@ export default function AboutPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* Trusted Partners */}
+      <TrustedPartners />
     </div>
   );
 }
