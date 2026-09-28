@@ -20,7 +20,7 @@ export default function ResortGallery({
   return (
     <div className="w-full px-4 md:px-0">
       {/* Mobile Hero (Padded) */}
-      <div className="md:hidden relative w-full h-[50vh] min-h-[400px] rounded-[24px] overflow-hidden mt-4 shadow-sm">
+      <div className="md:hidden relative w-full h-[40vh] min-h-[280px] max-h-[320px] rounded-[24px] overflow-hidden mt-4 shadow-sm">
         <Image fill src={activeImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1E]/90 via-[#1C1C1E]/30 to-transparent pointer-events-none"></div>
 

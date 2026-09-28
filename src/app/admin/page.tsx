@@ -10,7 +10,7 @@ export default async function AdminDashboard() {
   const sections = [
     { name: 'Tour Packages', href: '/admin/tour-packages', desc: 'Manage your tour itineraries and pricing' },
     { name: 'Hotels & Resorts', href: '/admin/hotels-resorts', desc: 'Update partner hotels and accommodations' },
-    { name: 'Top Destinations', href: '/admin/top-destinations', desc: 'Edit popular tourist spots in Vizag' },
+    { name: 'Devotional Tours', href: '/admin/top-destinations', desc: 'Manage devotional tours and pilgrimage trips' },
     { name: 'Places to Visit', href: '/admin/places-to-visit', desc: 'Manage specific locations and attractions' },
     { name: 'Hill Stations', href: '/admin/hill-stations', desc: 'Curate Araku and Lambasingi content' },
     { name: 'Travel Guides', href: '/admin/travel-guides', desc: 'Write helpful tips and checklists' },

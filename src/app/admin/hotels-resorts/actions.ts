@@ -61,6 +61,7 @@ export async function saveHotelResort(formData: FormData) {
     latitude: formData.get('latitude') ? parseFloat(formData.get('latitude') as string) : null,
     longitude: formData.get('longitude') ? parseFloat(formData.get('longitude') as string) : null,
     price_per_night: formData.get('price_per_night') ? parseFloat(formData.get('price_per_night') as string) : null,
+    price_label: formData.get('price_label') as string,
     whatsapp_link: formData.get('whatsapp_link') as string,
     rating: formData.get('rating') ? parseFloat(formData.get('rating') as string) : null,
     reviews: formData.get('reviews') ? parseInt(formData.get('reviews') as string) : 0,

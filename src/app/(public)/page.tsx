@@ -186,8 +186,10 @@ export default async function Home() {
       rating: r.rating || 4.5,
       location: r.location,
       price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
+      price_label: r.price_label,
       image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
-      amenities: r.amenities || []
+      amenities: r.amenities || [],
+      reviews: r.reviews || 0
     }))
     : [];
 
@@ -291,7 +293,7 @@ export default async function Home() {
             <ScrollCarousel>
               {displayDestinations.map((destination) => (
                 <div key={destination.id} className="min-w-[280px] w-[280px] sm:w-[calc(25%-15px)] flex-shrink-0 snap-start">
-                  <DestinationCard destination={destination as any} />
+                  <DestinationCard destination={destination as any} basePath="/devotional" />
                 </div>
               ))}
             </ScrollCarousel>

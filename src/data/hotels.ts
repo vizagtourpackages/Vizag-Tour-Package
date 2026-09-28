@@ -7,6 +7,7 @@ export interface Hotel {
   reviews: number;
   location: string;
   price: string;
+  price_label?: string;
   image: string;
   amenities: string[];
 }

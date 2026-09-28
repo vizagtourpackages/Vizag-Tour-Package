@@ -182,12 +182,29 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                           <h3>Attractions</h3>
                         </div>
                         <div className="space-y-0">
-                          {attractions.map((place: any, i: number) => (
+                          {attractions.slice(0, 4).map((place: any, i: number) => (
                             <div key={i} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
                               <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
                               <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
                             </div>
                           ))}
+                          
+                          {attractions.length > 4 && (
+                            <details className="group">
+                              <summary className="list-none cursor-pointer flex justify-center py-3 text-[#2D6A4F] font-bold text-sm hover:underline border-t border-[#E8DDD4]/50 mt-1">
+                                <span className="group-open:hidden">View All Attractions ({attractions.length})</span>
+                                <span className="hidden group-open:block">Show Less</span>
+                              </summary>
+                              <div className="space-y-0 border-t border-[#E8DDD4]/50">
+                                {attractions.slice(4).map((place: any, i: number) => (
+                                  <div key={i + 4} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
+                                    <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
+                                    <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </details>
+                          )}
                         </div>
                       </div>
                     )}
@@ -199,12 +216,29 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                           <h3>Restaurants</h3>
                         </div>
                         <div className="space-y-0">
-                          {restaurants.map((place: any, i: number) => (
+                          {restaurants.slice(0, 4).map((place: any, i: number) => (
                             <div key={i} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
                               <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
                               <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
                             </div>
                           ))}
+
+                          {restaurants.length > 4 && (
+                            <details className="group">
+                              <summary className="list-none cursor-pointer flex justify-center py-3 text-[#2D6A4F] font-bold text-sm hover:underline border-t border-[#E8DDD4]/50 mt-1">
+                                <span className="group-open:hidden">View All Restaurants ({restaurants.length})</span>
+                                <span className="hidden group-open:block">Show Less</span>
+                              </summary>
+                              <div className="space-y-0 border-t border-[#E8DDD4]/50">
+                                {restaurants.slice(4).map((place: any, i: number) => (
+                                  <div key={i + 4} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
+                                    <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
+                                    <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </details>
+                          )}
                         </div>
                       </div>
                     )}
@@ -257,6 +291,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                     reviews: r.reviews || 0,
                     location: r.location,
                     price: r.price_per_night ? `₹${r.price_per_night}` : r.price,
+                    price_label: r.price_label,
                     image: r.cover_image_url || r.image_url,
                     amenities: r.amenities || []
                   }} 

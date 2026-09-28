@@ -3,6 +3,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import TrustedPartners from "@/components/TrustedPartners";
 import { siteInfo, stats } from "@/data/siteInfo";
+import { Award, Users, Car, Headset, MapPin, ShieldCheck, CreditCard, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -42,13 +43,20 @@ export default function AboutPage() {
                 <h2 className="text-3xl lg:text-4xl font-heading font-black text-charcoal mb-6 tracking-tight">Our Story</h2>
                 <div className="space-y-4 text-charcoal/70 font-medium text-base leading-relaxed">
                   <p>
-                    Welcome to <strong className="text-charcoal">{siteInfo.name}</strong>. Based in Visakhapatnam, we are a passionate team of local travel experts dedicated to showcasing the unparalleled beauty of the Eastern Ghats and the Bay of Bengal coastline.
+                    <strong className="text-charcoal block mb-2 text-lg">Welcome to Vizag Tour Packages – Your Trusted Travel Partner</strong>
+                    Welcome to Vizag Tour Packages, your trusted travel partner for exploring the beautiful city of Vizag and its surrounding destinations!
                   </p>
                   <p>
-                    Over the past <strong className="text-charcoal">{stats[0].value}</strong> years, we have grown from a small local transport provider to a full-fledged destination management company. We specialize in curating personalized travel experiences, ranging from relaxing beach holidays and spiritual temple tours to adventurous hill station treks in Araku, Lambasingi, and Vanjangi.
+                    <a href="https://vizagtourpackages.com/" className="text-teal hover:underline font-bold">https://vizagtourpackages.com/</a> is operated by <strong className="text-charcoal">Araku Eco Stays and Travels</strong>, a trusted travel agency offering memorable trips from Vizag City to the Araku Valley agency area. We are dedicated to providing travelers with unforgettable experiences by offering a wide range of customized tour packages and exceptional travel services.
                   </p>
                   <p>
-                    Our mission is simple: to make travel in and around Vizag accessible, safe, comfortable, and memorable for everyone. We take pride in our well-maintained fleet of vehicles, our network of quality accommodations, and our commitment to customer satisfaction.
+                    At Vizag Tour Packages, we understand that every traveler is unique. That's why we offer tailor-made packages to suit all types of travelers—whether you're looking for a peaceful beach holiday, an adventurous exploration of nature, or a cultural journey through Vizag's rich history.
+                  </p>
+                  <p>
+                    From Vizag local sightseeing and Araku Valley tours to devotional trips and customized travel experiences, our goal is to make your journey comfortable, affordable, and memorable.
+                  </p>
+                  <p>
+                    Our mission is to make your trip seamless, enjoyable, and filled with memories that last a lifetime.
                   </p>
                 </div>
               </ScrollReveal>
@@ -89,13 +97,13 @@ export default function AboutPage() {
           <ScrollReveal delay={0.2}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12">
               {[
-                { value: "5+", label: "Years Experience", icon: "🏆" },
-                { value: "10,000+", label: "Happy Customers", icon: "👥" },
-                { value: "50+", label: "Professional Drivers", icon: "🛡️" },
-                { value: "24/7", label: "Customer Support", icon: "📞" },
+                { value: "5+", label: "Years Experience", icon: <Award size={24} className="text-teal" /> },
+                { value: "10,000+", label: "Happy Customers", icon: <Users size={24} className="text-coral" /> },
+                { value: "50+", label: "Professional Drivers", icon: <Car size={24} className="text-teal" /> },
+                { value: "24/7", label: "Customer Support", icon: <Headset size={24} className="text-coral" /> },
               ].map((stat, idx) => (
                 <div key={idx} className="bg-white rounded-[24px] p-6 text-center border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1">
-                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mx-auto mb-3 text-2xl shadow-sm border border-charcoal/5">
+                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center mx-auto mb-3 shadow-sm border border-charcoal/5">
                     {stat.icon}
                   </div>
                   <div className="text-2xl sm:text-3xl font-black text-charcoal mb-1 tracking-tight">{stat.value}</div>
@@ -112,26 +120,26 @@ export default function AboutPage() {
                 {
                   title: "Local Expertise",
                   description: "5+ years of dedicated service in Visakhapatnam with deep knowledge of local routes and hidden gems.",
-                  icon: "📍",
+                  icon: <MapPin size={24} />,
                 },
                 {
                   title: "Safety First",
                   description: "All drivers are thoroughly verified with clean driving records. Regular vehicle maintenance ensures your safety.",
-                  icon: "🛡️",
+                  icon: <ShieldCheck size={24} />,
                 },
                 {
                   title: "Transparent Pricing",
                   description: "Clear, upfront pricing with no hidden charges. What you see is what you pay — always.",
-                  icon: "💳",
+                  icon: <CreditCard size={24} />,
                 },
                 {
                   title: "24/7 Availability",
                   description: "Round-the-clock service for all your transportation needs. We're here whenever you need us.",
-                  icon: "⏰",
+                  icon: <Clock size={24} />,
                 },
               ].map((feature, idx) => (
                 <div key={idx} className="flex items-start gap-4 bg-white rounded-[24px] p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 group hover:-translate-y-1">
-                  <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center shrink-0 text-xl shadow-sm border border-charcoal/5 group-hover:bg-coral transition-colors duration-500">
+                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center shrink-0 shadow-sm border border-charcoal/5 group-hover:bg-coral text-teal group-hover:text-white transition-colors duration-500">
                     <span className="group-hover:scale-110 transition-transform duration-500">{feature.icon}</span>
                   </div>
                   <div>
