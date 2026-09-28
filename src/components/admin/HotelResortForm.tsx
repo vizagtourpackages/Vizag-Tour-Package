@@ -206,6 +206,11 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           </div>
 
           <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Price Label</label>
+            <input type="text" name="price_label" defaultValue={initialData?.price_label || 'per night'} required className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" placeholder="e.g. per night, per couple" />
+          </div>
+
+          <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">WhatsApp Link</label>
             <input type="url" name="whatsapp_link" defaultValue={initialData?.whatsapp_link} className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" placeholder="https://wa.me/..." />
           </div>

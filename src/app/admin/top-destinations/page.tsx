@@ -12,8 +12,8 @@ export default async function TopDestinationsPage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Top Destinations</h2>
-          <p className="mt-1 text-gray-500">Manage outstation destinations like Araku, Lambasingi, and Tirupati.</p>
+          <h2 className="text-3xl font-bold text-gray-900">Devotional Tours</h2>
+          <p className="mt-1 text-gray-500">Manage devotional tours like Annavaram, Simhachalam, etc.</p>
         </div>
         <Link 
           href="/admin/top-destinations/new" 

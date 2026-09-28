@@ -35,7 +35,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-white/60 text-sm leading-relaxed mb-6 font-medium">
-              {siteInfo.intro.slice(0, 150)}...
+              {siteInfo.footerAbout}
             </p>
             <div className="flex items-center gap-2">
               <Shield size={16} className="text-teal" />

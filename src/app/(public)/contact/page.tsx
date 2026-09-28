@@ -84,19 +84,31 @@ export default function ContactPage() {
               </div>
             </ScrollReveal>
 
-            {/* Map Placeholder */}
+            {/* Interactive Map */}
             <ScrollReveal delay={0.4}>
-              <div className="bg-sand p-2 rounded-[40px] shadow-card border border-charcoal/5 h-64 relative overflow-hidden flex items-center justify-center min-w-0 group">
-                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-teal/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none transition-transform duration-1000 group-hover:scale-110" />
-                <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-coral/10 rounded-full blur-[60px] translate-y-1/3 -translate-x-1/4 pointer-events-none transition-transform duration-1000 group-hover:scale-110" />
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%230c7b93\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
-                <div className="text-center z-10 relative">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-charcoal/5 group-hover:text-coral transition-colors duration-500 text-charcoal/50">
-                    <MapPin size={24} />
-                  </div>
-                  <p className="text-charcoal font-bold text-xl tracking-tight mb-2">Interactive Map Area</p>
-                  <p className="text-sm font-medium text-charcoal/50 uppercase tracking-widest">Requires Integration</p>
-                </div>
+              <div className="bg-sand rounded-[40px] shadow-card border border-charcoal/5 h-64 relative overflow-hidden flex items-center justify-center min-w-0 group hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1">
+                <iframe 
+                  src="https://maps.google.com/maps?q=AEST+-+Araku+Eco+stays+%26+Travels+-+Vizag,+13-134%2F1,+opposite+Union+Bank,+Mahalaxmi+Nagar,+Pendurthi,+Visakhapatnam,+Andhra+Pradesh+531173&t=&z=14&ie=UTF8&iwloc=&output=embed" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full absolute inset-0 grayscale-[20%] hover:grayscale-0 transition-all duration-500"
+                ></iframe>
+                
+                {/* External link overlay button */}
+                <a 
+                  href="https://maps.app.goo.gl/wuxLcPwa3MZ6hJfp8?g_st=ic" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm text-sm font-bold text-charcoal hover:text-ocean hover:bg-white transition-colors border border-charcoal/5 flex items-center gap-2 z-10"
+                  aria-label="Open in Google Maps"
+                >
+                  <MapPin size={16} />
+                  <span>Open in Maps</span>
+                </a>
               </div>
             </ScrollReveal>
           </div>
@@ -163,7 +175,8 @@ export default function ContactPage() {
                         <option value="" disabled className="text-charcoal/30">Select a subject...</option>
                         <option value="tour">Tour Package Inquiry</option>
                         <option value="hotel">Hotel Booking</option>
-                        <option value="transport">Vehicle Rental</option>
+                        <option value="cab">Cab Booking</option>
+                        <option value="corporate">Corporate Event</option>
                         <option value="other">Other Inquiry</option>
                       </select>
                     </div>

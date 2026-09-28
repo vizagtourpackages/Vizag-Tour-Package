@@ -6,15 +6,20 @@ import type { Destination } from "@/data/destinations";
 
 interface DestinationCardProps {
   destination: Destination;
+  basePath?: string;
 }
 
-export default function DestinationCard({ destination }: DestinationCardProps) {
+export default function DestinationCard({ destination, basePath }: DestinationCardProps) {
   // Check if this destination has a dedicated page
   const hasDedicatedPage = ["araku-valley", "lambasingi", "vanjangi"].includes(
     destination.id
   );
 
-  const href = destination.customLink || (hasDedicatedPage ? `/${destination.id}` : "/route-map");
+  // If basePath is provided, we assume it supports dynamic routes (like /devotional/[id])
+  // Otherwise, default fallback is just "/route-map" (without ID)
+  const fallbackHref = basePath ? `${basePath}/${destination.id}` : "/route-map";
+  
+  const href = destination.customLink || (hasDedicatedPage ? `/${destination.id}` : fallbackHref);
 
   return (
     <Link href={href} className="group block h-full">
@@ -73,6 +78,7 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
                 <span className="truncate">Visakhapatnam District</span>
               </span>
             )}
+            
           </div>
         </div>
       </div>

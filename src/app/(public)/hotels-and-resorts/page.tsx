@@ -1,5 +1,5 @@
 import SectionHeading from "@/components/SectionHeading";
-import HotelCard from "@/components/HotelCard";
+import ResortListClient from "./ResortListClient";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function HotelsPage() {
@@ -19,9 +19,10 @@ export default async function HotelsPage() {
     rating: r.rating || 4.5,
     location: r.location,
     price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
+    price_label: r.price_label,
     image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
     amenities: r.amenities || [],
-    reviews: r.review_count || 120
+    reviews: r.reviews || 0
   }));
 
   return (
@@ -32,16 +33,7 @@ export default async function HotelsPage() {
           subtitle="Find the right stay for your journey—from budget-friendly hotels and family stays to premium resorts and beachfront properties across Vizag and nearby destinations."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {mappedHotels.map((hotel) => (
-            <HotelCard key={hotel.id} hotel={hotel} />
-          ))}
-          {mappedHotels.length === 0 && (
-            <div className="col-span-full text-center py-12 text-gray-500">
-              No hotels found. Check back soon!
-            </div>
-          )}
-        </div>
+        <ResortListClient initialHotels={mappedHotels} />
       </div>
     </div>
   );
