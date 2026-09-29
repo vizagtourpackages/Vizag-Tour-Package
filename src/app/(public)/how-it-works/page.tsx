@@ -13,7 +13,7 @@ export default function HowItWorksPage() {
       {/* Hero Header */}
       <div className="bg-charcoal text-white pt-[104px] pb-16 rounded-b-[32px] mb-8 shadow-sm -mt-[72px]">
         <div className="container-max text-center">
-          <h1 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl mb-4 tracking-tight drop-shadow-sm">How It Works</h1>
+          <h1 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl mb-4 tracking-tight drop-shadow-sm">How It Works</h1>
           <p className="text-white/80 max-w-2xl mx-auto text-sm sm:text-base font-medium">
             Booking your dream vacation or a quick ride shouldn&apos;t be complicated. We&apos;ve made it simple and straightforward.
           </p>

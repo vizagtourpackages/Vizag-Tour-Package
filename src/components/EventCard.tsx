@@ -1,4 +1,5 @@
-import { Calendar } from "lucide-react";
+import Link from "next/link";
+import { Calendar, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Event } from "@/data/events";
@@ -9,8 +10,9 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   return (
-    <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden h-full group">
-      <div className="relative overflow-hidden p-2">
+    <Link href={`/events/${event.slug || event.id}`} className="block h-full group">
+      <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden h-full group">
+        <div className="relative overflow-hidden p-2">
         <div className="relative overflow-hidden rounded-[16px] bg-sand">
           {event.imageUrl ? (
             <div className="relative h-48 w-full">
@@ -45,10 +47,17 @@ export default function EventCard({ event }: EventCardProps) {
           {event.title}
         </h3>
         
-        <p className="text-sm text-charcoal/60 flex-1 break-words line-clamp-3 font-medium leading-relaxed">
+        <p className="text-sm text-charcoal/60 flex-1 break-words line-clamp-3 font-medium leading-relaxed mb-4">
           {event.description}
         </p>
+        
+        <div className="mt-auto pt-4 border-t border-charcoal/5">
+          <span className="inline-flex items-center text-xs font-bold text-coral group-hover:text-coral-dark transition-colors tracking-wide">
+            Read More <ArrowRight size={14} className="ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+          </span>
+        </div>
       </div>
     </div>
+    </Link>
   );
 }

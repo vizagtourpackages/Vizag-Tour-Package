@@ -13,11 +13,37 @@ export const metadata: Metadata = {
   description: destinationDetails["araku-valley"].description,
 };
 
-export default function ArakuValleyPage() {
+import { createClient } from "@/lib/supabase/server";
+
+export default async function ArakuValleyPage() {
   const dest = destinationDetails["araku-valley"];
-  const relatedPackages = allPackages.filter(
-    (pkg) => pkg.title.toLowerCase().includes("araku") || pkg.highlights.some(h => h.toLowerCase().includes("araku"))
-  );
+  const { data: dbPackages } = await supabase
+    .from('tour_packages')
+    .select('*')
+    .eq('is_published', true)
+    .eq('show_on_araku', true)
+    .order('created_at', { ascending: false });
+
+  // Map DB rows to match the existing Package interface, with a fallback
+  const relatedPackages = dbPackages && dbPackages.length > 0
+    ? dbPackages.map(pkg => ({
+      id: pkg.id,
+      slug: pkg.slug,
+      title: pkg.title,
+      price: pkg.price,
+      priceLabel: pkg.price_label,
+      duration: pkg.duration,
+      people: pkg.people,
+      badge: pkg.badge,
+      highlights: pkg.highlights,
+      includes: pkg.includes,
+      excludes: pkg.excludes,
+      category: pkg.category,
+      imageGradient: 'from-teal to-blue-600', // fallback
+      imageUrl: pkg.cover_image_url || pkg.image_url,
+      originalPrice: pkg.original_price || pkg.mrp
+    }))
+    : [];
 
   return (
     <div className="bg-white min-h-screen">
@@ -36,7 +62,7 @@ export default function ArakuValleyPage() {
             <span className="inline-flex badge bg-white/10 text-white backdrop-blur-md border border-white/20 mb-8 px-5 py-2.5 font-bold tracking-widest text-[10px] uppercase shadow-sm">
               {dest.tagline}
             </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-black text-white mb-4 leading-[1.1] tracking-tight drop-shadow-sm">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-black text-white mb-4 leading-[1.1] tracking-tight drop-shadow-sm">
               Explore {dest.name}
             </h1>
             <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed font-medium drop-shadow-sm">

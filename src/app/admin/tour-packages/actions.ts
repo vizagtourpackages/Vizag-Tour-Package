@@ -35,6 +35,7 @@ export async function saveTourPackage(formData: FormData) {
     title: formData.get('title') as string,
     slug: formData.get('slug') as string,
     overview_description: formData.get('overview_description') as string,
+    full_overview_content: formData.get('full_overview_content') as string,
     price: formData.get('price') ? parseInt(formData.get('price') as string) : null,
     price_label: formData.get('price_label') as string,
     original_price: formData.get('original_price') ? parseInt(formData.get('original_price') as string) : null,
@@ -64,6 +65,11 @@ export async function saveTourPackage(formData: FormData) {
     meta_keywords: formData.get('meta_keywords') as string,
     
     is_published: formData.get('is_published') === 'true',
+    show_on_home: formData.get('show_on_home') === 'true',
+    home_order: formData.get('home_order') ? parseInt(formData.get('home_order') as string) : 0,
+    show_on_araku: formData.get('show_on_araku') === 'true',
+    show_on_lambasingi: formData.get('show_on_lambasingi') === 'true',
+    show_on_vanjangi: formData.get('show_on_vanjangi') === 'true',
   }
 
   let packageId = id;

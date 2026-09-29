@@ -1,0 +1,1 @@
+ALTER TABLE upcoming_events ADD COLUMN IF NOT EXISTS slug TEXT UNIQUE;

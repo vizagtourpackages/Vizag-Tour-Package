@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { saveTourPackage } from '@/app/admin/tour-packages/actions'
 import ImageUpload from './ImageUpload'
+import RichTextEditor from './RichTextEditor'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Plus, X, Trash2, AlertCircle } from 'lucide-react'
@@ -15,6 +16,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!initialData?.slug)
   
   const [overviewDescription, setOverviewDescription] = useState(initialData?.overview_description || initialData?.description || '')
+  const [fullOverviewContent, setFullOverviewContent] = useState(initialData?.full_overview_content || '')
   
   // Basic arrays
   const [importantNotes, setImportantNotes] = useState<string[]>(initialData?.important_notes || [])
@@ -191,6 +193,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
     const formData = new FormData(e.currentTarget)
     formData.append('id', id)
     formData.append('cover_image_url', imageUrl)
+    formData.set('full_overview_content', fullOverviewContent)
     
     // Arrays
     formData.append('important_notes', JSON.stringify(importantNotes))
@@ -323,16 +326,27 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
       </div>
 
       {/* 2. Package Overview */}
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-        <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-6">Package Overview Description</h3>
-        <textarea 
-          name="overview_description" 
-          value={overviewDescription}
-          onChange={e => setOverviewDescription(e.target.value)}
-          placeholder="Enter a 50-word overview of the package..." 
-          rows={4} 
-          className="w-full p-3 border rounded-lg bg-gray-50" 
-        />
+      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-6">
+        <div>
+          <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-4">Short Package Description (For Cards & SEO)</h3>
+          <textarea 
+            name="overview_description" 
+            value={overviewDescription}
+            onChange={e => setOverviewDescription(e.target.value)}
+            placeholder="Enter a 50-word short overview of the package..." 
+            rows={4} 
+            className="w-full p-3 border rounded-lg bg-gray-50" 
+          />
+        </div>
+
+        <div>
+          <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-4">Full Overview Content (For 'Overview' Tab)</h3>
+          <RichTextEditor 
+            value={fullOverviewContent}
+            onChange={setFullOverviewContent}
+            placeholder="Write the full detailed overview here. Add images, paragraphs, etc."
+          />
+        </div>
       </div>
 
       {/* 3. Important Notes & Transports */}
@@ -675,6 +689,41 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Meta Keywords</label>
             <input type="text" name="meta_keywords" defaultValue={initialData?.meta_keywords} placeholder="vizag tours, araku package, etc." className="w-full p-3 border rounded-lg bg-gray-50" />
+          </div>
+        </div>
+      </div>
+
+      {/* 9. Visibility & Placement */}
+      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-coral">
+        <h3 className="text-xl font-heading font-bold mb-6">Visibility & Placement</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-4 bg-gray-50 rounded-lg border">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+              <span className="font-bold text-gray-700">Show on Home Page</span>
+            </label>
+            <div className="mt-4">
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>
+              <input type="number" name="home_order" defaultValue={initialData?.home_order || 0} className="w-full p-2 border rounded-md" />
+            </div>
+          </div>
+          <div className="p-4 bg-gray-50 rounded-lg border">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="show_on_araku" value="true" defaultChecked={initialData?.show_on_araku} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+              <span className="font-bold text-gray-700">Show on Araku Page</span>
+            </label>
+          </div>
+          <div className="p-4 bg-gray-50 rounded-lg border">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="show_on_lambasingi" value="true" defaultChecked={initialData?.show_on_lambasingi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+              <span className="font-bold text-gray-700">Show on Lambasingi Page</span>
+            </label>
+          </div>
+          <div className="p-4 bg-gray-50 rounded-lg border">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="show_on_vanjangi" value="true" defaultChecked={initialData?.show_on_vanjangi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+              <span className="font-bold text-gray-700">Show on Vanjangi Page</span>
+            </label>
           </div>
         </div>
       </div>

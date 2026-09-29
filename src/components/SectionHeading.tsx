@@ -17,7 +17,7 @@ export default function SectionHeading({
     <div className={`mb-8 sm:mb-12 w-full ${centered ? "text-center flex flex-col items-center" : "overflow-hidden"}`}>
       <ScrollReveal delay={0} className="w-full min-w-0 max-w-full px-2">
         <h2
-          className={`text-2xl sm:text-4xl lg:text-5xl font-heading font-bold leading-[1.2] tracking-tight ${
+          className={`text-xl sm:text-3xl lg:text-4xl font-heading font-bold leading-[1.2] tracking-tight ${
             light ? "text-white" : "text-charcoal"
           }`}
         >

@@ -24,12 +24,17 @@ export async function saveEvent(formData: FormData) {
   const supabase = await createClient()
   
   const id = formData.get('id') as string
+  const title = formData.get('title') as string;
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
   const data = {
-    title: formData.get('title') as string,
+    title,
+    slug,
     description: formData.get('description') as string,
     category: formData.get('category') as string,
     date: formData.get('date') as string,
     image_url: formData.get('image_url') as string,
+    content: formData.get('content') as string,
     is_published: formData.get('is_published') === 'true',
   }
 

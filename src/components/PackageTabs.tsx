@@ -4,8 +4,13 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Check, X, MapPin, Clock, Calendar, Star, Bed } from 'lucide-react'
 
+// SAFELIST FOR RICH TEXT EDITOR DYNAMIC CLASSES:
+// grid grid-cols-2 grid-cols-3 grid-cols-4 md:grid-cols-4 gap-4 my-6
+// aspect-square relative overflow-hidden rounded-xl bg-gray-100
+// absolute inset-0 w-full h-full object-cover m-0 inline-block bg-teal text-white font-bold py-3 px-8 rounded-full shadow-md hover:bg-teal-dark hover:shadow-lg transition-all text-center no-underline cursor-pointer
+
 export default function PackageTabs({ pkg }: { pkg: any }) {
-  const [activeTab, setActiveTab] = useState('summary')
+  const [activeTab, setActiveTab] = useState('overview')
 
   // Sort itinerary days and stops
   const itineraryDays = pkg.package_itinerary_days?.sort((a: any, b: any) => a.day_number - b.day_number) || []
@@ -18,6 +23,16 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
       {/* Tab Navigation */}
       <div className="flex justify-center mb-10">
         <div className="inline-flex bg-gray-100/80 p-1.5 rounded-full overflow-x-auto hide-scrollbar max-w-full border border-gray-200/50">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-6 py-2.5 sm:px-8 sm:py-3 text-sm sm:text-base font-bold whitespace-nowrap rounded-full transition-all duration-300 ${
+              activeTab === 'overview' 
+                ? 'bg-white text-teal shadow-sm' 
+                : 'text-charcoal/60 hover:text-charcoal hover:bg-white/50'
+            }`}
+          >
+            Overview
+          </button>
           <button
             onClick={() => setActiveTab('summary')}
             className={`px-6 py-2.5 sm:px-8 sm:py-3 text-sm sm:text-base font-bold whitespace-nowrap rounded-full transition-all duration-300 ${
@@ -43,13 +58,29 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
 
       {/* Tab Content */}
       <div className="min-h-[300px]">
+        {/* NEW: Overview Tab */}
+        {activeTab === 'overview' && (
+          <div className="space-y-10 animate-fade-in">
+            {pkg.full_overview_content ? (
+              <div 
+                className="prose prose-lg prose-charcoal max-w-none text-charcoal/80 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: pkg.full_overview_content }}
+              />
+            ) : (
+              <div className="prose prose-lg prose-charcoal max-w-none">
+                <p className="text-charcoal/80 leading-relaxed">{pkg.overview_description || pkg.description}</p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 1. Trip Summary Tab */}
         {activeTab === 'summary' && (
           <div className="space-y-10 animate-fade-in">
-            {/* Overview */}
-            {pkg.description && (
+            {/* Short Overview in Summary */}
+            {(pkg.overview_description || pkg.description) && !pkg.full_overview_content && (
               <div className="prose prose-lg prose-charcoal max-w-none">
-                <p className="text-charcoal/80 leading-relaxed">{pkg.description}</p>
+                <p className="text-charcoal/80 leading-relaxed">{pkg.overview_description || pkg.description}</p>
               </div>
             )}
 

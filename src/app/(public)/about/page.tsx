@@ -24,7 +24,7 @@ export default function AboutPage() {
         </div>
         <div className="container-max relative z-10 text-center px-4 mt-8">
           <ScrollReveal>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-black text-white mb-4 leading-[1.1] tracking-tight drop-shadow-sm">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-black text-white mb-4 leading-[1.1] tracking-tight drop-shadow-sm">
               About Us
             </h1>
             <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed font-medium drop-shadow-sm">
@@ -86,7 +86,7 @@ export default function AboutPage() {
               <span className="inline-flex badge bg-white/50 text-teal backdrop-blur-md border border-teal/20 mb-6 px-5 py-2.5 font-bold tracking-widest text-[10px] uppercase shadow-sm">
                 Why Choose Us
               </span>
-              <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-charcoal mb-6 tracking-tight">Your Trusted Travel Partner</h2>
+              <h2 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-charcoal mb-6 tracking-tight">Your Trusted Travel Partner</h2>
               <p className="text-charcoal/60 text-lg font-medium max-w-2xl mx-auto leading-relaxed">
                 With years of experience serving Visakhapatnam, we&apos;ve built our reputation on reliability, safety, and customer satisfaction.
               </p>

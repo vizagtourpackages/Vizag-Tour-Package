@@ -20,7 +20,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative w-full min-h-[85dvh] md:min-h-0 md:h-[calc(105dvh-72px)] flex items-center overflow-hidden bg-cover bg-center bg-no-repeat"
+      className="relative w-full min-h-[85dvh] md:min-h-0 md:h-[calc(115dvh-75px)] flex items-center overflow-hidden bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: "url('/hero-bg.png')",
       }}
@@ -56,7 +56,7 @@ export default function HeroSection() {
             <ScrollReveal delay={0.1}>
               <h1 className="text-4xl sm:text-6xl lg:text-[80px] font-heading font-bold text-white leading-[1.1] sm:leading-[1] mb-2 sm:mb-6 tracking-tight drop-shadow-lg">
                 {siteInfo.tagline.split("—")[0]}
-                <span className="block text-coral-light text-coral mt-1 sm:mt-2 text-[26px] sm:text-[1em] drop-shadow-md">
+                <span className="block text-coral-light text-coral mt-1 sm:mt-2 text-[26px] sm:text-4xl lg:text-6xl drop-shadow-md">
                   — {siteInfo.tagline.split("—")[1]?.trim()}
                 </span>
               </h1>
@@ -71,29 +71,29 @@ export default function HeroSection() {
 
           {/* CTA Cards */}
           <ScrollReveal delay={0.3}>
-            <div className="grid grid-cols-3 gap-2 sm:gap-6 max-w-4xl mx-auto lg:mx-0 mt-2 sm:mt-8 ">
+            <div className="grid grid-cols-3 gap-2 md:gap-4 max-w-3xl lg:max-w-2xl mx-auto lg:mx-0 mt-2 sm:mt-8 ">
               {heroCTAs.map((cta) => {
                 const Icon = iconMap[cta.icon];
                 return (
                   <Link
                     key={cta.title}
                     href={cta.href}
-                    className="group relative bg-white border border-charcoal/5 rounded-[16px] sm:rounded-[32px] p-2 sm:p-8 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-2 flex flex-col items-center lg:items-start text-center lg:text-left"
+                    className="group relative bg-white border border-charcoal/5 rounded-[16px] md:rounded-[20px] p-2.5 md:p-5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-2 flex flex-col items-center lg:items-start text-center lg:text-left"
                   >
-                    <div className="w-8 h-8 sm:w-14 sm:h-14 rounded-full bg-sand flex items-center justify-center mb-1.5 sm:mb-6 group-hover:scale-110 group-hover:bg-coral/10 transition-transform duration-500">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sand flex items-center justify-center mb-1.5 md:mb-3 group-hover:scale-110 group-hover:bg-coral/10 transition-transform duration-500">
                       {'imageUrl' in cta ? (
-                        <img src={cta.imageUrl} alt={cta.title} className="w-[18px] h-[18px] sm:w-[28px] sm:h-[28px] object-contain group-hover:scale-110 transition-transform" />
+                        <img src={cta.imageUrl} alt={cta.title} className="w-[18px] h-[18px] md:w-[22px] md:h-[22px] object-contain group-hover:scale-110 transition-transform" />
                       ) : (
-                        <Icon size={24} className="text-charcoal group-hover:text-coral transition-colors w-[16px] h-[16px] sm:w-[24px] sm:h-[24px]" />
+                        <Icon size={24} className="text-charcoal group-hover:text-coral transition-colors w-[16px] h-[16px] md:w-[18px] md:h-[18px]" />
                       )}
                     </div>
-                    <h3 className="text-charcoal font-bold text-[10px] sm:text-xl mb-0 sm:mb-2 tracking-tight leading-tight">
+                    <h3 className="text-charcoal font-bold text-[11px] md:text-[15px] mb-0 md:mb-1 tracking-tight leading-tight">
                       {cta.title}
                     </h3>
-                    <p className="hidden sm:block text-charcoal/50 text-sm leading-relaxed">{cta.description}</p>
+                    <p className="hidden sm:block text-charcoal/50 text-xs md:text-[13px] leading-relaxed line-clamp-2">{cta.description}</p>
                     <ArrowRight
                       size={20}
-                      className="hidden sm:block absolute top-8 right-8 text-charcoal/20 group-hover:text-coral group-hover:translate-x-1 transition-all"
+                      className="hidden sm:block absolute top-4 right-4 md:top-5 md:right-5 text-charcoal/20 group-hover:text-coral group-hover:translate-x-1 transition-all"
                     />
                   </Link>
                 );
