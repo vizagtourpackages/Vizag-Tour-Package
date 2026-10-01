@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function ArakuValleyPage() {
   const dest = destinationDetails["araku-valley"];
+  const supabase = await createClient();
   const { data: dbPackages } = await supabase
     .from('tour_packages')
     .select('*')
