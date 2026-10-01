@@ -29,7 +29,7 @@ export async function saveEvent(formData: FormData) {
 
   const data = {
     title,
-    slug,
+
     description: formData.get('description') as string,
     category: formData.get('category') as string,
     date: formData.get('date') as string,

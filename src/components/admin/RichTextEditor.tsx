@@ -206,7 +206,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
           saveSelection()
         }}
         suppressContentEditableWarning
-        placeholder={placeholder}
+        data-placeholder={placeholder}
       />
 
       {/* Image Row Modal */}

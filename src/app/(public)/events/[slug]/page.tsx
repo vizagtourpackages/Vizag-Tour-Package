@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { data: event } = await supabase
     .from("upcoming_events")
     .select("title, description, image_url")
-    .eq("slug", slug)
+    .eq("id", slug)
     .single();
 
   if (!event) {
@@ -35,7 +35,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   const { data: event } = await supabase
     .from("upcoming_events")
     .select("*")
-    .eq("slug", slug)
+    .eq("id", slug)
     .single();
 
   if (!event) {
@@ -109,9 +109,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
               
               <section className="relative z-10">
                 <h2 className="text-2xl font-heading font-bold text-charcoal mb-4">About {event.title}</h2>
-                <div className="prose prose-lg text-charcoal/70 whitespace-pre-line leading-relaxed">
-                  {event.content || event.description || 'Learn more about this exciting event.'}
-                </div>
+                <div 
+                  className="prose prose-lg text-charcoal/70 whitespace-pre-line leading-relaxed max-w-none"
+                  dangerouslySetInnerHTML={{ __html: event.content || event.description || 'Learn more about this exciting event.' }}
+                />
               </section>
             </div>
           </div>
@@ -137,7 +138,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
               
               <div className="mt-4 text-center">
                 <span className="text-xs text-charcoal/50">
-                  Or call us directly at <strong>{siteInfo.phone}</strong>
+                  Or call us directly at <strong>{siteInfo.whatsapp}</strong>
                 </span>
               </div>
             </div>

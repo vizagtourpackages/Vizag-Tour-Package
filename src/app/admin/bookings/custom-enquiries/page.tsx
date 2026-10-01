@@ -51,6 +51,11 @@ export default async function CustomEnquiriesPage() {
                       <span key={d} className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-[10px]">{d}</span>
                     ))}
                   </div>
+                  {enq.vehicle_preference && (
+                    <div className="mt-2 text-xs text-gray-500">
+                      <span className="font-medium text-gray-600">Vehicle:</span> {enq.vehicle_preference}
+                    </div>
+                  )}
                   {enq.special_requirements && (
                     <div className="mt-2 text-xs text-gray-500 italic max-w-[200px] truncate" title={enq.special_requirements}>
                       &quot;{enq.special_requirements}&quot;
