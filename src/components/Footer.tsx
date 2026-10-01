@@ -139,7 +139,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/5 relative z-10">
-        <div className="container-max px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="container-max px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:pb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/40 text-xs sm:text-sm font-medium text-center sm:text-left tracking-wide">
             © {currentYear} Vizag Tour Packages. All rights reserved.
           </p>

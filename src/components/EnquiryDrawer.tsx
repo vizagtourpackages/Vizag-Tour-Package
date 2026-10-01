@@ -1,14 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, CheckCircle2, ArrowRight, Plus, Minus, Loader2 } from "lucide-react";
 import { submitCustomEnquiry } from "@/app/actions/booking";
+import { createClient } from "@/lib/supabase/client";
 
 export default function EnquiryDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchVehicles() {
+      const supabase = createClient();
+      const { data: travelsData } = await supabase
+        .from('travels')
+        .select('*')
+        .eq('is_published', true)
+        .order('display_order', { ascending: true });
+      
+      if (travelsData && travelsData.length > 0) {
+        setVehicles(travelsData);
+      }
+    }
+    fetchVehicles();
+  }, []);
 
   return (
     <>
@@ -62,6 +80,7 @@ export default function EnquiryDrawer() {
               adults,
               children,
               destinations,
+              vehicle_preference: formData.get("vehicle_preference"),
               special_requirements: formData.get("special_requirements")
             };
 
@@ -185,6 +204,21 @@ export default function EnquiryDrawer() {
             </div>
 
             <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest block">Vehicle Preference</label>
+              <select
+                name="vehicle_preference"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-coral/50 transition-all text-sm font-medium appearance-none [&>option]:text-charcoal"
+              >
+                <option value="">Select a vehicle (Optional)</option>
+                {vehicles.map((v, i) => (
+                  <option key={i} value={v.model}>
+                    {v.model} ({v.pax} Pax)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest block">Special Requirements</label>
               <textarea
                 name="special_requirements"
@@ -218,3 +252,4 @@ export default function EnquiryDrawer() {
     </>
   );
 }
+

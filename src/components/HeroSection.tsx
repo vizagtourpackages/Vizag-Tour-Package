@@ -82,12 +82,12 @@ export default function HeroSection() {
                   >
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sand flex items-center justify-center mb-1.5 md:mb-3 group-hover:scale-110 group-hover:bg-coral/10 transition-transform duration-500">
                       {'imageUrl' in cta ? (
-                        <img src={cta.imageUrl} alt={cta.title} className="w-[18px] h-[18px] md:w-[22px] md:h-[22px] object-contain group-hover:scale-110 transition-transform" />
+                        <img src={cta.imageUrl} alt={cta.title} className="w-[14px] h-[14px] md:w-[22px] md:h-[22px] object-contain group-hover:scale-110 transition-transform" />
                       ) : (
                         <Icon size={24} className="text-charcoal group-hover:text-coral transition-colors w-[16px] h-[16px] md:w-[18px] md:h-[18px]" />
                       )}
                     </div>
-                    <h3 className="text-charcoal font-bold text-[11px] md:text-[15px] mb-0 md:mb-1 tracking-tight leading-tight">
+                    <h3 className="text-charcoal font-bold text-[10px] md:text-[15px] mb-0 md:mb-1 tracking-tight leading-tight">
                       {cta.title}
                     </h3>
                     <p className="hidden sm:block text-charcoal/50 text-xs md:text-[13px] leading-relaxed line-clamp-2">{cta.description}</p>

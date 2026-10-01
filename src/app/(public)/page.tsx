@@ -154,7 +154,7 @@ export default async function Home() {
       category: place.category || 'Place',
       imageGradient: 'from-blue-400 to-ocean', // fallback
       imageUrl: place.image_url,
-      customLink: place.custom_link
+      customLink: place.custom_link || `/top-tourist-places?first=${place.id}`
     }))
     : [];
 
@@ -396,6 +396,13 @@ export default async function Home() {
                 </div>
               ))}
             </ScrollCarousel>
+          </ScrollReveal>
+          <ScrollReveal delay={0.3}>
+            <div className="mt-16 text-center">
+              <Link href="/top-tourist-places" className="btn-secondary !px-6 !py-2.5 !text-sm">
+                View All Places <ArrowRight size={18} />
+              </Link>
+            </div>
           </ScrollReveal>
         </div>
       </section>
