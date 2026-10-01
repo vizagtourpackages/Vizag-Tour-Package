@@ -37,8 +37,9 @@ export default async function Home() {
     .from('tour_packages')
     .select('*')
     .eq('is_published', true)
-    .order('created_at', { ascending: false })
-    .limit(4);
+    .eq('show_on_home', true)
+    .order('home_order', { ascending: true })
+    .order('created_at', { ascending: false });
 
   const { data: dbEvents } = await supabase
     .from('upcoming_events')
@@ -59,6 +60,7 @@ export default async function Home() {
     ? dbEvents.map(evt => ({
       id: evt.id,
       title: evt.title,
+      slug: evt.slug,
       description: evt.description,
       category: evt.category,
       year: evt.date,
@@ -335,7 +337,7 @@ export default async function Home() {
             <ScrollCarousel gap="gap-4">
               {displayHotels.map((hotel) => (
                 <div key={hotel.id} className="w-[320px] sm:w-[320px] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1rem)] flex-shrink-0 snap-start">
-                  <HotelCard hotel={hotel as any} />
+                  <HotelCard hotel={hotel as any} compact={true} />
                 </div>
               ))}
             </ScrollCarousel>

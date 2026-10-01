@@ -83,14 +83,21 @@ export default function PromoBanner({ banner, images }: PromoBannerProps) {
           </div>
 
           {/* Content */}
-          {/* Content */}
           <div className="relative z-10 p-4 sm:p-6 md:p-8 w-full flex flex-col justify-between h-full">
-            <div className="max-w-xl">
+            
+            {/* Last Minute Deal Badge (Top Right) */}
+            <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8">
+              <span className="inline-block bg-red-600 text-white border border-red-500 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-widest uppercase shadow-lg shadow-red-500/30">
+                🔥 LAST MIN DEAL
+              </span>
+            </div>
+
+            <div className="max-w-xl md:max-w-[85%] lg:max-w-[90%]">
               <span className="inline-block bg-orange-500/20 text-orange-400 border border-orange-500/30 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-widest uppercase mb-2 shadow-sm">
                 {banner.badge_text}
               </span>
               
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-white leading-tight mb-1.5 tracking-tight drop-shadow-md">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-white leading-tight mb-1.5 tracking-tight drop-shadow-md md:whitespace-nowrap">
                 {banner.headline}
               </h2>
               

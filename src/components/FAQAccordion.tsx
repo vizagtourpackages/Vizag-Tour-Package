@@ -60,12 +60,13 @@ export default function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) 
           subtitle="Clear answers to common questions about bookings, tour inclusions, and safety policies."
         />
 
-        <div className="mt-10 space-y-4">
-          {displayFaqs.map((faq, index) => {
-            const isOpen = openIndex === index;
-            return (
-              <ScrollReveal key={index} delay={index * 0.1}>
+        <ScrollReveal delay={0.2}>
+          <div className="mt-10 space-y-4">
+            {displayFaqs.map((faq, index) => {
+              const isOpen = openIndex === index;
+              return (
                 <div
+                  key={index}
                   className={`rounded-[24px] border transition-all duration-500 overflow-hidden ${
                     isOpen
                       ? "bg-white border-charcoal/10 shadow-card"
@@ -106,10 +107,10 @@ export default function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) 
                     </div>
                   </div>
                 </div>
-              </ScrollReveal>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </ScrollReveal>
 
         <ScrollReveal delay={0.6}>
           <div className="mt-12 max-w-2xl mx-auto text-center p-8 sm:p-10 bg-white rounded-[32px] border border-charcoal/5 shadow-card flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-card-hover transition-shadow duration-500">

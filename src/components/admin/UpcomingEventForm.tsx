@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { saveEvent } from '@/app/admin/upcoming-events/actions'
 import ImageUpload from './ImageUpload'
 import Link from 'next/link'
+import RichTextEditor from './RichTextEditor'
 
 export default function UpcomingEventForm({ initialData, id }: { initialData?: any, id: string }) {
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || '')
+  const [content, setContent] = useState(initialData?.content || '')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -15,6 +17,7 @@ export default function UpcomingEventForm({ initialData, id }: { initialData?: a
     const formData = new FormData(e.currentTarget)
     formData.append('id', id)
     formData.append('image_url', imageUrl)
+    formData.set('content', content) // Override/set the content from state
     
     try {
       await saveEvent(formData)
@@ -46,8 +49,16 @@ export default function UpcomingEventForm({ initialData, id }: { initialData?: a
               <input type="text" name="date" defaultValue={initialData?.date || initialData?.year} required className="w-full p-2.5 border rounded-lg" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Short Description (for cards)</label>
               <textarea name="description" defaultValue={initialData?.description} required rows={3} className="w-full p-2.5 border rounded-lg" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Full Content (for event page)</label>
+              <RichTextEditor 
+                value={content} 
+                onChange={setContent} 
+                placeholder="Write full details about the event here. You can add images, bold text, etc." 
+              />
             </div>
           </div>
         </div>

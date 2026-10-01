@@ -6,6 +6,8 @@ export interface Event {
   year: number | string;
   imageGradient: string;
   imageUrl?: string;
+  slug?: string;
+  content?: string;
 }
 
 export const events: Event[] = [

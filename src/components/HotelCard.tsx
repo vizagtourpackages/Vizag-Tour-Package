@@ -5,7 +5,7 @@ import { Star, MapPin, CheckCircle2 } from "lucide-react";
 import type { Hotel } from "@/data/hotels";
 import { useBooking } from "./booking/BookingContext";
 
-export default function HotelCard({ hotel }: { hotel: Hotel }) {
+export default function HotelCard({ hotel, compact = false }: { hotel: Hotel, compact?: boolean }) {
   const { openBooking } = useBooking();
   return (
     <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 h-full flex flex-col overflow-hidden group">
@@ -53,11 +53,11 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
 
         <div className="mt-auto pt-5 border-t border-charcoal/5 flex items-center justify-between">
           <div>
-            <span className="text-xs text-charcoal/50 block font-bold uppercase tracking-wider mb-0.5">Starting from</span>
-            <span className="text-2xl font-black text-charcoal tracking-tight">{hotel.price}</span>
-            <span className="text-xs text-charcoal/50 font-medium"> {hotel.price_label ? hotel.price_label : '/ night'}</span>
+            <span className="text-[10px] sm:text-xs text-charcoal/50 block font-bold uppercase tracking-wider mb-0.5">Starting from</span>
+            <span className={`font-black text-charcoal tracking-tight ${compact ? 'text-xl' : 'text-2xl'}`}>{hotel.price}</span>
+            <span className="text-[10px] sm:text-xs text-charcoal/50 font-medium"> {hotel.price_label ? hotel.price_label : '/ night'}</span>
           </div>
-          <Link href={`/resorts/${hotel.slug || hotel.id}`} className="btn-primary py-2.5 px-6 text-sm rounded-full bg-charcoal hover:bg-coral inline-block text-center">
+          <Link href={`/resorts/${hotel.slug || hotel.id}`} className={`btn-primary rounded-full bg-charcoal hover:bg-coral inline-block text-center ${compact ? 'py-1.5 px-4 text-xs' : 'py-2.5 px-6 text-sm'}`}>
             Book Now
           </Link>
         </div>
