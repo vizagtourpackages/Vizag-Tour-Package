@@ -52,8 +52,9 @@ export default async function Home() {
     .from('hotels_resorts')
     .select('*')
     .eq('is_published', true)
-    .order('created_at', { ascending: false })
-    .limit(6);
+    .eq('show_on_home', true)
+    .order('home_order', { ascending: true })
+    .order('created_at', { ascending: false });
 
   // Map DB rows to match the existing Event interface, with a fallback
   const displayEvents = dbEvents && dbEvents.length > 0
@@ -300,13 +301,6 @@ export default async function Home() {
               ))}
             </ScrollCarousel>
           </ScrollReveal>
-          <ScrollReveal delay={0.3}>
-            <div className="mt-16 text-center">
-              <Link href="/route-map" className="btn-secondary !px-6 !py-2.5 !text-sm">
-                View All Routes <ArrowRight size={18} />
-              </Link>
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 
@@ -322,7 +316,7 @@ export default async function Home() {
             title="Best Travels for Vizag Tours & Outstation Trips"
             subtitle="Book reliable Vizag tour vehicles including Sedans, SUVs, Tempo Travellers, Urbania, and Buses for local and outstation travel."
           />
-          <FleetSection vehicles={displayTravels} />
+          <FleetSection vehicles={displayTravels} isHomepage={true} />
         </div>
       </section>
 
@@ -465,7 +459,7 @@ export default async function Home() {
               </h2>
             </div>
             <div className="w-full min-w-0 max-w-full px-4">
-              <p className="mt-3 sm:mt-6 text-sm sm:text-lg font-medium leading-relaxed max-w-2xl mx-auto text-charcoal/60">
+              <p className="mt-3 sm:mt-6 text-sm sm:text-lg font-medium leading-relaxed max-w-4xl lg:max-w-5xl mx-auto text-charcoal/60">
                 From Vizag city sightseeing to the scenic hills of Araku, Vanjangi and Lambasingi, we make your complete travel experience simple, comfortable and memorable.
               </p>
             </div>
@@ -569,13 +563,13 @@ export default async function Home() {
                   <h3 className="text-2xl font-heading font-bold text-white tracking-tight">Special Promotions</h3>
                   <span className="badge bg-coral/20 text-coral border border-coral/30 tracking-widest text-[10px]">LIMITED</span>
                 </div>
-                <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+                <ScrollCarousel>
                   {displayPromotions.map((promo) => (
                     <div key={promo.id} className="w-[85vw] max-w-[300px] lg:max-w-none lg:w-[85%] shrink-0 snap-start">
                       <NewsPromoCard item={promo} />
                     </div>
                   ))}
-                </div>
+                </ScrollCarousel>
               </div>
             </ScrollReveal>
 
@@ -588,13 +582,13 @@ export default async function Home() {
                   <h3 className="text-2xl font-heading font-bold text-white tracking-tight">Travel News</h3>
                   <span className="badge bg-teal/20 text-teal border border-teal/30 tracking-widest text-[10px]">UPDATES</span>
                 </div>
-                <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+                <ScrollCarousel>
                   {displayNews.map((news) => (
                     <div key={news.id} className="w-[85vw] max-w-[300px] lg:max-w-none lg:w-[85%] shrink-0 snap-start">
                       <NewsPromoCard item={news} />
                     </div>
                   ))}
-                </div>
+                </ScrollCarousel>
               </div>
             </ScrollReveal>
           </div>

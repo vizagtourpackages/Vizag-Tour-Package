@@ -27,7 +27,7 @@ export default function SectionHeading({
       {subtitle && (
         <ScrollReveal delay={0.1} className="w-full min-w-0 max-w-full px-4">
           <p
-            className={`mt-3 sm:mt-6 text-sm sm:text-lg font-medium leading-relaxed max-w-2xl ${centered ? "mx-auto" : ""} ${
+            className={`mt-3 sm:mt-6 text-sm sm:text-lg font-medium leading-relaxed max-w-4xl lg:max-w-5xl ${centered ? "mx-auto" : ""} ${
               light ? "text-white/70" : "text-charcoal/60"
             }`}
           >

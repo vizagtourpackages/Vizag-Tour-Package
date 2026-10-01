@@ -43,9 +43,9 @@ export default function HeroSection() {
       </div>
 
       {/* Content */}
-      <div ref={ref} className="relative z-10 container-max px-4 sm:px-6 lg:px-8 pt-6 sm:pt-16 pb-20 sm:pb-24 w-full h-full flex flex-col">
+      <div ref={ref} className="relative z-10 container-max px-4 sm:px-6 lg:px-8 pt-6 sm:pt-16 pb-32 sm:pb-24 w-full h-full flex flex-col">
         {/* Main Content centered in available space */}
-        <div className="flex flex-col justify-center flex-1">
+        <div className="flex flex-col justify-start md:justify-center flex-1 mt-4 md:mt-0">
           <div className="max-w-4xl mx-auto text-center lg:text-left lg:mx-0">
             <ScrollReveal delay={0}>
               <span className="inline-block badge border border-white/20 text-white bg-black/20 backdrop-blur-sm mb-3 sm:mb-8 tracking-widest px-4 py-1.5 shadow-sm text-[10px] sm:text-xs">
@@ -103,8 +103,8 @@ export default function HeroSection() {
         </div> {/* Close flex-1 wrapper */}
 
         {/* Bottom Banner */}
-        <ScrollReveal delay={0.4} className="mt-auto w-full md:hidden z-20 relative pt-4 pb-8">
-          <div className="w-full flex justify-center">
+        <ScrollReveal delay={0.4} className="absolute bottom-0 left-0 right-0 w-full md:hidden z-20 flex justify-center pb-2">
+          <div className="w-full">
             <MobileTrustBanner />
           </div>
         </ScrollReveal>

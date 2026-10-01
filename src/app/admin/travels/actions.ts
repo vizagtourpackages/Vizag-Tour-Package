@@ -36,6 +36,9 @@ export async function saveTravel(formData: FormData) {
     is_published: formData.get('is_published') === 'true',
     display_order: formData.get('display_order') ? parseInt(formData.get('display_order') as string) : 0,
     amenities: formData.get('amenities') ? JSON.parse(formData.get('amenities') as string) : [],
+    meta_title: formData.get('meta_title') as string || null,
+    meta_description: formData.get('meta_description') as string || null,
+    meta_keywords: formData.get('meta_keywords') as string || null,
   }
 
   if (isNew) {

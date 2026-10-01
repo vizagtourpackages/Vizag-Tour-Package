@@ -57,12 +57,12 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
             {navLinks.map((link) => (
               link.subLinks ? (
                 <div key={link.label} className="relative group">
                   <button
-                    className={`flex items-center gap-1 px-3 py-2 rounded-full text-[11px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
+                    className={`flex items-center gap-1 px-2 xl:px-3 py-1.5 xl:py-2 rounded-full text-[10px] xl:text-[11px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
                       ? "text-charcoal/80 hover:text-charcoal hover:bg-charcoal/5"
                       : "text-white/90 hover:text-white hover:bg-white/10"
                       }`}
@@ -90,7 +90,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href!}
                   prefetch={true}
-                  className={`px-3 py-2 rounded-full text-[11px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
+                  className={`px-2 xl:px-3 py-1.5 xl:py-2 rounded-full text-[10px] xl:text-[11px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
                     ? "text-charcoal/80 hover:text-charcoal hover:bg-charcoal/5"
                     : "text-white/90 hover:text-white hover:bg-white/10"
                     }`}
@@ -159,12 +159,16 @@ export default function Navbar() {
                   <ChevronDown size={16} className={`transition-transform duration-300 ${expandedMobileMenu === link.label ? "rotate-180" : ""}`} />
                 </button>
                 <div className={`pl-8 pr-4 overflow-hidden transition-all duration-300 ${expandedMobileMenu === link.label ? "max-h-[500px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-                  <div className="space-y-1 pb-2">
+                  <div className={link.label === "Destination" ? "grid grid-cols-3 gap-2 pb-2" : "space-y-1 pb-2"}>
                     {link.subLinks.map((subLink) => (
                       <Link
                         key={subLink.href}
                         href={subLink.href}
-                        className="block px-4 py-3 text-sm font-bold text-charcoal/80 hover:text-coral hover:bg-sand rounded-[12px] transition-colors"
+                        className={
+                          link.label === "Destination"
+                            ? "px-1 py-2 text-[10px] leading-[1.2] font-bold text-center flex items-center justify-center text-charcoal bg-sand border border-charcoal/5 rounded-[12px] hover:text-coral transition-colors"
+                            : "block px-4 py-3 text-sm font-bold text-charcoal/80 hover:text-coral hover:bg-sand rounded-[12px] transition-colors"
+                        }
                         onClick={() => setIsOpen(false)}
                       >
                         {subLink.label}

@@ -19,6 +19,8 @@ import {
   ChevronRight,
   Car,
   Image as ImageIcon,
+  Search,
+  FileText,
   Settings
 } from 'lucide-react';
 
@@ -30,11 +32,14 @@ const mainNavigation = [
   { name: 'Devotional Tours', href: '/admin/top-destinations', icon: MapPin },
   { name: 'Places to Visit', href: '/admin/places-to-visit', icon: Navigation },
   { name: 'Hill Stations', href: '/admin/hill-stations', icon: Mountain },
+  { name: 'Destination Pages', href: '/admin/destination-pages', icon: MapPin },
   { name: 'Travel Guides', href: '/admin/travel-guides', icon: BookOpen },
   { name: 'Upcoming Events', href: '/admin/upcoming-events', icon: Calendar },
   { name: 'Updates & Offers', href: '/admin/updates-offers', icon: Megaphone },
   { name: 'Promo Banner', href: '/admin/promo-banner', icon: ImageIcon },
   { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
+  { name: 'Global SEO', href: '/admin/seo', icon: Search },
+  { name: 'Terms & Conditions', href: '/admin/terms', icon: FileText },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

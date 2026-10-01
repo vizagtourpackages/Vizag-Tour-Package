@@ -125,7 +125,43 @@ export default function TravelForm({ initialData, id }: { initialData: any, id: 
           />
         </div>
 
-        <div className="md:col-span-2 flex items-center gap-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="md:col-span-2 pt-6 border-t border-gray-100">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">SEO Settings (Optional)</h3>
+          <div className="grid grid-cols-1 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Meta Title</label>
+              <input 
+                type="text" 
+                name="meta_title" 
+                defaultValue={initialData?.meta_title || ''}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-coral/20 focus:border-coral outline-none"
+                placeholder="SEO Title for this vehicle"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+              <textarea 
+                name="meta_description" 
+                rows={3}
+                defaultValue={initialData?.meta_description || ''}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-coral/20 focus:border-coral outline-none resize-none"
+                placeholder="SEO Description..."
+              ></textarea>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Meta Keywords</label>
+              <input 
+                type="text" 
+                name="meta_keywords" 
+                defaultValue={initialData?.meta_keywords || ''}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-coral/20 focus:border-coral outline-none"
+                placeholder="cab booking vizag, swift dzire, etc"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-2 flex items-center gap-3 bg-gray-50 p-4 rounded-lg border border-gray-200 mt-2">
           <input 
             type="checkbox" 
             id="is_published"

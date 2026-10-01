@@ -6,6 +6,7 @@ import { MapPin, Star, CheckCircle2, ChevronRight, Home, Info, ArrowLeft, Utensi
 import ResortGallery from "@/components/ResortGallery";
 import HotelCard from "@/components/HotelCard";
 import ResortBookingButton from "@/components/ResortBookingButton";
+import TermsButton from "@/components/TermsButton";
 import { siteInfo } from "@/data/siteInfo";
 import { Metadata } from "next";
 
@@ -263,7 +264,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                 
                 <div className="mt-4 text-center">
                   <span className="text-xs text-[#6B5744]/60">
-                    By booking you agree to our <Link href="/terms-conditions" className="text-[#2D6A4F] hover:underline font-medium">Terms & Conditions</Link>
+                    By booking you agree to our <TermsButton category="resorts" className="text-[#2D6A4F] hover:underline font-medium cursor-pointer" />
                   </span>
                 </div>
               </div>

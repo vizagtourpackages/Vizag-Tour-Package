@@ -10,16 +10,16 @@ interface DestinationCardProps {
 }
 
 export default function DestinationCard({ destination, basePath }: DestinationCardProps) {
+  const slug = destination.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  
   // Check if this destination has a dedicated page
-  const hasDedicatedPage = ["araku-valley", "lambasingi", "vanjangi"].includes(
-    destination.id
-  );
+  const hasDedicatedPage = ["araku-valley", "lambasingi", "vanjangi"].includes(slug);
 
   // If basePath is provided, we assume it supports dynamic routes (like /devotional/[id])
   // Otherwise, default fallback is just "/route-map" (without ID)
   const fallbackHref = basePath ? `${basePath}/${destination.id}` : "/route-map";
   
-  const href = destination.customLink || (hasDedicatedPage ? `/${destination.id}` : fallbackHref);
+  const href = destination.customLink || (hasDedicatedPage ? `/${slug}` : fallbackHref);
 
   return (
     <Link href={href} className="group block h-full">
@@ -58,27 +58,33 @@ export default function DestinationCard({ destination, basePath }: DestinationCa
           <p className="text-sm text-charcoal/60 line-clamp-3 mb-6 flex-1 break-words leading-relaxed font-medium">
             {destination.description}
           </p>
-          <div className="flex items-center gap-3 text-xs font-bold text-teal mt-auto pt-5 border-t border-charcoal/5 flex-wrap tracking-wide uppercase">
-            {destination.distance ? (
-              <>
+          <div className="flex items-center justify-between gap-3 text-xs font-bold text-teal mt-auto pt-5 border-t border-charcoal/5 flex-wrap tracking-wide uppercase w-full">
+            <div className="flex items-center gap-3 flex-wrap">
+              {destination.distance ? (
+                <>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin size={14} className="shrink-0" />
+                    {destination.distance}
+                  </span>
+                  {destination.duration && (
+                    <span className="flex items-center gap-1.5">
+                      <Clock size={14} className="shrink-0" />
+                      {destination.duration}
+                    </span>
+                  )}
+                </>
+              ) : (
                 <span className="flex items-center gap-1.5">
                   <MapPin size={14} className="shrink-0" />
-                  {destination.distance}
+                  <span className="truncate">Visakhapatnam District</span>
                 </span>
-                {destination.duration && (
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={14} className="shrink-0" />
-                    {destination.duration}
-                  </span>
-                )}
-              </>
-            ) : (
-              <span className="flex items-center gap-1.5">
-                <MapPin size={14} className="shrink-0" />
-                <span className="truncate">Visakhapatnam District</span>
+              )}
+            </div>
+            {basePath === '/devotional' && (
+              <span className="text-coral flex items-center gap-1 font-black group-hover:underline">
+                Read More <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
               </span>
             )}
-            
           </div>
         </div>
       </div>

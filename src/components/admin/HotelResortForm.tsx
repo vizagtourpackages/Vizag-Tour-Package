@@ -383,12 +383,49 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
             </div>
           </div>
 
-          {/* Publishing */}
-          <div className="md:col-span-2 pt-4">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" name="is_published" value="true" defaultChecked={initialData ? initialData.is_published : true} className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="font-semibold text-gray-800">Published (visible on resorts page)</span>
-            </label>
+          {/* Publishing & Visibility */}
+          <div className="md:col-span-2 pt-4 border-t border-gray-100">
+            <h4 className="font-bold text-gray-900 mb-4">Visibility & Placement</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 bg-gray-50 rounded-lg border">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" name="is_published" value="true" defaultChecked={initialData ? initialData.is_published : true} className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span className="font-semibold text-gray-800">Published (Global)</span>
+                </label>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg border">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home || false} className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500" />
+                  <span className="font-semibold text-gray-800">Show on Home</span>
+                </label>
+                <div className="mt-4">
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>
+                  <input type="number" name="home_order" defaultValue={initialData?.home_order || 0} className="w-full p-2 border rounded-md" />
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg border">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" name="show_on_araku" value="true" defaultChecked={initialData?.show_on_araku} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+                  <span className="font-semibold text-gray-800">Show on Araku Page</span>
+                </label>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg border">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" name="show_on_lambasingi" value="true" defaultChecked={initialData?.show_on_lambasingi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+                  <span className="font-semibold text-gray-800">Show on Lambasingi Page</span>
+                </label>
+              </div>
+              
+              <div className="p-4 bg-gray-50 rounded-lg border">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" name="show_on_vanjangi" value="true" defaultChecked={initialData?.show_on_vanjangi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+                  <span className="font-semibold text-gray-800">Show on Vanjangi Page</span>
+                </label>
+              </div>
+            </div>
           </div>
 
           <div className="md:col-span-2 pt-4 flex gap-4">

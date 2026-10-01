@@ -2,7 +2,7 @@ import { Shield, BadgeCheck } from "lucide-react";
 
 export default function MobileTrustBanner() {
   return (
-    <div className="md:hidden mt-6 mb-2 w-[92%] mx-auto">
+    <div className="md:hidden w-[82%] mx-auto">
       <div className="border border-emerald-200 rounded-2xl bg-white p-1.5 w-full shadow-sm">
         <div className="flex items-start justify-between w-full">
 

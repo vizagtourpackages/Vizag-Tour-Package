@@ -5,6 +5,7 @@ import { siteInfo } from '@/data/siteInfo'
 import { submitCabBooking } from '@/app/actions/booking'
 import { createClient } from '@/lib/supabase/client'
 import { Users, Briefcase } from 'lucide-react'
+import TermsButton from "@/components/TermsButton"
 
 export default function CabBookingModal({ data, onClose }: { data: any, onClose: () => void }) {
   const [step, setStep] = useState<1 | 2>(data ? 2 : 1)
@@ -217,7 +218,7 @@ Passengers: ${bookingData.adults} Adults, ${bookingData.kids} Kids`
                   {loading ? 'Processing...' : 'Book Now'}
                 </button>
                 <div className="text-center">
-                  <a href="/terms" className="text-[10px] sm:text-xs text-coral hover:underline font-medium">View Terms & Conditions</a>
+                  <TermsButton category="travels" label="View Terms & Conditions" className="text-[10px] sm:text-xs text-coral hover:underline font-medium cursor-pointer" />
                 </div>
               </div>
             </form>

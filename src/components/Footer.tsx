@@ -8,6 +8,7 @@ import {
   Shield,
 } from "lucide-react";
 import { siteInfo, navLinks } from "@/data/siteInfo";
+import TermsButton from "@/components/TermsButton";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -139,10 +140,11 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/5 relative z-10">
-        <div className="container-max px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:pb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/40 text-xs sm:text-sm font-medium text-center sm:text-left tracking-wide">
-            © {currentYear} Vizag Tour Packages. All rights reserved.
-          </p>
+        <div className="container-max px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:pb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-white/40 text-xs sm:text-sm font-medium text-center sm:text-left tracking-wide">
+            <span>© {currentYear} Vizag Tour Packages. All rights reserved.</span>
+            <TermsButton category="footer" label="Terms & Conditions" className="hover:text-white transition-colors cursor-pointer" />
+          </div>
           <p className="text-white/40 text-xs sm:text-sm font-medium flex items-center gap-1.5 tracking-wide">
             Made with <Heart size={14} className="text-coral fill-coral animate-pulse-soft" /> in
             Visakhapatnam

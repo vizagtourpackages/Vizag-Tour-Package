@@ -75,7 +75,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
     : 0;
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-24">
+    <div className="bg-white min-h-screen pt-6 md:pt-12 pb-24">
       <div className="container-max px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
@@ -110,6 +110,19 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-white leading-tight tracking-tight drop-shadow-md max-w-3xl">
                   {pkg.title}
                 </h1>
+                
+                <div className="flex items-center gap-2 mt-3 text-white/90 drop-shadow-md">
+                  <div className="flex items-center text-yellow-400">
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" className="opacity-50" />
+                  </div>
+                  <span className="text-sm font-medium">
+                    4.9 ({pkg.reviews_count || "120+"} reviews)
+                  </span>
+                </div>
               </div>
             </div>
 
