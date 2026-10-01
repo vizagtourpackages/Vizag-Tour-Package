@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import PackageBookingButton from "@/components/PackageBookingButton";
 import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
+import TermsButton from "@/components/TermsButton";
 
 export default function PackageBookingSidebar({ 
   pkg, 
@@ -43,7 +44,7 @@ export default function PackageBookingSidebar({
       <div className="space-y-2 lg:space-y-3">
         <PackageBookingButton pkg={pkg} />
         <div className="text-center text-[9px] lg:text-[10px] text-charcoal/50">
-          By booking you agree to our <Link href="/terms" className="underline hover:text-teal">Terms & Conditions</Link>
+          By booking you agree to our <TermsButton category="packages" />
         </div>
       </div>
       

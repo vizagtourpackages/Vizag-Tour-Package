@@ -5,17 +5,28 @@ import Image from "next/image";
 import { ChevronRight, ChevronLeft, User } from "lucide-react";
 import type { Vehicle } from "@/data/vehicles";
 import { useBooking } from "./booking/BookingContext";
+import { useRouter } from "next/navigation";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
+  isHomepage?: boolean;
 }
 
-export function VehicleCard({ vehicle }: VehicleCardProps) {
+export function VehicleCard({ vehicle, isHomepage }: VehicleCardProps) {
   const { openBooking } = useBooking();
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (isHomepage) {
+      router.push(`/travels?book=${vehicle.id}`);
+    } else {
+      openBooking('cab', vehicle);
+    }
+  };
 
   return (
     <div 
-      onClick={() => openBooking('cab', vehicle)}
+      onClick={handleClick}
       className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden cursor-pointer group"
     >
       {/* Model name pill */}
@@ -78,9 +89,10 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
 
 interface FleetSectionProps {
   vehicles: Vehicle[];
+  isHomepage?: boolean;
 }
 
-export default function FleetSection({ vehicles }: FleetSectionProps) {
+export default function FleetSection({ vehicles, isHomepage }: FleetSectionProps) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -135,7 +147,7 @@ export default function FleetSection({ vehicles }: FleetSectionProps) {
             key={vehicle.id}
             className="min-w-[260px] w-[calc(25%-15px)] flex-shrink-0 snap-start"
           >
-            <VehicleCard vehicle={vehicle} />
+            <VehicleCard vehicle={vehicle} isHomepage={isHomepage} />
           </div>
         ))}
       </div>

@@ -79,6 +79,25 @@ export default function TopDestinationForm({ initialData, id }: { initialData?: 
           </div>
         </div>
         
+        {/* SEO Settings */}
+        <div className="space-y-4 md:col-span-2">
+          <h3 className="text-lg font-bold border-b pb-2">SEO Settings (Optional)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
+              <input type="text" name="meta_title" defaultValue={initialData?.meta_title} className="w-full p-2.5 border rounded-lg" placeholder="SEO Title" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
+              <input type="text" name="meta_keywords" defaultValue={initialData?.meta_keywords} className="w-full p-2.5 border rounded-lg" placeholder="temple, vizag, devotional" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+              <textarea name="meta_description" defaultValue={initialData?.meta_description} rows={3} className="w-full p-2.5 border rounded-lg" placeholder="SEO Description..." />
+            </div>
+          </div>
+        </div>
+        
         {/* Settings */}
         <div className="md:col-span-2 pt-4 border-t flex items-center justify-between">
           <label className="flex items-center gap-2 cursor-pointer">

@@ -35,6 +35,9 @@ export async function saveTopDestination(formData: FormData) {
     image_url: formData.get('image_url') as string,
     is_published: formData.get('is_published') === 'true',
     custom_link: formData.get('custom_link') as string,
+    meta_title: formData.get('meta_title') as string || null,
+    meta_description: formData.get('meta_description') as string || null,
+    meta_keywords: formData.get('meta_keywords') as string || null,
   }
 
   if (id === 'new') {

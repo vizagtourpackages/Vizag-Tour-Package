@@ -3,24 +3,45 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { CheckCircle2, Clock, MapPin, Mountain } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import PackageCard from "@/components/PackageCard";
+import HotelCard from "@/components/HotelCard";
 import PlaceholderImage from "@/components/PlaceholderImage";
+import DestinationTabs from "@/components/DestinationTabs";
 import { destinationDetails } from "@/data/destinations";
-import { allPackages } from "@/data/packages";
 import { siteInfo } from "@/data/siteInfo";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Lambasingi Tour Packages",
   description: destinationDetails["lambasingi"].description,
 };
 
-import { createClient } from "@/lib/supabase/server";
-
 export default async function LambasingiPage() {
-  const dest = destinationDetails["lambasingi"];
-  
   const supabase = await createClient();
+
+  // Fetch destination page content
+  const { data: dbDest } = await supabase
+    .from('destination_pages')
+    .select('*')
+    .eq('id', 'lambasingi')
+    .single();
+
+  const dest = dbDest ? {
+    ...dbDest,
+    bestTimeToVisit: dbDest.best_time_to_visit || dbDest.bestTimeToVisit,
+  } : destinationDetails["lambasingi"];
+  // If no DB image, fallback to the hardcoded gradient for placeholder
+  const heroImage = dbDest?.image_url;
+  const gradient = dest.imageGradient || 'from-blue-300 to-indigo-600';
+
   const { data: dbPackages } = await supabase
     .from('tour_packages')
+    .select('*')
+    .eq('is_published', true)
+    .eq('show_on_lambasingi', true)
+    .order('created_at', { ascending: false });
+
+  const { data: dbHotels } = await supabase
+    .from('hotels_resorts')
     .select('*')
     .eq('is_published', true)
     .eq('show_on_lambasingi', true)
@@ -47,17 +68,119 @@ export default async function LambasingiPage() {
     }))
     : [];
 
+  const overviewContent = (
+    <div className="flex flex-col">
+      <ScrollReveal direction="up">
+        <SectionHeading
+          title="Top Attractions & Highlights"
+          centered={true}
+        />
+      </ScrollReveal>
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
+        <div className="lg:w-1/2 w-full">
+        <ScrollReveal direction="right">
+          {heroImage ? (
+            <div className="w-full aspect-[4/3] rounded-[40px] shadow-card border border-charcoal/5 relative overflow-hidden">
+              <img src={heroImage} alt={`${dest.name} Highlights`} className="w-full h-full object-cover" />
+            </div>
+          ) : (
+            <PlaceholderImage
+              gradient={gradient}
+              alt={`${dest.name} Highlights`}
+              className="w-full aspect-[4/3] rounded-[40px] shadow-card border border-charcoal/5"
+            />
+          )}
+        </ScrollReveal>
+      </div>
+      <div className="lg:w-1/2 w-full">
+        <ScrollReveal direction="left">
+          <div className="bg-gray-50/80 backdrop-blur-sm p-6 sm:p-8 rounded-[32px] shadow-sm border border-charcoal/5">
+            <ul className="space-y-4">
+            {dest.highlights.map((highlight, idx) => {
+              const [title, desc] = highlight.split("—");
+              return (
+                <li key={idx} className="flex gap-5 group">
+                  <div className="mt-1 shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-teal/10 flex items-center justify-center text-teal group-hover:bg-teal group-hover:text-white transition-colors duration-300">
+                      <CheckCircle2 size={18} />
+                    </div>
+                  </div>
+                  <div>
+                    <strong className="text-charcoal text-lg block mb-1 font-heading tracking-tight leading-tight">{title.trim()}</strong>
+                    <span className="text-charcoal/60 text-sm font-medium leading-relaxed block">{desc?.trim()}</span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          </div>
+        </ScrollReveal>
+      </div>
+    </div>
+    </div>
+  );
+
+  const packagesContent = (
+    <div className="bg-warm-white relative overflow-hidden rounded-[40px] shadow-sm border border-charcoal/5 p-8 lg:p-12">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+      <div className="relative z-10">
+        <SectionHeading
+          title={`Tour Packages in ${dest.name}`}
+          subtitle="Choose from our specially crafted itineraries to experience the best of this destination."
+        />
+        {relatedPackages.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {relatedPackages.map((pkg) => (
+              <PackageCard key={pkg.id} pkg={pkg} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            No packages available for this destination currently. Please check back later!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const hotelsContent = (
+    <div className="bg-warm-white relative overflow-hidden rounded-[40px] shadow-sm border border-charcoal/5 p-8 lg:p-12">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-coral/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+      <div className="relative z-10">
+        <SectionHeading
+          title={`Hotels & Resorts in ${dest.name}`}
+          subtitle="Comfortable stays selected just for you."
+        />
+        {dbHotels && dbHotels.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {dbHotels.map((hotel: any) => (
+              <HotelCard key={hotel.id} hotel={hotel} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            No hotels available for this destination currently. Please check back later!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="bg-white min-h-screen">
       {/* Destination Hero */}
       <section className="relative -mt-[72px] pt-[104px] pb-12 lg:pb-16 overflow-hidden rounded-b-[40px] shadow-sm">
         <div className="absolute inset-0 bg-charcoal">
-          <PlaceholderImage
-            gradient={dest.imageGradient}
-            alt={dest.name}
-            className="w-full h-full opacity-60 mix-blend-overlay"
-            overlay
-          />
+          {heroImage ? (
+            <img src={heroImage} alt={dest.name} className="w-full h-full object-cover opacity-60 mix-blend-overlay" />
+          ) : (
+            <PlaceholderImage
+              gradient={gradient}
+              alt={dest.name}
+              className="w-full h-full opacity-60 mix-blend-overlay"
+              overlay
+            />
+          )}
         </div>
         <div className="container-max relative z-10 text-center px-4 mt-8">
           <ScrollReveal>
@@ -78,22 +201,22 @@ export default async function LambasingiPage() {
       <div className="relative z-20 -mt-10 mb-10 px-4 sm:px-6 lg:px-8">
         <div className="container-max">
           <div className="bg-white rounded-[24px] shadow-card border border-charcoal/5 p-2 max-w-4xl mx-auto">
-            <div className="flex flex-col sm:flex-row justify-around divide-y sm:divide-y-0 sm:divide-x divide-charcoal/5 py-4">
-              <div className="flex flex-col items-center py-4 sm:py-2 px-4 text-center group">
+            <div className="flex flex-col sm:flex-row justify-center divide-y sm:divide-y-0 sm:divide-x divide-charcoal/5 py-4 w-full">
+              <div className="flex flex-col items-center py-4 sm:py-2 px-4 text-center group flex-1">
                 <div className="w-10 h-10 rounded-full bg-sand flex items-center justify-center mb-2 group-hover:bg-coral group-hover:text-white transition-colors text-charcoal duration-500 shadow-sm border border-charcoal/5">
                   <MapPin size={20} />
                 </div>
                 <span className="text-[10px] text-charcoal/40 uppercase tracking-widest font-bold mb-1">Distance</span>
                 <span className="text-charcoal font-bold text-base tracking-tight">{dest.distance}</span>
               </div>
-              <div className="flex flex-col items-center py-4 sm:py-2 px-4 text-center group">
+              <div className="flex flex-col items-center py-4 sm:py-2 px-4 text-center group flex-1">
                 <div className="w-10 h-10 rounded-full bg-sand flex items-center justify-center mb-2 group-hover:bg-teal group-hover:text-white transition-colors text-charcoal duration-500 shadow-sm border border-charcoal/5">
                   <Mountain size={20} />
                 </div>
                 <span className="text-[10px] text-charcoal/40 uppercase tracking-widest font-bold mb-1">Elevation</span>
                 <span className="text-charcoal font-bold text-base tracking-tight">{dest.elevation}</span>
               </div>
-              <div className="flex flex-col items-center py-4 sm:py-2 px-4 text-center group">
+              <div className="flex flex-col items-center py-4 sm:py-2 px-4 text-center group flex-1">
                 <div className="w-10 h-10 rounded-full bg-sand flex items-center justify-center mb-2 group-hover:bg-ocean group-hover:text-white transition-colors text-charcoal duration-500 shadow-sm border border-charcoal/5">
                   <Clock size={20} />
                 </div>
@@ -105,81 +228,26 @@ export default async function LambasingiPage() {
         </div>
       </div>
 
-      {/* Highlights */}
-      <section className="section-padding">
-        <div className="container-max">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
-            <div className="lg:w-1/2 w-full">
-              <ScrollReveal direction="right">
-                <PlaceholderImage
-                  gradient={dest.imageGradient}
-                  alt={`${dest.name} Highlights`}
-                  className="w-full aspect-[4/3] rounded-[40px] shadow-card border border-charcoal/5"
-                />
-              </ScrollReveal>
-            </div>
-            <div className="lg:w-1/2 w-full">
-              <ScrollReveal direction="left">
-                <SectionHeading
-                  title="Top Attractions & Highlights"
-                  centered={false}
-                />
-                <ul className="space-y-4 mt-6">
-                  {dest.highlights.map((highlight, idx) => {
-                    const [title, desc] = highlight.split("—");
-                    return (
-                      <li key={idx} className="flex gap-5 group">
-                        <div className="mt-1 shrink-0">
-                          <div className="w-8 h-8 rounded-full bg-teal/10 flex items-center justify-center text-teal group-hover:bg-teal group-hover:text-white transition-colors duration-300">
-                            <CheckCircle2 size={18} />
-                          </div>
-                        </div>
-                        <div>
-                          <strong className="text-charcoal text-lg block mb-1 font-heading tracking-tight leading-tight">{title.trim()}</strong>
-                          <span className="text-charcoal/60 text-sm font-medium leading-relaxed block">{desc?.trim()}</span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </ScrollReveal>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Related Packages */}
-      <section className="section-padding bg-warm-white relative overflow-hidden rounded-[40px] mx-4 sm:mx-6 lg:mx-8 mb-12 shadow-sm border border-charcoal/5">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-        <div className="container-max relative z-10">
-          <SectionHeading
-            title={`Tour Packages featuring ${dest.name}`}
-            subtitle="Choose from our specially crafted itineraries to experience the best of this destination."
-          />
-          <ScrollReveal delay={0.2}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-              {relatedPackages.map((pkg) => (
-                <PackageCard key={pkg.id} pkg={pkg} />
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      <DestinationTabs 
+        overviewContent={overviewContent}
+        packagesContent={packagesContent}
+        hotelsContent={hotelsContent}
+      />
 
       {/* CTA */}
-      <section className="py-16 bg-charcoal text-center px-4 relative overflow-hidden rounded-[40px] mx-4 sm:mx-6 lg:mx-8 mb-12 shadow-card">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-coral/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/3 pointer-events-none" />
+      <section className="py-10 bg-charcoal text-center px-4 relative overflow-hidden rounded-[24px] mx-4 sm:mx-6 lg:mx-8 mb-12 shadow-card">
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-coral/10 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-teal/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/3 pointer-events-none" />
         
         <ScrollReveal>
           <div className="max-w-2xl mx-auto relative z-10">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-heading text-white mb-4 tracking-tight leading-[1.1]">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black font-heading text-white mb-3 tracking-tight leading-[1.1]">
               Ready to visit <span className="text-coral">{dest.name}</span>?
             </h2>
-            <p className="text-white/60 text-base md:text-lg mb-8 font-medium leading-relaxed">
+            <p className="text-white/60 text-sm md:text-base mb-6 font-medium leading-relaxed">
               Contact our experts to customize your itinerary and book your trip today.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
               <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-primary bg-coral hover:bg-coral/90 text-white shadow-[0_8px_20px_rgba(255,107,107,0.3)] hover:-translate-y-1 transition-all duration-300">
                 Plan on WhatsApp
               </a>

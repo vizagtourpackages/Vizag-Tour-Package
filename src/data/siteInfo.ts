@@ -5,7 +5,7 @@ export const siteInfo = {
   intro:
     "Discover Vizag with Ease — We Plan, You Explore! — Your one-stop travel partner for Vizag sightseeing, Araku Valley hill-station tours, hotel bookings, vizag airport transfers, outstation cabs, and customized holiday packages.",
   footerAbout:
-    "vizagtourpackages is operated by Araku Eco Stays & Travels, a trusted local travel company in Vizag City (Visakhapatnam). We offer local sightseeing tours in Vizag, the best Vizag tour packages and devotional tour packages, hotel and resort bookings, transportation, and customized tour packages for a comfortable, affordable, and memorable travel experience.",
+    "vizagtourpackages.com is operated by Araku Eco Stays & Travels, a trusted local travel company in Vizag City (Visakhapatnam). We offer local sightseeing tours in Vizag, the best Vizag tour packages and devotional tour packages, hotel and resort bookings, transportation, and customized tour packages for a comfortable, affordable, and memorable travel experience.",
   whatsapp: "+917780739851",
   whatsappLink: "https://wa.me/917780739851",
   landline: "0891 2213875",

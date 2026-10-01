@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Shield, Car, MapPin, Clock, Phone, MessageCircle } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import FleetSection from "@/components/VehicleCard";
@@ -19,6 +21,22 @@ export default function TravelsClient({
   notes?: any[]
 }) {
   const { openBooking } = useBooking();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const handledBookId = useRef<string | null>(null);
+
+  useEffect(() => {
+    const bookId = searchParams.get('book');
+    if (bookId && vehicles.length > 0 && handledBookId.current !== bookId) {
+      handledBookId.current = bookId;
+      const vehicleToBook = vehicles.find(v => String(v.id) === String(bookId));
+      if (vehicleToBook) {
+        openBooking('cab', vehicleToBook);
+        // We use window.history.replaceState to avoid triggering Next.js router re-renders
+        window.history.replaceState(null, '', '/travels');
+      }
+    }
+  }, [searchParams, vehicles]);
 
   return (
     <div className="bg-warm-white min-h-screen pb-24 pt-0 md:pt-16">

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import TravelsClient from "./TravelsClient";
 
@@ -37,5 +38,9 @@ export default async function TravelsPage() {
   const trustPoints = dbTrustPoints || [];
   const notes = dbNotes || [];
 
-  return <TravelsClient vehicles={displayTravels} trustPoints={trustPoints} notes={notes} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TravelsClient vehicles={displayTravels} trustPoints={trustPoints} notes={notes} />
+    </Suspense>
+  );
 }
