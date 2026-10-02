@@ -130,9 +130,10 @@ export default function DestinationPageForm({ initialData }: { initialData: any 
           <label className="block text-sm font-medium text-gray-700 mb-2">Main Image</label>
           <p className="text-xs text-gray-500 mb-4">This image will be used as the hero banner and the highlights placeholder image. Replaces the default gradient.</p>
           <ImageUpload 
-            value={imageUrl} 
-            onChange={setImageUrl} 
+            defaultImage={imageUrl} 
+            onUpload={setImageUrl} 
             folder="destination-pages" 
+            bucket="vizag-tours"
           />
         </div>
       </div>

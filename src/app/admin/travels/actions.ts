@@ -30,7 +30,7 @@ export async function saveTravel(formData: FormData) {
   const data = {
     model: formData.get('model') as string,
     price_per_km: formData.get('price_per_km') as string,
-    pax: formData.get('pax') ? parseInt(formData.get('pax') as string) : 0,
+    pax: formData.get('pax') as string,
     image: formData.get('image') as string,
     min_km_note: formData.get('min_km_note') as string,
     is_published: formData.get('is_published') === 'true',

@@ -4,25 +4,29 @@ import PromoBanner from "./PromoBanner";
 export default async function PromoBannerSection() {
   const supabase = await createClient();
 
-  // Fetch the most recently updated active banner
-  const { data: banner } = await supabase
+  // Fetch all active banners along with their images
+  const { data: banners } = await supabase
     .from('promo_banner')
-    .select('*')
+    .select('*, promo_banner_images(image_url, display_order)')
     .eq('is_active', true)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
+    .order('created_at', { ascending: false });
 
-  if (!banner) return null;
+  if (!banners || banners.length === 0) return null;
 
-  // Fetch its images
-  const { data: images } = await supabase
-    .from('promo_banner_images')
-    .select('image_url')
-    .eq('banner_id', banner.id)
-    .order('display_order', { ascending: true });
+  // Format data for the client component
+  const formattedBanners = banners.map(banner => {
+    // Sort images by display_order
+    const images = banner.promo_banner_images
+      ? banner.promo_banner_images
+          .sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0))
+          .map((img: any) => img.image_url)
+      : [];
+    
+    return {
+      ...banner,
+      images
+    };
+  });
 
-  if (!images || images.length === 0) return null;
-
-  return <PromoBanner banner={banner} images={images} />;
+  return <PromoBanner banners={formattedBanners} />;
 }

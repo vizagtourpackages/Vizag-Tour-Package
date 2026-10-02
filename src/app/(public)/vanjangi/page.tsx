@@ -37,14 +37,14 @@ export default async function VanjangiPage() {
     .from('tour_packages')
     .select('*')
     .eq('is_published', true)
-    .eq('show_on_vanjangi', true)
+    .eq('show_in_vanjangi', true)
     .order('created_at', { ascending: false });
 
   const { data: dbHotels } = await supabase
     .from('hotels_resorts')
     .select('*')
     .eq('is_published', true)
-    .eq('show_on_vanjangi', true)
+    .eq('show_in_vanjangi', true)
     .order('created_at', { ascending: false });
 
   // Map DB rows to match the existing Package interface, with a fallback

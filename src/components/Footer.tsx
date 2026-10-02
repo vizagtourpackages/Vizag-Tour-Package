@@ -10,8 +10,31 @@ import {
 import { siteInfo, navLinks } from "@/data/siteInfo";
 import TermsButton from "@/components/TermsButton";
 
-export default function Footer() {
+import { createClient } from "@/lib/supabase/server";
+
+export default async function Footer() {
   const currentYear = new Date().getFullYear();
+
+  // Fetch popular packages
+  const supabase = await createClient();
+  const { data: popularPackages } = await supabase
+    .from('tour_packages')
+    .select('title, slug')
+    .eq('is_published', true)
+    .ilike('badge', '%popular%')
+    .limit(5);
+
+  const fallbackPopular = [
+    { label: "One Day Vizag Tour", href: "/tour-packages" },
+    { label: "Vizag City Tour (1N/2D)", href: "/tour-packages" },
+    { label: "Vizag - Araku Package", href: "/tour-packages" },
+    { label: "Araku Valley Trip", href: "/araku-valley" },
+    { label: "Lambasingi Getaway", href: "/lambasingi" },
+  ];
+
+  const popularLinks = popularPackages && popularPackages.length > 0 
+    ? popularPackages.map(pkg => ({ label: pkg.title, href: `/tour-packages/${pkg.slug}` }))
+    : fallbackPopular;
 
   return (
     <footer className="bg-charcoal text-white relative overflow-hidden">
@@ -68,20 +91,14 @@ export default function Footer() {
           <div>
             <h3 className="font-heading font-bold text-lg mb-6 tracking-tight">Popular Packages</h3>
             <ul className="space-y-3">
-              {[
-                { label: "One Day Vizag Tour", href: "/tour-packages" },
-                { label: "Vizag City Tour (1N/2D)", href: "/tour-packages" },
-                { label: "Vizag - Araku Package", href: "/tour-packages" },
-                { label: "Araku Valley Trip", href: "/araku-valley" },
-                { label: "Lambasingi Getaway", href: "/lambasingi" },
-              ].map((link, idx) => (
+              {popularLinks.map((link, idx) => (
                 <li key={idx}>
                   <Link
                     href={link.href}
                     className="text-white/60 text-sm font-medium hover:text-coral transition-colors flex items-center gap-2 group"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-charcoal-light group-hover:bg-coral transition-colors" />
-                    {link.label}
+                    <span className="truncate max-w-[200px]" title={link.label}>{link.label}</span>
                   </Link>
                 </li>
               ))}

@@ -62,7 +62,7 @@ export default function Navbar() {
               link.subLinks ? (
                 <div key={link.label} className="relative group">
                   <button
-                    className={`flex items-center gap-1 px-2 xl:px-3 py-1.5 xl:py-2 rounded-full text-[10px] xl:text-[11px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
+                    className={`flex items-center gap-1 px-1.5 xl:px-2 py-1 xl:py-1.5 rounded-full text-[9px] xl:text-[10px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
                       ? "text-charcoal/80 hover:text-charcoal hover:bg-charcoal/5"
                       : "text-white/90 hover:text-white hover:bg-white/10"
                       }`}
@@ -90,7 +90,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href!}
                   prefetch={true}
-                  className={`px-2 xl:px-3 py-1.5 xl:py-2 rounded-full text-[10px] xl:text-[11px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
+                  className={`px-1.5 xl:px-2 py-1 xl:py-1.5 rounded-full text-[9px] xl:text-[10px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
                     ? "text-charcoal/80 hover:text-charcoal hover:bg-charcoal/5"
                     : "text-white/90 hover:text-white hover:bg-white/10"
                     }`}

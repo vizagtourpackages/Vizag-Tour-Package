@@ -79,12 +79,12 @@ export default function TravelForm({ initialData, id }: { initialData: any, id: 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Pax (Passengers) *</label>
           <input 
-            type="number" 
+            type="text" 
             name="pax" 
-            defaultValue={initialData?.pax || 4}
+            defaultValue={initialData?.pax || '4'}
             required
-            min="1"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-coral/20 focus:border-coral outline-none"
+            placeholder="e.g. 4+1, 7+1"
           />
         </div>
 

@@ -140,7 +140,7 @@ export default function PromoBannerForm({ id, initialData, initialImages = [] }:
               />
               <span className="text-sm font-semibold text-gray-700">Set as Active Banner</span>
             </label>
-            <span className="ml-2 text-xs text-gray-500">(Only the most recently updated active banner is shown on the homepage)</span>
+            <span className="ml-2 text-xs text-gray-500">(All active banners will be shown in a scrolling carousel on the homepage)</span>
           </div>
         </div>
       </div>
