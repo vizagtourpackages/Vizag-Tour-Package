@@ -407,21 +407,21 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
 
               <div className="p-4 bg-gray-50 rounded-lg border">
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" name="show_on_araku" value="true" defaultChecked={initialData?.show_on_araku} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+                  <input type="checkbox" name="show_in_araku" value="true" defaultChecked={initialData?.show_in_araku} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
                   <span className="font-semibold text-gray-800">Show on Araku Page</span>
                 </label>
               </div>
 
               <div className="p-4 bg-gray-50 rounded-lg border">
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" name="show_on_lambasingi" value="true" defaultChecked={initialData?.show_on_lambasingi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+                  <input type="checkbox" name="show_in_lambasingi" value="true" defaultChecked={initialData?.show_in_lambasingi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
                   <span className="font-semibold text-gray-800">Show on Lambasingi Page</span>
                 </label>
               </div>
               
               <div className="p-4 bg-gray-50 rounded-lg border">
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" name="show_on_vanjangi" value="true" defaultChecked={initialData?.show_on_vanjangi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+                  <input type="checkbox" name="show_in_vanjangi" value="true" defaultChecked={initialData?.show_in_vanjangi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
                   <span className="font-semibold text-gray-800">Show on Vanjangi Page</span>
                 </label>
               </div>

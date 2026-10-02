@@ -2,40 +2,57 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface PromoBannerProps {
-  banner: {
-    id: string;
-    badge_text: string;
-    headline: string;
-    description: string | null;
-    offer_end_datetime: string | null;
-    cta_text: string;
-    cta_link: string;
-  };
-  images: {
-    image_url: string;
-  }[];
+interface BannerData {
+  id: string;
+  badge_text: string;
+  headline: string;
+  description: string | null;
+  offer_end_datetime: string | null;
+  cta_text: string;
+  cta_link: string;
+  images: string[];
 }
 
-export default function PromoBanner({ banner, images }: PromoBannerProps) {
+interface PromoBannerProps {
+  banners: BannerData[];
+}
+
+export default function PromoBanner({ banners }: PromoBannerProps) {
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
 
-  // Auto-rotate images
+  const banner = banners[currentBannerIndex];
+
+  // Auto-rotate banners every 2 seconds if there is more than 1
   useEffect(() => {
-    if (!images || images.length <= 1) return;
+    if (!banners || banners.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+      setCurrentBannerIndex((prev) => (prev + 1) % banners.length);
+      setCurrentImageIndex(0); // Reset image index when banner changes
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [banners]);
+
+  // Auto-rotate images within a banner every 2 seconds (if multiple images)
+  // But wait, if we are rotating banners every 2 seconds, image rotation within the same 2 seconds won't be seen.
+  // We'll leave it at 3 seconds, so if there's only 1 banner but multiple images, they still rotate.
+  useEffect(() => {
+    if (!banner || !banner.images || banner.images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % banner.images.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [images]);
+  }, [banner]);
 
   // Countdown timer
   useEffect(() => {
-    if (!banner.offer_end_datetime) return;
+    if (!banner || !banner.offer_end_datetime) {
+      setTimeLeft(null);
+      return;
+    }
     
     const calculateTimeLeft = () => {
       const difference = new Date(banner.offer_end_datetime!).getTime() - new Date().getTime();
@@ -55,9 +72,9 @@ export default function PromoBanner({ banner, images }: PromoBannerProps) {
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [banner.offer_end_datetime]);
+  }, [banner]);
 
-  if (!images || images.length === 0) return null;
+  if (!banners || banners.length === 0 || !banner) return null;
 
   return (
     <section className="py-4 md:py-8 bg-warm-white relative overflow-hidden">
@@ -68,18 +85,18 @@ export default function PromoBanner({ banner, images }: PromoBannerProps) {
           <div className="absolute inset-0 z-0">
             <AnimatePresence mode="popLayout">
               <motion.img
-                key={currentImageIndex}
-                src={images[currentImageIndex].image_url}
+                key={`${banner.id}-${currentImageIndex}`}
+                src={banner.images && banner.images.length > 0 ? banner.images[currentImageIndex] : ''}
                 alt="Promo Banner"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1, ease: "easeInOut" }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </AnimatePresence>
             {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20" />
           </div>
 
           {/* Content */}
@@ -93,19 +110,29 @@ export default function PromoBanner({ banner, images }: PromoBannerProps) {
             </div>
 
             <div className="max-w-xl md:max-w-[85%] lg:max-w-[90%]">
-              <span className="inline-block bg-orange-500/20 text-orange-400 border border-orange-500/30 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-widest uppercase mb-2 shadow-sm">
-                {banner.badge_text}
-              </span>
-              
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-white leading-tight mb-1.5 tracking-tight drop-shadow-md md:whitespace-nowrap">
-                {banner.headline}
-              </h2>
-              
-              {banner.description && (
-                <p className="text-white/90 text-xs sm:text-sm mb-3 leading-relaxed drop-shadow line-clamp-2">
-                  {banner.description}
-                </p>
-              )}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`content-${banner.id}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <span className="inline-block bg-orange-500/20 text-orange-400 border border-orange-500/30 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-widest uppercase mb-2 shadow-sm">
+                    {banner.badge_text}
+                  </span>
+                  
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-white leading-tight mb-1.5 tracking-tight drop-shadow-md md:whitespace-nowrap">
+                    {banner.headline}
+                  </h2>
+                  
+                  {banner.description && (
+                    <p className="text-white/90 text-xs sm:text-sm mb-3 leading-relaxed drop-shadow line-clamp-2">
+                      {banner.description}
+                    </p>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
 
             <div className="flex flex-row items-center justify-between w-full mt-auto pt-2 gap-2">
@@ -126,15 +153,45 @@ export default function PromoBanner({ banner, images }: PromoBannerProps) {
                 <div />
               )}
 
-              <Link 
-                href={banner.cta_link}
-                className="bg-teal hover:bg-teal-dark text-white font-bold py-1.5 px-4 sm:py-2 sm:px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap text-[10px] sm:text-xs"
-              >
-                {banner.cta_text}
-              </Link>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`cta-${banner.id}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Link 
+                    href={banner.cta_link}
+                    className="bg-teal hover:bg-teal-dark text-white font-bold py-1.5 px-4 sm:py-2 sm:px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap text-[10px] sm:text-xs inline-block"
+                  >
+                    {banner.cta_text}
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
-
+          
+          {/* Banner Indicators (Dots) */}
+          {banners.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+              {banners.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setCurrentBannerIndex(idx);
+                    setCurrentImageIndex(0);
+                  }}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    currentBannerIndex === idx 
+                      ? 'bg-white w-4' 
+                      : 'bg-white/40 hover:bg-white/60'
+                  }`}
+                  aria-label={`Go to banner ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
