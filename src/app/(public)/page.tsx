@@ -190,6 +190,7 @@ export default async function Home() {
       location: r.location,
       price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
       price_label: r.price_label,
+      no_of_persons: r.no_of_persons,
       image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
       amenities: r.amenities || [],
       reviews: r.reviews || 0
@@ -514,24 +515,7 @@ export default async function Home() {
       <ComparisonTable />
 
       {/* Your Trusted Travel Partner (Redesigned) */}
-      <section className="py-16 bg-white border-y border-charcoal/5">
-        <div className="container-max">
-          <ScrollReveal>
-            <div className="text-center mb-10">
-              <h2 className="font-heading font-bold text-lg md:text-xl text-charcoal/40 uppercase tracking-widest">Your Trusted Travel Partner</h2>
-            </div>
-          </ScrollReveal>
-          <ScrollReveal delay={0.2}>
-            <div className="flex flex-wrap justify-center items-center gap-x-12 sm:gap-x-16 gap-y-10 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-              {["MakeMyTrip", "Agoda", "Goibibo", "TripAdvisor", "Booking.com"].map((partner, idx) => (
-                <div key={idx} className="text-xl md:text-3xl font-black text-charcoal tracking-tight">
-                  {partner}
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      <TrustedPartners />
 
       {/* NEW: Promotions & News */}
       <section className="section-padding bg-charcoal relative overflow-hidden">

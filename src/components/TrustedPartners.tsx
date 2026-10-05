@@ -4,17 +4,23 @@ import ScrollReveal from "./ScrollReveal";
 export default async function TrustedPartners() {
   const supabase = await createClient();
   
-  // Fetch visibility setting
-  const { data: setting } = await supabase
+  const { data: settings } = await supabase
     .from("site_settings")
-    .select("value")
-    .eq("key", "show_trusted_partners")
-    .single();
+    .select("key, value")
+    .in("key", ["show_trusted_partners", "trusted_partners_list"]);
     
-  // If setting exists and is explicitly set to 'false' (as a string or boolean), hide it
-  if (setting && (setting.value === 'false' || setting.value === false)) {
+  const getSetting = (key: string, defaultValue: string) => {
+    const s = settings?.find(s => s.key === key)
+    return s ? s.value : defaultValue
+  }
+
+  const showPartners = getSetting("show_trusted_partners", "true")
+  if (showPartners === 'false') {
     return null;
   }
+  
+  const partnersListStr = getSetting("trusted_partners_list", "MakeMyTrip, Agoda, Goibibo, TripAdvisor, Booking.com")
+  const partnersList = partnersListStr.split(",").map(s => s.trim()).filter(Boolean)
 
   return (
     <section className="py-16 bg-white border-y border-charcoal/5">
@@ -26,7 +32,7 @@ export default async function TrustedPartners() {
         </ScrollReveal>
         <ScrollReveal delay={0.2}>
           <div className="flex flex-wrap justify-center items-center gap-x-12 sm:gap-x-16 gap-y-10 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-            {["MakeMyTrip", "Agoda", "Goibibo", "TripAdvisor", "Booking.com"].map((partner, idx) => (
+            {partnersList.map((partner, idx) => (
               <div key={idx} className="text-xl md:text-3xl font-black text-charcoal tracking-tight">
                 {partner}
               </div>

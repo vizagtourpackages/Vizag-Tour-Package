@@ -14,6 +14,8 @@ export interface Package {
   imageGradient: string;
   imageUrl?: string;
   originalPrice?: number;
+  rating?: number;
+  review_count?: number;
 }
 
 export const trendingPackages: Package[] = [

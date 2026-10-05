@@ -1,12 +1,21 @@
 'use client'
 import Image from "next/image";
 import Link from "next/link";
-import { Star, MapPin, CheckCircle2 } from "lucide-react";
+import { Star, MapPin, CheckCircle2, Users } from "lucide-react";
 import type { Hotel } from "@/data/hotels";
 import { useBooking } from "./booking/BookingContext";
 
 export default function HotelCard({ hotel, compact = false }: { hotel: Hotel, compact?: boolean }) {
   const { openBooking } = useBooking();
+  
+  const getFormattedPriceLabel = (label?: string) => {
+    const base = "per night";
+    if (!label) return base;
+    const cleanLabel = label.replace(/^\/?\s*/, '').toLowerCase().trim();
+    if (cleanLabel === "per night" || cleanLabel === "night" || cleanLabel === "") return base;
+    return `${base} / ${label.replace(/^\/?\s*/, '')}`;
+  };
+
   return (
     <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 h-full flex flex-col overflow-hidden group">
       <Link href={`/resorts/${hotel.slug || hotel.id}`} className="w-full relative p-2 block group-hover:scale-[1.01] transition-transform">
@@ -28,6 +37,12 @@ export default function HotelCard({ hotel, compact = false }: { hotel: Hotel, co
         <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-charcoal shadow-sm border border-charcoal/5 z-20">
           {hotel.type}
         </div>
+        {hotel.no_of_persons && (
+          <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-charcoal shadow-md border border-white/20 z-20 flex items-center gap-1.5">
+            <Users size={14} className="text-teal" />
+            {hotel.no_of_persons}
+          </div>
+        )}
       </Link>
 
       <div className="p-5 sm:p-6 flex flex-col flex-grow">
@@ -51,11 +66,15 @@ export default function HotelCard({ hotel, compact = false }: { hotel: Hotel, co
           ))}
         </div>
 
-        <div className="mt-auto pt-5 border-t border-charcoal/5 flex items-center justify-between">
-          <div>
+        <div className="mt-auto pt-5 border-t border-charcoal/5 flex items-end justify-between gap-2">
+          <div className="flex-1 min-w-0">
             <span className="text-[10px] sm:text-xs text-charcoal/50 block font-bold uppercase tracking-wider mb-0.5">Starting from</span>
-            <span className={`font-black text-charcoal tracking-tight ${compact ? 'text-xl' : 'text-2xl'}`}>{hotel.price}</span>
-            <span className="text-[10px] sm:text-xs text-charcoal/50 font-medium"> {hotel.price_label ? hotel.price_label : '/ night'}</span>
+            <div className="flex items-baseline flex-wrap gap-1">
+              <span className={`font-black text-charcoal tracking-tight leading-none ${compact ? 'text-xl' : 'text-2xl'}`}>{hotel.price}</span>
+              <span className="text-[10px] sm:text-xs text-charcoal/50 font-medium whitespace-nowrap">
+                / {getFormattedPriceLabel(hotel.price_label)}
+              </span>
+            </div>
           </div>
           <Link href={`/resorts/${hotel.slug || hotel.id}`} className={`btn-primary rounded-full bg-charcoal hover:bg-coral inline-block text-center ${compact ? 'py-1.5 px-4 text-xs' : 'py-2.5 px-6 text-sm'}`}>
             Book Now

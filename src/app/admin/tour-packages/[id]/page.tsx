@@ -42,12 +42,28 @@ export default async function EditTourPackagePage({ params }: { params: Promise<
     }
   }
 
+  // Always fetch available resorts for the rate plans dropdown
+  const supabaseClient = await createClient();
+  const { data: resortsData } = await supabaseClient
+    .from('hotels_resorts')
+    .select('id, name')
+    .eq('is_published', true)
+    .order('name');
+  
+  const availableResorts = resortsData || [];
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900">{isNew ? 'Add New Tour Package' : 'Edit Tour Package'}</h2>
       </div>
-      <TourPackageForm initialData={initialData} id={resolvedParams.id} initialDays={initialDays} initialHotels={initialHotels} />
+      <TourPackageForm 
+        initialData={initialData} 
+        id={resolvedParams.id} 
+        initialDays={initialDays} 
+        initialHotels={initialHotels} 
+        availableResorts={availableResorts}
+      />
     </div>
   )
 }

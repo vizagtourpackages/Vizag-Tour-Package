@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link";
 import Image from "next/image";
-import { Check, X, ArrowRight, Clock, Users } from "lucide-react";
+import { Check, X, ArrowRight, Clock, Users, Star } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Package } from "@/data/packages";
 import { useBooking } from "./booking/BookingContext";
@@ -47,6 +47,13 @@ export default function PackageCard({ pkg }: PackageCardProps) {
             {pkg.badge}
           </span>
         )}
+
+        {/* Review Badge */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 flex items-center gap-1 bg-white/90 backdrop-blur-md px-2 py-1 rounded-full shadow-sm text-xs font-bold text-charcoal border border-charcoal/5">
+          <Star size={12} className="text-amber-500 fill-amber-500" />
+          <span>{pkg.rating || 4.5}</span>
+          <span className="text-charcoal/50 text-[10px]">({pkg.review_count || 120})</span>
+        </div>
         <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-sm border border-charcoal/5 z-10 flex flex-col items-end min-w-[100px]">
           {discountPercent > 0 && (
             <div className="flex items-center gap-1.5 mb-0.5">

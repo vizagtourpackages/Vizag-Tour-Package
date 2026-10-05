@@ -86,10 +86,43 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
   const mainImageUrl = hotel.cover_image_url || hotel.image_url || '/placeholder.jpg';
   const priceDisplay = hotel.price_per_night ? `₹${hotel.price_per_night}` : hotel.price;
   
+  const getFormattedPriceLabel = (label?: string) => {
+    const base = "per night";
+    if (!label) return base;
+    const cleanLabel = label.replace(/^\/?\s*/, '').toLowerCase().trim();
+    if (cleanLabel === "per night" || cleanLabel === "night" || cleanLabel === "") return base;
+    return `${base} / ${label.replace(/^\/?\s*/, '')}`;
+  };
+  
   // Group nearby places by category
   const nearbyPlaces = hotel.nearby_places || [];
   const attractions = nearbyPlaces.filter((p: any) => p.category === 'attraction' || p.category !== 'restaurant');
   const restaurants = nearbyPlaces.filter((p: any) => p.category === 'restaurant');
+
+  const bookingCard = (
+    <div className="bg-white rounded-[24px] border border-[#E8DDD4] p-6 sm:p-8 shadow-sm lg:sticky lg:top-28">
+      <div className="mb-2">
+        <span className="text-[#6B5744]/70 text-[15px] font-medium">Starting from</span>
+      </div>
+      <div className="mb-4 flex flex-wrap items-baseline gap-2">
+        <span className="text-[32px] font-bold text-[#332A20] leading-none mb-1">
+          {priceDisplay}
+        </span>
+        <span className="text-sm font-medium text-[#6B5744]/70">
+          / {getFormattedPriceLabel(hotel.price_label)}
+        </span>
+        <span className="text-[#6B5744]/60 text-sm block mt-1 w-full">Taxes included · Select a room to book</span>
+      </div>
+
+      <ResortBookingButton hotel={hotel} />
+      
+      <div className="mt-4 text-center">
+        <span className="text-xs text-[#6B5744]/60">
+          By booking you agree to our <TermsButton category="resorts" className="text-[#2D6A4F] hover:underline font-medium cursor-pointer" />
+        </span>
+      </div>
+    </div>
+  );
 
   return (
     <div className="bg-[#FFFBF4] min-h-screen md:pt-16 pt-0 pb-24 font-sans">
@@ -162,13 +195,20 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                         </div>
                         <div className="text-right shrink-0 ml-4">
                           <div className="font-bold text-xl sm:text-2xl text-[#332A20]">₹{rt.price}</div>
-                          <div className="text-[11px] text-[#6B5744]/60">per night</div>
+                          <div className="text-[11px] text-[#6B5744]/60">
+                            / {getFormattedPriceLabel(hotel.price_label)}
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </section>
               )}
+
+              {/* Mobile Booking Card (Before Around the Property) */}
+              <div className="block lg:hidden">
+                {bookingCard}
+              </div>
 
               {/* Around the Property */}
               {(attractions.length > 0 || restaurants.length > 0) && (
@@ -250,24 +290,8 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
             </div>
 
             {/* Right Column / Sticky Booking Card */}
-            <div className="w-full lg:w-1/3 mt-8 lg:mt-0 pb-12 lg:pb-0">
-              <div className="lg:sticky lg:top-28 bg-white rounded-[24px] border border-[#E8DDD4] p-6 sm:p-8 shadow-sm">
-                <div className="mb-2">
-                  <span className="text-[#6B5744]/70 text-[15px] font-medium">Starting from</span>
-                </div>
-                <div className="mb-4">
-                  <span className="text-[32px] font-bold text-[#332A20] block leading-none mb-1">{priceDisplay}</span>
-                  <span className="text-[#6B5744]/60 text-sm block">Taxes included · Select a room to book</span>
-                </div>
-
-                <ResortBookingButton hotel={hotel} />
-                
-                <div className="mt-4 text-center">
-                  <span className="text-xs text-[#6B5744]/60">
-                    By booking you agree to our <TermsButton category="resorts" className="text-[#2D6A4F] hover:underline font-medium cursor-pointer" />
-                  </span>
-                </div>
-              </div>
+            <div className="hidden lg:block w-full lg:w-1/3 mt-8 lg:mt-0 pb-12 lg:pb-0">
+              {bookingCard}
             </div>
 
           </div>
@@ -293,6 +317,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                     location: r.location,
                     price: r.price_per_night ? `₹${r.price_per_night}` : r.price,
                     price_label: r.price_label,
+                    no_of_persons: r.no_of_persons,
                     image: r.cover_image_url || r.image_url,
                     amenities: r.amenities || []
                   }} 

@@ -11,6 +11,8 @@ import { Check, X, MapPin, Clock, Calendar, Star, Bed } from 'lucide-react'
 
 export default function PackageTabs({ pkg }: { pkg: any }) {
   const [activeTab, setActiveTab] = useState('itinerary')
+  const [showAllItinerary, setShowAllItinerary] = useState(false)
+  const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({})
 
   // Sort itinerary days and stops
   const itineraryDays = pkg.package_itinerary_days?.sort((a: any, b: any) => a.day_number - b.day_number) || []
@@ -168,8 +170,10 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
           <div className="space-y-8 animate-fade-in">
             {itineraryDays.length > 0 ? (
               <div className="relative border-l-2 border-charcoal/10 ml-4 md:ml-6 space-y-12 pb-8">
-                {itineraryDays.map((day: any) => {
+                {(showAllItinerary ? itineraryDays : itineraryDays.slice(0, 3)).map((day: any) => {
                   const stops = day.package_itinerary_stops?.sort((a: any, b: any) => a.display_order - b.display_order) || []
+                  const isExpanded = expandedDays[day.id] || false;
+                  const visibleStops = isExpanded ? stops : stops.slice(0, 3);
                   
                   return (
                     <div key={day.id} className="relative pl-8 md:pl-12">
@@ -189,7 +193,7 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
                       {/* Stops */}
                       {stops.length > 0 && (
                         <div className="space-y-4">
-                          {stops.map((stop: any, idx: number) => (
+                          {visibleStops.map((stop: any, idx: number) => (
                             <div key={stop.id} className="bg-white p-5 rounded-2xl border border-charcoal/5 shadow-sm relative">
                               <h4 className="font-bold text-charcoal text-base mb-1">{stop.place_name}</h4>
                               {stop.description && (
@@ -197,11 +201,31 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
                               )}
                             </div>
                           ))}
+                          
+                          {stops.length > 3 && !isExpanded && (
+                            <button
+                              onClick={() => setExpandedDays(prev => ({ ...prev, [day.id]: true }))}
+                              className="text-sm font-bold text-coral hover:text-coral/80 transition-colors mt-2 underline underline-offset-4"
+                            >
+                              View More Places (+{stops.length - 3} more)
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
                   )
                 })}
+
+                {itineraryDays.length > 3 && !showAllItinerary && (
+                  <div className="relative pl-8 md:pl-12 pt-4">
+                    <button
+                      onClick={() => setShowAllItinerary(true)}
+                      className="w-full py-4 bg-gray-50 border border-gray-200 rounded-xl text-charcoal font-bold hover:bg-gray-100 transition-colors"
+                    >
+                      View All {itineraryDays.length} Days
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-charcoal/50 text-center py-12">Detailed itinerary is not available for this package.</p>

@@ -17,7 +17,7 @@ export default function PackageBookingButton({ pkg, plan }: { pkg: any, plan?: a
       onClick={() => openBooking('package', formattedPkg)}
       className={plan 
         ? "inline-block w-full sm:w-auto px-8 py-3 text-sm font-bold text-center text-teal border-2 border-teal rounded-lg hover:bg-teal hover:text-white transition-colors"
-        : "w-full flex items-center justify-center gap-2 text-white bg-teal py-2 lg:py-4 rounded-full font-bold text-xs lg:text-lg shadow-sm lg:shadow-md hover:bg-teal-dark hover:shadow-lg transition-all"
+        : "w-full flex items-center justify-center gap-2 text-white bg-teal py-3.5 sm:py-4 rounded-full font-bold text-base sm:text-lg shadow-sm lg:shadow-md hover:bg-teal-dark hover:shadow-lg transition-all"
       }
     >
       {plan ? 'SELECT' : 'Book Now'}
