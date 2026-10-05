@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Plus, X, Trash2, AlertCircle } from 'lucide-react'
 
-export default function TourPackageForm({ initialData, id, initialDays = [], initialHotels = [] }: { initialData?: any, id: string, initialDays?: any[], initialHotels?: any[] }) {
+export default function TourPackageForm({ initialData, id, initialDays = [], initialHotels = [], availableResorts = [] }: { initialData?: any, id: string, initialDays?: any[], initialHotels?: any[], availableResorts?: any[] }) {
   const [imageUrl, setImageUrl] = useState(initialData?.cover_image_url || initialData?.image_url || '')
   const [loading, setLoading] = useState(false)
   const [title, setTitle] = useState(initialData?.title || '')
@@ -154,7 +154,8 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
       is_best_value: false,
       price: '',
       mrp: '',
-      features: []
+      features: [],
+      resort_ids: []
     }])
   }
 
@@ -184,6 +185,21 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
     const newPlans = [...ratePlans]
     newPlans[planIndex].features = newPlans[planIndex].features.filter((_: any, i: number) => i !== featureIndex)
     setRatePlans(newPlans)
+  }
+
+  const toggleRatePlanResort = (planIndex: number, resortId: string) => {
+    setRatePlans(prev => {
+      const newPlans = [...prev];
+      const updatedPlan = { ...newPlans[planIndex] };
+      const currentResorts = updatedPlan.resort_ids || [];
+      if (currentResorts.includes(resortId)) {
+        updatedPlan.resort_ids = currentResorts.filter((id: string) => id !== resortId);
+      } else {
+        updatedPlan.resort_ids = [...currentResorts, resortId];
+      }
+      newPlans[planIndex] = updatedPlan;
+      return newPlans;
+    });
   }
 
   // Form Submission
@@ -590,6 +606,28 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
                     <Plus size={14}/> Add Feature
                   </button>
                 </div>
+                
+                {availableResorts && availableResorts.length > 0 && (
+                  <div className="mt-4 border-t border-gray-200 pt-4">
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Available Resorts for this Rate Plan</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                      {availableResorts.map(resort => {
+                        const isSelected = (plan.resort_ids || []).includes(resort.id);
+                        return (
+                          <label key={resort.id} className={`flex items-center gap-2 p-2 rounded border cursor-pointer transition-colors ${isSelected ? 'bg-teal/5 border-teal text-teal' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                            <input 
+                              type="checkbox" 
+                              checked={isSelected}
+                              onChange={() => toggleRatePlanResort(pIdx, resort.id)}
+                              className="rounded border-gray-300 text-teal focus:ring-teal"
+                            />
+                            <span className="text-xs font-bold truncate">{resort.name}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -701,6 +739,10 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
             <label className="flex items-center gap-3 cursor-pointer">
               <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
               <span className="font-bold text-gray-700">Show on Home Page</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer mt-4">
+              <input type="checkbox" name="show_on_packages_page" value="true" defaultChecked={initialData ? initialData.show_on_packages_page !== false : true} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+              <span className="font-bold text-gray-700">Show on Tour Packages Page</span>
             </label>
             <div className="mt-4">
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>

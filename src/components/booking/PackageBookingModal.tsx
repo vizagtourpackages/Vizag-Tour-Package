@@ -52,9 +52,62 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
   
   // State for Rate Plan Selector step
   const [showPlanSelector, setShowPlanSelector] = useState(
-    hasRatePlans && !isOneDayPackage && !data?.selected_plan
+    hasRatePlans && !data?.selected_plan
   );
   const [selectedPlan, setSelectedPlan] = useState(data?.selected_plan || '');
+
+  // State for Resort Selector step
+  const [showResortSelector, setShowResortSelector] = useState(false);
+  const [ratePlanResorts, setRatePlanResorts] = useState<any[]>([]);
+  const [loadingResorts, setLoadingResorts] = useState(false);
+
+  // If a plan is pre-selected on mount, check if it has resorts and fetch them
+  useEffect(() => {
+    if (data?.selected_plan && data?.rate_plans) {
+      const plan = data.rate_plans.find((p: any) => p.title === data.selected_plan);
+      if (plan && plan.resort_ids && plan.resort_ids.length > 0) {
+        setShowResortSelector(true);
+        setLoadingResorts(true);
+        const supabase = createClient();
+        supabase
+          .from('hotels_resorts')
+          .select('id, name, location, cover_image_url, category')
+          .in('id', plan.resort_ids)
+          .eq('is_published', true)
+          .then(({ data: resorts }) => {
+            setRatePlanResorts(resorts || []);
+            setLoadingResorts(false);
+          });
+      }
+    }
+  }, [data?.selected_plan, data?.rate_plans]);
+
+  const handlePlanSelect = async (plan: any) => {
+    setSelectedPlan(plan.title);
+    setFormData(prev => ({ ...prev, accommodationType: plan.title || 'Selected Plan' }));
+    
+    if (plan.resort_ids && plan.resort_ids.length > 0) {
+      setShowPlanSelector(false);
+      setShowResortSelector(true);
+      setLoadingResorts(true);
+      const supabase = createClient();
+      const { data: resorts } = await supabase
+        .from('hotels_resorts')
+        .select('id, name, location, cover_image_url, category')
+        .in('id', plan.resort_ids)
+        .eq('is_published', true);
+      
+      setRatePlanResorts(resorts || []);
+      setLoadingResorts(false);
+    } else {
+      setShowPlanSelector(false);
+    }
+  };
+
+  const handleResortSelect = (resort: any) => {
+    setFormData(prev => ({ ...prev, accommodationType: `${selectedPlan || 'Selected Plan'} - ${resort.name}` }));
+    setShowResortSelector(false);
+  };
 
   // Auto-calculate end date
   useEffect(() => {
@@ -162,11 +215,7 @@ Special Requests: ${bookingData.special_requests || 'None'}`
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
               {data.rate_plans.map((plan: any, i: number) => (
                 <div key={i} className="border border-charcoal/10 rounded-xl p-4 hover:border-teal/50 hover:bg-teal/5 cursor-pointer transition-all flex flex-col sm:flex-row gap-4 justify-between"
-                     onClick={() => {
-                       setSelectedPlan(plan.title);
-                       setFormData(prev => ({ ...prev, accommodationType: plan.title }));
-                       setShowPlanSelector(false);
-                     }}>
+                     onClick={() => handlePlanSelect(plan)}>
                   <div>
                     {plan.badge && (
                       <span className="inline-block px-2 py-0.5 bg-teal/10 text-teal text-[10px] font-bold rounded-full mb-2">
@@ -192,6 +241,46 @@ Special Requests: ${bookingData.special_requests || 'None'}`
                 </div>
               ))}
             </div>
+          </div>
+        ) : showResortSelector ? (
+          <div className="animate-fade-in">
+            <div className="mb-6 mt-2 pr-10">
+              <button 
+                onClick={() => { setShowResortSelector(false); setShowPlanSelector(true); }}
+                className="text-teal text-xs font-bold mb-2 flex items-center gap-1 hover:underline"
+              >
+                ← Back to Plans
+              </button>
+              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-1">Select Resort</h2>
+              <p className="text-charcoal/60 text-sm">Choose your preferred resort for {selectedPlan || 'this plan'}.</p>
+            </div>
+
+            {loadingResorts ? (
+              <div className="py-8 text-center text-charcoal/60">Loading resorts...</div>
+            ) : ratePlanResorts.length === 0 ? (
+              <div className="py-8 text-center text-charcoal/60">No resorts found. <button onClick={() => setShowResortSelector(false)} className="text-teal underline">Continue booking</button></div>
+            ) : (
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                {ratePlanResorts.map((resort: any) => (
+                  <div key={resort.id} className="border border-charcoal/10 rounded-xl p-3 hover:border-teal/50 hover:bg-teal/5 cursor-pointer transition-all flex gap-4 items-center"
+                    onClick={() => handleResortSelect(resort)}>
+                    {resort.cover_image_url && (
+                      <img src={resort.cover_image_url} alt={resort.name} className="w-20 h-20 object-cover rounded-lg shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <span className="inline-block px-2 py-0.5 bg-gray-100 text-charcoal text-[10px] font-bold rounded-full mb-1">
+                        {resort.category || 'Resort'}
+                      </span>
+                      <h3 className="font-bold text-charcoal text-base leading-tight">{resort.name}</h3>
+                      <p className="text-xs text-charcoal/60 mt-1">{resort.location}</p>
+                    </div>
+                    <button className="px-4 py-1.5 bg-charcoal text-white text-xs font-bold rounded-lg group-hover:bg-teal transition-colors shrink-0">
+                      Select
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <div className="animate-fade-in">
@@ -298,30 +387,28 @@ Special Requests: ${bookingData.special_requests || 'None'}`
 
             <div>
               <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Accommodation *</label>
-              <select 
-                required 
-                value={formData.accommodationType} 
-                disabled={!data?.isCustomEnquiry && isOneDayPackage} 
-                onChange={e => setFormData({...formData, accommodationType: e.target.value})} 
-                className="w-full p-2 border rounded-lg text-sm bg-white disabled:bg-gray-100 disabled:text-gray-500"
-              >
-                {!data?.isCustomEnquiry && <option value="Not Required" disabled={data?.rate_plans && data.rate_plans.length > 0}>Not Required</option>}
-                {!data?.isCustomEnquiry && data?.rate_plans && data.rate_plans.length > 0 ? (
-                  <>
-                    <option value="" disabled>Select Room from Rate Plan</option>
-                    {data.rate_plans.map((plan: any, i: number) => (
-                      <option key={i} value={plan.title}>{plan.title}</option>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    <option value="Standard (2/3 Star)">Standard (2/3 Star)</option>
-                    <option value="Premium (4 Star)">Premium (4 Star)</option>
-                    <option value="Luxury (5 Star / Resort)">Luxury (5 Star / Resort)</option>
-                    {data?.isCustomEnquiry && <option value="Not Required">Not Required</option>}
-                  </>
-                )}
-              </select>
+              {selectedPlan || hasRatePlans ? (
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={formData.accommodationType} 
+                  className="w-full p-2 border rounded-lg text-sm bg-gray-100 border-gray-200 text-gray-600 font-medium cursor-not-allowed" 
+                />
+              ) : (
+                <select 
+                  required 
+                  value={formData.accommodationType} 
+                  disabled={!data?.isCustomEnquiry && isOneDayPackage} 
+                  onChange={e => setFormData({...formData, accommodationType: e.target.value})} 
+                  className="w-full p-2 border rounded-lg text-sm bg-white disabled:bg-gray-100 disabled:text-gray-500"
+                >
+                  {!data?.isCustomEnquiry && <option value="Not Required">Not Required</option>}
+                  <option value="Standard (2/3 Star)">Standard (2/3 Star)</option>
+                  <option value="Premium (4 Star)">Premium (4 Star)</option>
+                  <option value="Luxury (5 Star / Resort)">Luxury (5 Star / Resort)</option>
+                  {data?.isCustomEnquiry && <option value="Not Required">Not Required</option>}
+                </select>
+              )}
             </div>
           </div>
 

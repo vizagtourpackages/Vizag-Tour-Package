@@ -9,7 +9,7 @@ export default function ResortBookingModal({ data, onClose }: { data: any, onClo
   const [roomTypes, setRoomTypes] = useState<any[]>([])
   const [loadingRooms, setLoadingRooms] = useState(true)
   const [selectedRoom, setSelectedRoom] = useState<any>(null)
-  
+
   const [formData, setFormData] = useState({
     fullName: '',
     contactNumber: '',
@@ -21,9 +21,17 @@ export default function ResortBookingModal({ data, onClose }: { data: any, onClo
     guests: 2,
     specialRequests: ''
   })
-  
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const getFormattedPriceLabel = (label?: string) => {
+    const base = "per night";
+    if (!label) return base;
+    const cleanLabel = label.replace(/^\/?\s*/, '').toLowerCase().trim();
+    if (cleanLabel === "per night" || cleanLabel === "night" || cleanLabel === "") return base;
+    return `${base} / ${label.replace(/^\/?\s*/, '')}`;
+  };
 
   useEffect(() => {
     async function fetchRooms() {
@@ -37,10 +45,10 @@ export default function ResortBookingModal({ data, onClose }: { data: any, onClo
         .select('*')
         .eq('resort_id', data.id)
         .eq('is_available', true)
-        
+
       setRoomTypes(rooms || [])
       setLoadingRooms(false)
-      
+
       // Auto-skip if no rooms in DB to prevent blocking
       if (!rooms || rooms.length === 0) {
         setSelectedRoom({ room_type: 'Standard Room' })
@@ -83,7 +91,7 @@ export default function ResortBookingModal({ data, onClose }: { data: any, onClo
     }
 
     const res = await submitResortBooking(bookingData)
-    
+
     if (!res.success) {
       setError(res.error || 'Failed to save booking')
       setLoading(false)
@@ -101,10 +109,10 @@ Guests: ${bookingData.guests}
 Special Requests: ${bookingData.special_requests || 'None'}`
 
     const encodedMessage = encodeURIComponent(waText)
-    
+
     // Attempt to open WhatsApp directly (bypasses browser prompt on mobile)
     window.location.href = `whatsapp://send?phone=917780739851&text=${encodedMessage}`
-    
+
     // Fallback for desktop/if app is not installed
     setTimeout(() => {
       window.location.href = `https://wa.me/917780739851?text=${encodedMessage}`
@@ -115,20 +123,20 @@ Special Requests: ${bookingData.special_requests || 'None'}`
     <div className="fixed inset-0 z-[300] overflow-y-auto bg-black/50 backdrop-blur-sm p-4 sm:p-6">
       <div className="relative mx-auto w-full max-w-2xl bg-white rounded-2xl p-5 sm:p-6 shadow-xl mt-4 mb-4 sm:mt-10 sm:mb-10">
         <button type="button" onClick={onClose} className="absolute top-4 right-4 z-10 text-gray-400 hover:text-charcoal bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
-        
+
         {step === 1 ? (
           <div className="mt-1">
             <div className="mb-5 pr-10">
               <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-0.5">Choose Room</h2>
               <p className="text-charcoal/60 text-sm">Select a room at {data?.name}</p>
             </div>
-            
+
             {loadingRooms ? (
               <div className="py-12 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-teal border-t-transparent rounded-full"></div></div>
             ) : (
               <div className="space-y-4">
                 {roomTypes.map(room => (
-                  <div 
+                  <div
                     key={room.id}
                     className="border border-charcoal/10 rounded-[20px] p-5 sm:p-6 hover:border-teal/50 hover:shadow-md transition-all bg-white"
                   >
@@ -147,15 +155,17 @@ Special Requests: ${bookingData.special_requests || 'None'}`
                           {room.room_type}
                         </h4>
                       </div>
-                      
+
                       <div className="sm:text-right shrink-0 flex flex-col justify-center mt-2 sm:mt-0">
                         <div className="mb-3 text-left sm:text-right flex items-end sm:flex-col gap-3 sm:gap-0">
                           <div className="text-2xl font-black font-heading text-charcoal tracking-tight">
                             ₹{(room.price || 0).toLocaleString('en-IN')}
                           </div>
-                          <div className="text-[10px] text-charcoal/50 font-bold uppercase sm:mt-1 pb-1 sm:pb-0">per night</div>
+                          <div className="text-[10px] text-charcoal/50 font-bold uppercase sm:mt-1 pb-1 sm:pb-0">
+                            / {getFormattedPriceLabel(data?.price_label)}
+                          </div>
                         </div>
-                        <button 
+                        <button
                           onClick={() => handleRoomSelect(room)}
                           className="btn-primary !py-2.5 !px-6 !text-sm rounded-full w-full sm:w-auto hover:scale-[1.02] transition-transform shadow-sm bg-charcoal hover:bg-teal text-white"
                         >
@@ -188,7 +198,7 @@ Special Requests: ${bookingData.special_requests || 'None'}`
                   <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">Resort Name</label>
                   <input type="text" readOnly value={data?.name || ''} className="w-full p-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 font-medium" />
                 </div>
-                
+
                 <div>
                   <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">Room Type</label>
                   <input type="text" readOnly value={selectedRoom?.room_type || ''} className="w-full p-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 font-medium" />
@@ -197,7 +207,7 @@ Special Requests: ${bookingData.special_requests || 'None'}`
 
               <div>
                 <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Full Name *</label>
-                <input type="text" required value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} className="w-full p-2 border rounded-lg text-sm" placeholder="Enter your full name" />
+                <input type="text" required value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} className="w-full p-2 border rounded-lg text-sm" placeholder="Sraya" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -205,8 +215,8 @@ Special Requests: ${bookingData.special_requests || 'None'}`
                   <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Contact Number *</label>
                   <input type="tel" required pattern="[0-9]{10}" title="10 digit phone number" value={formData.contactNumber} onChange={e => {
                     const val = e.target.value
-                    setFormData(prev => ({...prev, contactNumber: val, whatsappNumber: prev.sameAsContact ? val : prev.whatsappNumber}))
-                  }} className="w-full p-2 border rounded-lg text-sm" placeholder="10-digit mobile" />
+                    setFormData(prev => ({ ...prev, contactNumber: val, whatsappNumber: prev.sameAsContact ? val : prev.whatsappNumber }))
+                  }} className="w-full p-2 border rounded-lg text-sm" placeholder="+917780739851" />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -216,38 +226,38 @@ Special Requests: ${bookingData.special_requests || 'None'}`
                       Same as contact
                     </label>
                   </div>
-                  <input type="tel" value={formData.whatsappNumber} onChange={e => setFormData({...formData, whatsappNumber: e.target.value, sameAsContact: false})} className="w-full p-2 border rounded-lg text-sm" placeholder="Optional" />
+                  <input type="tel" value={formData.whatsappNumber} onChange={e => setFormData({ ...formData, whatsappNumber: e.target.value, sameAsContact: false })} className="w-full p-2 border rounded-lg text-sm" placeholder="Optional" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Email ID</label>
-                <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full p-2 border rounded-lg text-sm" placeholder="Optional" />
+                <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full p-2 border rounded-lg text-sm" placeholder="Optional" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Check-in Date *</label>
-                  <input type="date" required value={formData.checkIn} min={new Date().toISOString().split('T')[0]} onChange={e => setFormData({...formData, checkIn: e.target.value})} className="w-full p-2 border rounded-lg text-sm" />
+                  <input type="date" required value={formData.checkIn} min={new Date().toISOString().split('T')[0]} onChange={e => setFormData({ ...formData, checkIn: e.target.value })} className="w-full p-2 border rounded-lg text-sm" />
                 </div>
                 <div>
                   <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Check-out Date *</label>
-                  <input type="date" required value={formData.checkOut} min={formData.checkIn || new Date().toISOString().split('T')[0]} onChange={e => setFormData({...formData, checkOut: e.target.value})} className="w-full p-2 border rounded-lg text-sm" />
+                  <input type="date" required value={formData.checkOut} min={formData.checkIn || new Date().toISOString().split('T')[0]} onChange={e => setFormData({ ...formData, checkOut: e.target.value })} className="w-full p-2 border rounded-lg text-sm" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Guests *</label>
                 <div className="flex border rounded-lg overflow-hidden w-full sm:w-1/2">
-                  <button type="button" onClick={() => setFormData(p => ({...p, guests: Math.max(1, p.guests - 1)}))} className="px-3 bg-gray-50 hover:bg-gray-100 border-r">-</button>
-                  <input type="number" required min="1" value={formData.guests} onChange={e => setFormData({...formData, guests: parseInt(e.target.value) || 1})} className="w-full p-2 text-center text-sm outline-none" />
-                  <button type="button" onClick={() => setFormData(p => ({...p, guests: p.guests + 1}))} className="px-3 bg-gray-50 hover:bg-gray-100 border-l">+</button>
+                  <button type="button" onClick={() => setFormData(p => ({ ...p, guests: Math.max(1, p.guests - 1) }))} className="px-3 bg-gray-50 hover:bg-gray-100 border-r">-</button>
+                  <input type="number" required min="1" value={formData.guests} onChange={e => setFormData({ ...formData, guests: parseInt(e.target.value) || 1 })} className="w-full p-2 text-center text-sm outline-none" />
+                  <button type="button" onClick={() => setFormData(p => ({ ...p, guests: p.guests + 1 }))} className="px-3 bg-gray-50 hover:bg-gray-100 border-l">+</button>
                 </div>
               </div>
 
               <div>
                 <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Special Requests</label>
-                <textarea value={formData.specialRequests} onChange={e => setFormData({...formData, specialRequests: e.target.value})} className="w-full p-2 border rounded-lg text-sm h-16 resize-none" placeholder="Any specific requirements..."></textarea>
+                <textarea value={formData.specialRequests} onChange={e => setFormData({ ...formData, specialRequests: e.target.value })} className="w-full p-2 border rounded-lg text-sm h-16 resize-none" placeholder="Any specific requirements..."></textarea>
               </div>
 
               <button type="submit" disabled={loading} className="w-full btn-primary !py-2.5 !rounded-lg disabled:opacity-70 disabled:cursor-not-allowed mt-2">

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, FileText } from 'lucide-react'
+import { X, FileText, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import ReactMarkdown from 'react-markdown'
+import { siteInfo } from '@/data/siteInfo'
 
 interface TermsModalProps {
   category: 'travels' | 'packages' | 'resorts' | 'footer' | string;
@@ -60,16 +61,17 @@ export default function TermsModal({ category, isOpen, onClose, title = "Terms &
       <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-teal/10 flex items-center justify-center text-teal">
-              <FileText size={20} />
+        <div className="flex items-start justify-between px-6 py-5 bg-teal text-white shrink-0">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 font-heading">
+              <CheckCircle2 size={20} className="text-white/90" />
+              <h2 className="text-lg font-bold">{siteInfo.name || "Vizag Tour Packages"}</h2>
             </div>
-            <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+            <p className="text-sm text-white/80 font-medium ml-7">{title}</p>
           </div>
           <button 
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
+            className="text-white/70 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
           >
             <X size={20} />
           </button>
@@ -87,8 +89,27 @@ export default function TermsModal({ category, isOpen, onClose, title = "Terms &
               {error}
             </div>
           ) : (
-            <div className="prose prose-sm md:prose-base prose-teal max-w-none text-gray-600 prose-headings:text-gray-900 prose-a:text-teal">
-              <ReactMarkdown>{content || ''}</ReactMarkdown>
+            <div className="text-gray-700">
+              <ReactMarkdown
+                components={{
+                  ul: ({ node, ...props }) => <ul className="space-y-4" {...props} />,
+                  li: ({ node, ...props }) => (
+                    <li className="bg-white border border-gray-200 border-l-4 border-l-teal rounded-xl shadow-sm p-4 text-sm md:text-base flex flex-col gap-1" {...props} />
+                  ),
+                  p: ({ node, ...props }) => <p className="leading-relaxed" {...props} />,
+                  strong: ({ node, ...props }) => <strong className="font-bold text-gray-900 text-base mb-1 block" {...props} />,
+                  h1: ({ node, ...props }) => <h1 className="text-2xl font-bold text-gray-900 mb-4" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="text-xl font-bold text-gray-900 mb-3" {...props} />,
+                  h3: ({ node, ...props }) => <h3 className="text-lg font-bold text-gray-900 mb-2" {...props} />,
+                }}
+              >
+                {content 
+                  ? content.split('\n')
+                      .filter(line => line.trim().length > 0)
+                      .map(line => line.trim().startsWith('-') || line.trim().startsWith('*') ? line : `- ${line}`)
+                      .join('\n')
+                  : ''}
+              </ReactMarkdown>
             </div>
           )}
         </div>

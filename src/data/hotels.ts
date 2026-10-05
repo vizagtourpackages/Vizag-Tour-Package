@@ -8,6 +8,7 @@ export interface Hotel {
   location: string;
   price: string;
   price_label?: string;
+  no_of_persons?: string;
   image: string;
   amenities: string[];
 }

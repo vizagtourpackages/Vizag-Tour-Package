@@ -15,8 +15,10 @@ export default async function TourPackagesPage() {
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
-  const displayPackages = dbPackages && dbPackages.length > 0
-    ? dbPackages.map(pkg => ({
+  const validPackages = dbPackages?.filter(pkg => pkg.show_on_packages_page !== false) || [];
+
+  const displayPackages = validPackages.length > 0
+    ? validPackages.map(pkg => ({
       id: pkg.id,
       slug: pkg.slug,
       title: pkg.title,
@@ -29,6 +31,8 @@ export default async function TourPackagesPage() {
       includes: pkg.includes || [],
       excludes: pkg.excludes || [],
       category: pkg.category || pkg.type || '',
+      rating: pkg.rating || 4.5,
+      review_count: pkg.review_count || 0,
       rate_plans: pkg.rate_plans || [],
       imageGradient: 'from-teal to-blue-600', // fallback
       imageUrl: pkg.cover_image_url || pkg.image_url,

@@ -66,6 +66,7 @@ export async function saveTourPackage(formData: FormData) {
     
     is_published: formData.get('is_published') === 'true',
     show_on_home: formData.get('show_on_home') === 'true',
+    show_on_packages_page: formData.get('show_on_packages_page') === 'true',
     home_order: formData.get('home_order') ? parseInt(formData.get('home_order') as string) : 0,
     show_in_araku: formData.get('show_in_araku') === 'true',
     show_in_lambasingi: formData.get('show_in_lambasingi') === 'true',

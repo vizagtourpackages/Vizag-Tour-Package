@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { ChevronRight, ChevronLeft, User } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ChevronRight, ChevronLeft, User } from "lucide-react";
 import type { Vehicle } from "@/data/vehicles";
 import { useBooking } from "./booking/BookingContext";
 import { useRouter } from "next/navigation";
@@ -25,7 +26,7 @@ export function VehicleCard({ vehicle, isHomepage }: VehicleCardProps) {
   };
 
   return (
-    <div 
+    <div
       onClick={handleClick}
       className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden cursor-pointer group"
     >
@@ -167,6 +168,15 @@ export default function FleetSection({ vehicles, isHomepage }: FleetSectionProps
           </p>
         </div>
       </div>
+
+      {/* View All Travels Button */}
+      {isHomepage && (
+        <div className="mt-8 flex justify-center">
+          <Link href="/travels" className="btn-secondary !px-6 !py-2.5 !text-sm">
+            View All Travels <ArrowRight size={18} />
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

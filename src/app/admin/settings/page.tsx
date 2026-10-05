@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import SettingToggle from '@/components/admin/SettingToggle'
+import SettingInput from '@/components/admin/SettingInput'
 
 export const metadata = {
   title: 'Site Settings - Admin',
@@ -25,13 +26,23 @@ export default async function SettingsPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Homepage Sections</h2>
         
-        <div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
-          <div>
-            <h3 className="font-bold text-gray-900">Show "Trusted Travel Partner" Section</h3>
-            <p className="text-sm text-gray-500 mt-1">Displays the logos of travel partners (MakeMyTrip, Agoda, etc.) on the Homepage and About page.</p>
+        <div className="flex flex-col py-4 border-b border-gray-100 last:border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-gray-900">Show "Trusted Travel Partner" Section</h3>
+              <p className="text-sm text-gray-500 mt-1">Displays the logos of travel partners (MakeMyTrip, Agoda, etc.) on the Homepage and About page.</p>
+            </div>
+            <SettingToggle settingKey="show_trusted_partners" initialValue={showTrustedPartners} />
           </div>
           
-          <SettingToggle settingKey="show_trusted_partners" initialValue={showTrustedPartners} />
+          <div className="mt-4">
+            <h4 className="font-semibold text-gray-800 text-sm">Partners List (Comma separated)</h4>
+            <SettingInput 
+              settingKey="trusted_partners_list" 
+              initialValue={getSetting('trusted_partners_list', 'MakeMyTrip, Agoda, Goibibo, TripAdvisor, Booking.com')} 
+              placeholder="MakeMyTrip, Agoda, Goibibo..."
+            />
+          </div>
         </div>
       </div>
     </div>

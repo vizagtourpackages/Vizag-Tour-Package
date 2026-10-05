@@ -20,7 +20,7 @@ export default function EnquiryDrawer() {
         .select('*')
         .eq('is_published', true)
         .order('display_order', { ascending: true });
-      
+
       if (travelsData && travelsData.length > 0) {
         setVehicles(travelsData);
       }
@@ -71,7 +71,7 @@ export default function EnquiryDrawer() {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
             const destinations = Array.from(e.currentTarget.querySelectorAll('input[type="checkbox"]:checked')).map((cb: any) => cb.value);
-            
+
             const payload = {
               name: formData.get("name"),
               phone: formData.get("phone"),
@@ -87,7 +87,7 @@ export default function EnquiryDrawer() {
             setLoading(true);
             const res = await submitCustomEnquiry(payload);
             setLoading(false);
-            
+
             if (res.success) {
               alert("Enquiry submitted! We will contact you soon.");
               setIsOpen(false);
@@ -187,7 +187,7 @@ export default function EnquiryDrawer() {
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest block">Destinations of Interest</label>
               <div className="flex flex-wrap gap-1.5">
-                {["Vizag Local", "Araku Valley", "Vanajangi", "Lambasingi", "Tarabu Waterfalls", "Others"].map(
+                {["Vizag Local", "Araku Valley", "Vanjangi", "Lambasingi", "Tarabu Waterfalls", "Others"].map(
                   (dest) => (
                     <label
                       key={dest}

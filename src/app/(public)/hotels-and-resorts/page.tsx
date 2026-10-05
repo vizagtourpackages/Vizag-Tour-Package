@@ -10,8 +10,10 @@ export default async function HotelsPage() {
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
+  const validResorts = resorts?.filter(r => r.show_on_resorts_page !== false) || [];
+
   // map Supabase results to Hotel interface expected by HotelCard
-  const mappedHotels = (resorts || []).map((r) => ({
+  const mappedHotels = validResorts.map((r) => ({
     id: r.id,
     name: r.name,
     slug: r.slug,
@@ -20,6 +22,7 @@ export default async function HotelsPage() {
     location: r.location,
     price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
     price_label: r.price_label,
+    no_of_persons: r.no_of_persons,
     image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
     amenities: r.amenities || [],
     reviews: r.reviews || 0

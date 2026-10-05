@@ -186,6 +186,11 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           </div>
 
           <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">No of Persons / Occupancy</label>
+            <input type="text" name="no_of_persons" defaultValue={initialData?.no_of_persons} className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" placeholder="e.g. 2 Adults, 1 Child" />
+          </div>
+
+          <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
             <input type="text" name="location" defaultValue={initialData?.location} required className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" placeholder="e.g. Araku Valley, AP" />
           </div>
@@ -398,6 +403,10 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home || false} className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500" />
                   <span className="font-semibold text-gray-800">Show on Home</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer mt-4">
+                  <input type="checkbox" name="show_on_resorts_page" value="true" defaultChecked={initialData ? initialData.show_on_resorts_page !== false : true} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+                  <span className="font-semibold text-gray-800">Show on Resorts Page</span>
                 </label>
                 <div className="mt-4">
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>

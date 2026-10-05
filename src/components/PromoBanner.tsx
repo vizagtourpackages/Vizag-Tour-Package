@@ -24,6 +24,39 @@ export default function PromoBanner({ banners }: PromoBannerProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
 
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const minSwipeDistance = 50;
+
+  const onSwipeStart = (clientX: number) => {
+    setTouchEnd(null);
+    setTouchStart(clientX);
+    setIsDragging(true);
+  };
+
+  const onSwipeMove = (clientX: number) => {
+    if (!isDragging) return;
+    setTouchEnd(clientX);
+  };
+
+  const onSwipeEnd = () => {
+    setIsDragging(false);
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe && banners.length > 1) {
+      setCurrentBannerIndex((prev) => (prev + 1) % banners.length);
+      setCurrentImageIndex(0);
+    } else if (isRightSwipe && banners.length > 1) {
+      setCurrentBannerIndex((prev) => (prev - 1 + banners.length) % banners.length);
+      setCurrentImageIndex(0);
+    }
+  };
+
   const banner = banners[currentBannerIndex];
 
   // Auto-rotate banners every 2 seconds if there is more than 1
@@ -79,7 +112,17 @@ export default function PromoBanner({ banners }: PromoBannerProps) {
   return (
     <section className="py-4 md:py-8 bg-warm-white relative overflow-hidden">
       <div className="container-max px-4 md:px-6">
-        <div className="relative w-full rounded-[20px] sm:rounded-[32px] overflow-hidden shadow-xl min-h-[180px] md:min-h-[240px] flex items-center bg-charcoal">
+        <div 
+          className="relative w-full rounded-[20px] sm:rounded-[32px] overflow-hidden shadow-xl min-h-[180px] md:min-h-[240px] flex items-center bg-charcoal cursor-grab active:cursor-grabbing select-none"
+          onTouchStart={(e) => onSwipeStart(e.targetTouches[0].clientX)}
+          onTouchMove={(e) => onSwipeMove(e.targetTouches[0].clientX)}
+          onTouchEnd={onSwipeEnd}
+          onMouseDown={(e) => onSwipeStart(e.clientX)}
+          onMouseMove={(e) => onSwipeMove(e.clientX)}
+          onMouseUp={onSwipeEnd}
+          onMouseLeave={onSwipeEnd}
+          onDragStart={(e) => e.preventDefault()}
+        >
           
           {/* Rotating Background Images */}
           <div className="absolute inset-0 z-0">
