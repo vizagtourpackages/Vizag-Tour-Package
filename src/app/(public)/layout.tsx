@@ -35,7 +35,7 @@ export default function PublicLayout({
             <LatestUpdatesSection />
           </LatestUpdatesWrapper>
           <Footer />
-          <div className="hidden md:block">
+          <div className="hidden xl:block">
             <WhatsAppFAB />
           </div>
           <MobileBottomNav />

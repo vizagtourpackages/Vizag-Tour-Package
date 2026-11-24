@@ -75,7 +75,7 @@ export default function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) 
                 >
                   <button
                     onClick={() => toggleAccordion(index)}
-                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-base md:text-lg text-charcoal focus:outline-none tracking-tight"
+                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-medium text-base md:text-lg text-charcoal focus:outline-none tracking-tight"
                     aria-expanded={isOpen}
                   >
                     <span className="flex items-center gap-4">
@@ -115,7 +115,7 @@ export default function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) 
         <ScrollReveal delay={0.6}>
           <div className="mt-12 max-w-2xl mx-auto text-center p-8 sm:p-10 bg-white rounded-[32px] border border-charcoal/5 shadow-card flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-card-hover transition-shadow duration-500">
             <div className="text-center sm:text-left">
-              <h4 className="text-xl font-bold text-charcoal font-heading tracking-tight">Have a custom query or large group?</h4>
+              <h4 className="text-xl font-medium text-charcoal font-heading tracking-tight">Have a custom query or large group?</h4>
               <p className="text-base text-charcoal/60 font-medium mt-1">Our 24/7 human desk is standing by.</p>
             </div>
             <a href={`tel:${siteInfo.whatsapp.replace(/\D/g, '')}`} className="btn-primary shrink-0 whitespace-nowrap bg-teal hover:bg-teal-dark w-full sm:w-auto">

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ChevronDown, Phone } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
 import { ease } from "./Motion";
@@ -21,7 +21,6 @@ const desktopLinks = [...primaryLinks, { label: "More", subLinks: moreLinks }];
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [solid, setSolid] = useState(false);
   const { scrollY, scrollYProgress } = useScroll();
@@ -29,17 +28,8 @@ export default function Navbar() {
   useMotionValueEvent(scrollY, "change", (y) => {
     const prev = scrollY.getPrevious() ?? 0;
     setSolid(y > 12);
-    setHidden(y > 500 && y > prev && !open);
+    setHidden(y > 500 && y > prev);
   });
-
-  useEffect(() => setOpen(false), [pathname]);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
 
   return (
     <>
@@ -126,58 +116,10 @@ export default function Navbar() {
               <WaIcon className="relative h-[22px] w-[22px] sm:h-[17px] sm:w-[17px] sm:text-[#25d366]" />
               <span className="relative hidden sm:inline">Book on WhatsApp</span>
             </a>
-            <button
-              aria-label="Menu"
-              aria-expanded={open}
-              onClick={() => setOpen((o) => !o)}
-              className="grid h-10 w-10 place-items-center rounded-full border border-ocean/20 xl:hidden"
-            >
-              <span className="relative block h-3 w-5">
-                <span className={`absolute left-0 h-[1.5px] w-full bg-ocean transition-all duration-300 ${open ? "top-[5px] rotate-45" : "top-0"}`} />
-                <span className={`absolute left-0 top-[5px] h-[1.5px] w-full bg-ocean transition-opacity ${open ? "opacity-0" : ""}`} />
-                <span className={`absolute left-0 h-[1.5px] w-full bg-ocean transition-all duration-300 ${open ? "top-[5px] -rotate-45" : "top-[10px]"}`} />
-              </span>
-            </button>
           </div>
         </div>
       </motion.header>
 
-      {/* Mobile menu: light, circular reveal, numbered display links */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            data-lenis-prevent
-            initial={{ clipPath: "circle(0% at 92% 4%)" }}
-            animate={{ clipPath: "circle(150% at 92% 4%)" }}
-            exit={{ clipPath: "circle(0% at 92% 4%)" }}
-            transition={{ duration: 0.7, ease }}
-            className="fixed inset-0 z-[90] overflow-y-auto bg-warm-white px-7 pb-10 pt-28 xl:hidden"
-          >
-            <ul>
-              {navLinks.flatMap((l) => (l.subLinks ? l.subLinks : [{ label: l.label, href: l.href! }])).map((n, i) => (
-                <motion.li
-                  key={n.href}
-                  initial={{ opacity: 0, x: -28 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + i * 0.04, duration: 0.6, ease }}
-                >
-                  <Link
-                    href={n.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-baseline gap-4 border-b border-ocean/10 py-3 font-heading text-[1.55rem] text-ocean active:text-coral"
-                  >
-                    <span className="text-xs font-semibold text-coral">{String(i + 1).padStart(2, "0")}</span>
-                    {n.label}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-            <a href={siteInfo.whatsappLink} className="btn-coral mt-8 w-full">
-              <WaIcon /> Book on WhatsApp
-            </a>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

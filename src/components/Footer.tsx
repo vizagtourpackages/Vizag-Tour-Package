@@ -163,7 +163,7 @@ export default async function Footer() {
 
       {/* Legal bar */}
       <div className="relative z-10 border-t border-white/15">
-        <div className="container-max flex flex-col items-center justify-between gap-4 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-6 text-center sm:px-6 md:flex-row md:pb-6 md:text-left lg:px-8">
+        <div className="container-max flex flex-col items-center justify-between gap-4 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-6 text-center sm:px-6 md:flex-row xl:pb-6 md:text-left lg:px-8">
           <div className="flex flex-col items-center gap-2 text-[0.8rem] text-white/60 sm:flex-row sm:gap-5">
             <span>© {currentYear} Vizag Tour Packages. All rights reserved.</span>
             <TermsButton category="footer" label="Terms & Conditions" className="cursor-pointer transition-colors hover:text-white" />
