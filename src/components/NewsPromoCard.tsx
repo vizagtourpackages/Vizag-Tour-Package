@@ -17,9 +17,9 @@ export default function NewsPromoCard({ item }: { item: NewsPromoData }) {
   const isPromo = item.type === "Promotion";
 
   return (
-    <div className="bg-white rounded-[32px] p-4 sm:p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-stretch border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 group hover:-translate-y-2">
+    <div className="bg-white rounded-[28px] overflow-hidden flex flex-col sm:flex-row items-stretch border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 group hover:-translate-y-2">
       {/* Image container */}
-      <div className="w-full sm:w-2/5 aspect-[4/3] sm:aspect-auto rounded-[24px] overflow-hidden relative shrink-0 bg-sand">
+      <div className="w-full sm:w-2/5 aspect-[16/10] sm:aspect-auto sm:min-h-[220px] overflow-hidden relative shrink-0 bg-sand">
         <Image
           src={item.imageUrl}
           alt={item.title}
@@ -29,7 +29,7 @@ export default function NewsPromoCard({ item }: { item: NewsPromoData }) {
       </div>
 
       {/* Content */}
-      <div className="w-full sm:w-3/5 flex flex-col justify-center py-2">
+      <div className="w-full sm:w-3/5 flex flex-col justify-center p-5 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <span
             className={`inline-block px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${

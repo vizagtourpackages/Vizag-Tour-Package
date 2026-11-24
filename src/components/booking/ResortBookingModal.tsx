@@ -120,8 +120,12 @@ Special Requests: ${bookingData.special_requests || 'None'}`
   }
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-[300] overflow-y-auto bg-black/50 backdrop-blur-sm p-4 sm:p-6">
-      <div className="relative mx-auto w-full max-w-2xl bg-white rounded-2xl p-5 sm:p-6 shadow-xl mt-4 mb-4 sm:mt-10 sm:mb-10">
+    <div
+      className="fixed inset-0 z-[300] flex items-end justify-center bg-ocean/55 backdrop-blur-sm sm:items-center sm:p-6"
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div data-lenis-prevent className="thin-scroll relative max-h-[94dvh] w-full overflow-y-auto overscroll-contain rounded-t-[24px] bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl sm:max-h-[90vh] sm:max-w-xl sm:rounded-[24px] sm:p-6">
+        <div aria-hidden className="mx-auto mb-3 h-1 w-10 rounded-full bg-ocean/15 sm:hidden" />
         <button type="button" onClick={onClose} className="absolute top-4 right-4 z-10 text-gray-400 hover:text-charcoal bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
 
         {step === 1 ? (

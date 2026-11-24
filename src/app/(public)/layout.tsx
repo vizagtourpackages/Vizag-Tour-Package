@@ -7,6 +7,7 @@ import LatestUpdatesWrapper from "@/components/LatestUpdatesWrapper";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import SmoothScroll from "@/components/SmoothScroll";
+import BackToTopFab from "@/components/BackToTopFab";
 import { BookingProvider } from "@/components/booking/BookingContext";
 import BookingModalController from "@/components/booking/BookingModalController";
 
@@ -39,6 +40,7 @@ export default function PublicLayout({
             <WhatsAppFAB />
           </div>
           <MobileBottomNav />
+          <BackToTopFab />
           <BookingModalController />
         </div>
       </SmoothScroll>

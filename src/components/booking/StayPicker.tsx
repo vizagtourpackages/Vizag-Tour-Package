@@ -164,7 +164,7 @@ export default function StayPicker({
         <p className="text-charcoal/60 text-sm">Select the hotel you would like to stay in.</p>
       </div>
 
-      <div className="space-y-3 max-h-[52vh] overflow-y-auto pr-1">
+      <div className="thin-scroll max-h-[52vh] space-y-3 overflow-y-auto">
         {active.hotels.map(h => {
           const on = selected === h.id
           return (

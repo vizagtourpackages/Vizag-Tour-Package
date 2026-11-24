@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Filter, X, ArrowDownUp, Check } from "lucide-react";
+import { Filter, X, ArrowDownUp, Check, SlidersHorizontal } from "lucide-react";
+import FilterSheet, { FilterGroup, OptionPill } from "@/components/FilterSheet";
 import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
 import PackageCard from "@/components/PackageCard";
@@ -27,6 +28,9 @@ export default function TourPackagesClient({ initialPackages }: { initialPackage
   const [activeDuration, setActiveDuration] = useState("All");
   const [activeSort, setActiveSort] = useState("Recommended");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const activeCount = (activeDuration !== "All" ? 1 : 0) + (activeSort !== "Recommended" ? 1 : 0);
+  const clearAll = () => { setActiveDuration("All"); setActiveSort("Recommended"); };
   const sortRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,9 +90,38 @@ export default function TourPackagesClient({ initialPackages }: { initialPackage
         <ScrollReveal delay={0.2}>
           {/* Filters & Sort Row */}
           <div className="mb-10 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+
+            {/* Mobile: one button opens a full-screen filter view */}
+            <div className="w-full md:hidden">
+              <button
+                onClick={() => setSheetOpen(true)}
+                className="flex w-full items-center justify-between rounded-full border border-ocean/15 bg-white px-5 py-3.5 text-sm font-semibold text-ocean shadow-sm active:scale-[0.99]"
+              >
+                <span className="flex items-center gap-2.5"><SlidersHorizontal size={17} className="text-coral" /> Filters &amp; sort</span>
+                <span className="flex items-center gap-2 text-ocean/50">
+                  {activeCount > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-coral px-1.5 text-[0.7rem] font-bold text-white">{activeCount}</span>}
+                  {processedPackages.length} packages
+                </span>
+              </button>
+              {activeCount > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {activeDuration !== "All" && (
+                    <button onClick={() => setActiveDuration("All")} className="inline-flex items-center gap-1.5 rounded-full bg-ocean px-3.5 py-1.5 text-xs font-semibold text-white">
+                      {activeDuration} <X size={13} />
+                    </button>
+                  )}
+                  {activeSort !== "Recommended" && (
+                    <button onClick={() => setActiveSort("Recommended")} className="inline-flex items-center gap-1.5 rounded-full bg-ocean px-3.5 py-1.5 text-xs font-semibold text-white">
+                      {activeSort} <X size={13} />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
             
             {/* Filter Pills */}
-            <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar pb-2 md:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 w-full md:w-auto">
+            <div className="hidden md:flex items-center gap-3 overflow-x-auto hide-scrollbar pb-2 md:pb-0 w-full md:w-auto">
               <button 
                 className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50"
                 aria-label="Filter"
@@ -112,7 +145,7 @@ export default function TourPackagesClient({ initialPackages }: { initialPackage
             </div>
 
             {/* Sort Dropdown */}
-            <div className="relative shrink-0 w-full md:w-auto" ref={sortRef}>
+            <div className="relative hidden md:block shrink-0 md:w-auto" ref={sortRef}>
               <button
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 className="w-full md:w-auto flex items-center justify-between gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-full text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors"
@@ -149,6 +182,30 @@ export default function TourPackagesClient({ initialPackages }: { initialPackage
             </div>
           </div>
         </ScrollReveal>
+
+        <FilterSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          onClear={clearAll}
+          resultCount={processedPackages.length}
+          resultLabel={processedPackages.length === 1 ? "package" : "packages"}
+          title="Filters & sort"
+        >
+          <FilterGroup title="Duration">
+            <div className="flex flex-wrap gap-2">
+              {DURATION_FILTERS.map((f) => (
+                <OptionPill key={f} active={activeDuration === f} onClick={() => setActiveDuration(f)}>{f}</OptionPill>
+              ))}
+            </div>
+          </FilterGroup>
+          <FilterGroup title="Sort by">
+            <div className="flex flex-wrap gap-2">
+              {SORT_OPTIONS.map((o) => (
+                <OptionPill key={o} active={activeSort === o} onClick={() => setActiveSort(o)}>{o}</OptionPill>
+              ))}
+            </div>
+          </FilterGroup>
+        </FilterSheet>
 
         {/* Package Grid */}
         <ScrollReveal delay={0.4}>

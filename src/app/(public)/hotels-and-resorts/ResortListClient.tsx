@@ -3,12 +3,14 @@
 import { useState, useMemo } from 'react';
 import HotelCard from '@/components/HotelCard';
 import { SlidersHorizontal, X } from 'lucide-react';
+import FilterSheet, { FilterGroup, OptionPill } from '@/components/FilterSheet';
 
 export default function ResortListClient({ initialHotels }: { initialHotels: any[] }) {
   const [category, setCategory] = useState<string>('All');
   const [minRating, setMinRating] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(20000);
   const [showFilters, setShowFilters] = useState(false);
+  const clearAll = () => { setCategory('All'); setMinRating(0); setMaxPrice(20000); };
 
   // Extract unique categories
   const categories = ['All', ...Array.from(new Set(initialHotels.map(h => h.type)))];
@@ -29,28 +31,57 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
     });
   }, [initialHotels, category, minRating, maxPrice]);
 
+  const activeCount = (category !== 'All' ? 1 : 0) + (minRating > 0 ? 1 : 0) + (maxPrice < 20000 ? 1 : 0);
+
   return (
     <div className="flex flex-col lg:flex-row gap-8">
-      {/* Mobile filter toggle */}
+      {/* Mobile: button opens a full-screen filter view */}
       <div className="lg:hidden">
-        <button 
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 font-bold text-[#332A20] bg-white border border-[#E8DDD4] px-4 py-2 rounded-full shadow-sm"
+        <button
+          onClick={() => setShowFilters(true)}
+          className="flex w-full items-center justify-between rounded-full border border-ocean/15 bg-white px-5 py-3.5 text-sm font-semibold text-ocean shadow-sm active:scale-[0.99]"
         >
-          <SlidersHorizontal size={18} /> Filters
+          <span className="flex items-center gap-2.5"><SlidersHorizontal size={17} className="text-coral" /> Filters</span>
+          <span className="flex items-center gap-2 text-ocean/50">
+            {activeCount > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-coral px-1.5 text-[0.7rem] font-bold text-white">{activeCount}</span>}
+            {filteredHotels.length} properties
+          </span>
         </button>
       </div>
 
+      <FilterSheet
+        open={showFilters}
+        onClose={() => setShowFilters(false)}
+        onClear={clearAll}
+        resultCount={filteredHotels.length}
+        resultLabel={filteredHotels.length === 1 ? 'property' : 'properties'}
+      >
+        <FilterGroup title="Category">
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <OptionPill key={cat} active={category === cat} onClick={() => setCategory(cat)}>{cat}</OptionPill>
+            ))}
+          </div>
+        </FilterGroup>
+        <FilterGroup title="Rating">
+          <div className="flex flex-wrap gap-2">
+            {[0, 3, 4, 4.5].map((r) => (
+              <OptionPill key={r} active={minRating === r} onClick={() => setMinRating(r)}>{r === 0 ? 'Any rating' : `${r}+ stars`}</OptionPill>
+            ))}
+          </div>
+        </FilterGroup>
+        <FilterGroup title="Max price per night">
+          <div className="mb-3 font-heading text-2xl text-ocean">₹{maxPrice.toLocaleString()}</div>
+          <input type="range" min="1000" max="30000" step="500" value={maxPrice} onChange={(e) => setMaxPrice(parseInt(e.target.value))} className="w-full accent-coral" />
+          <div className="mt-1 flex justify-between text-xs text-charcoal/50"><span>₹1K</span><span>₹30K+</span></div>
+        </FilterGroup>
+      </FilterSheet>
+
       {/* Filters Sidebar */}
-      <div className={`lg:w-1/4 shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+      <div className="hidden lg:block lg:w-1/4 shrink-0">
         <div className="bg-white rounded-[24px] border border-[#E8DDD4] p-6 sticky top-28 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl text-[#332A20]">Filters</h3>
-            {showFilters && (
-              <button onClick={() => setShowFilters(false)} className="lg:hidden text-[#6B5744]">
-                <X size={20} />
-              </button>
-            )}
           </div>
 
           <div className="space-y-8">

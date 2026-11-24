@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Mail, MapPin, Phone, ShieldCheck, Star } from "lucide-react";
 import { siteInfo } from "@/data/siteInfo";
 import TermsButton from "@/components/TermsButton";
-import BackToTop from "@/components/BackToTop";
 import { createClient } from "@/lib/supabase/server";
 
 const explore = [
@@ -181,7 +180,6 @@ export default async function Footer() {
                 Innovalley
               </a>
             </p>
-            <BackToTop />
           </div>
         </div>
       </div>
