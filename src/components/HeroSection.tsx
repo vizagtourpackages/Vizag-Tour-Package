@@ -71,7 +71,7 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
               ))}
             </span>
             <span className="text-[0.78rem] font-semibold text-ocean">
-              {siteInfo.googleReviews.rating}.0 on Google
+              {siteInfo.googleReviews.rating} on Google
               <span className="font-medium text-charcoal/50"> · {siteInfo.googleReviews.count} reviews</span>
             </span>
           </motion.div>

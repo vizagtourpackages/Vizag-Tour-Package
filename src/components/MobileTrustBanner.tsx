@@ -1,4 +1,5 @@
 import { Shield, BadgeCheck } from "lucide-react";
+import { siteInfo } from "@/data/siteInfo";
 
 export default function MobileTrustBanner() {
   return (
@@ -39,7 +40,7 @@ export default function MobileTrustBanner() {
             <span className="text-[8px] text-charcoal/60 mt-0.5">Since 2020</span>
           </div>
 
-          {/* 4.9 Rating */}
+          {/* Google rating */}
           <div className="flex flex-col items-center text-center flex-1 px-0.5">
             <div className="w-6 h-6 rounded-full bg-yellow-50/50 border-[2px] border-yellow-50 flex items-center justify-center mb-1 bg-white">
               <svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg">
@@ -49,8 +50,8 @@ export default function MobileTrustBanner() {
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
               </svg>
             </div>
-            <span className="text-[9px] font-bold text-charcoal leading-tight">4.9 Rating</span>
-            <span className="text-[8px] text-charcoal/60 mt-0.5">700+ Reviews</span>
+            <span className="text-[9px] font-bold text-charcoal leading-tight">{siteInfo.googleReviews.rating} Rating</span>
+            <span className="text-[8px] text-charcoal/60 mt-0.5">{siteInfo.googleReviews.count} Reviews</span>
           </div>
 
         </div>

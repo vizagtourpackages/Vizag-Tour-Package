@@ -125,7 +125,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                     <Star size={16} fill="currentColor" className="opacity-50" />
                   </div>
                   <span className="text-sm font-medium">
-                    4.9 ({pkg.reviews_count || "120+"} reviews)
+                    {siteInfo.googleReviews.rating} ({siteInfo.googleReviews.count} Google reviews)
                   </span>
                 </div>
               </div>

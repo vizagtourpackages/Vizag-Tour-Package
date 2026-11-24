@@ -36,11 +36,10 @@ const WaIcon = ({ size = 24 }: { size?: number }) => (
 const tabs = [
   { label: "Home", href: "/", icon: Home, match: (p: string) => p === "/" },
   { label: "Packages", href: "/tour-packages", icon: Package, match: (p: string) => p.startsWith("/tour-packages") || p.startsWith("/packages") },
-  // center action rendered separately
-  { label: "Stays", href: "/hotels-and-resorts", icon: BedDouble, match: (p: string) => p.startsWith("/hotels-and-resorts") || p.startsWith("/resorts") },
 ];
 
 const moreLinks = [
+  { label: "Hotels & Stays", href: "/hotels-and-resorts", icon: BedDouble },
   { label: "Cabs & Travels", href: "/travels", icon: CarFront },
   { label: "Araku Valley", href: "/araku-valley", icon: Mountain },
   { label: "Lambasingi", href: "/lambasingi", icon: Mountain },
@@ -130,6 +129,22 @@ export default function MobileBottomNav() {
                 </ul>
               ) : (
                 <>
+                  {/* contact */}
+                  <div className="mt-5 rounded-3xl bg-ocean p-5 text-white">
+                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-amber">24/7 travel support</p>
+                    <p className="mt-1 flex items-start gap-2 text-sm text-white/75">
+                      <MapPin size={15} className="mt-0.5 shrink-0" /> {siteInfo.address}
+                    </p>
+                    <div className="mt-4 grid grid-cols-2 gap-2.5">
+                      <a href={`tel:${siteInfo.whatsapp}`} className="flex items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-bold text-ocean active:scale-[0.97]">
+                        <Phone size={16} /> Call now
+                      </a>
+                      <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-3 text-sm font-bold text-white active:scale-[0.97]">
+                        <WaIcon size={16} /> WhatsApp
+                      </a>
+                    </div>
+                  </div>
+
                   <div className="mt-5 grid grid-cols-3 gap-2.5">
                     {moreLinks.map((l) => {
                       const Icon = l.icon;
@@ -149,21 +164,6 @@ export default function MobileBottomNav() {
                     })}
                   </div>
 
-                  {/* contact */}
-                  <div className="mt-5 rounded-3xl bg-ocean p-5 text-white">
-                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-amber">24/7 travel support</p>
-                    <p className="mt-1 flex items-start gap-2 text-sm text-white/75">
-                      <MapPin size={15} className="mt-0.5 shrink-0" /> {siteInfo.address}
-                    </p>
-                    <div className="mt-4 grid grid-cols-2 gap-2.5">
-                      <a href={`tel:${siteInfo.whatsapp}`} className="flex items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-bold text-ocean active:scale-[0.97]">
-                        <Phone size={16} /> Call now
-                      </a>
-                      <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-3 text-sm font-bold text-white active:scale-[0.97]">
-                        <WaIcon size={16} /> WhatsApp
-                      </a>
-                    </div>
-                  </div>
                 </>
               )}
             </motion.div>
@@ -195,9 +195,14 @@ export default function MobileBottomNav() {
             <span className="text-[0.62rem] font-bold text-ocean">Book</span>
           </a>
 
-          {tabs.slice(2).map((t) => (
-            <Tab key={t.href} {...t} active={t.match(pathname)} />
-          ))}
+          <a
+            href={`tel:${siteInfo.whatsapp}`}
+            aria-label="Call us"
+            className="relative flex h-full flex-col items-center justify-center gap-1 text-ocean/55 transition-[color,transform] duration-150 active:scale-95 active:text-coral"
+          >
+            <Phone size={22} strokeWidth={2} />
+            <span className="text-[0.62rem] font-semibold">Call</span>
+          </a>
 
           <button onClick={() => setMoreOpen(true)} className="relative flex h-full flex-col items-center justify-center gap-1 text-ocean/55 active:scale-95 transition-transform duration-150">
             <LayoutGrid size={22} strokeWidth={2} />

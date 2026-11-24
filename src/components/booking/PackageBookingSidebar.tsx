@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import PackageBookingButton from "@/components/PackageBookingButton";
 import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
 import TermsButton from "@/components/TermsButton";
+import { siteInfo } from "@/data/siteInfo";
 
 export default function PackageBookingSidebar({ 
   pkg, 
@@ -79,7 +80,7 @@ export default function PackageBookingSidebar({
       {/* Rating Block */}
       <div className="flex flex-col items-center justify-center space-y-1 lg:space-y-2">
         <div className="flex items-center gap-2 lg:gap-3">
-          <span className="text-xl lg:text-2xl font-black font-heading text-charcoal">{pkg.rating || '4.9'}</span>
+          <span className="text-xl lg:text-2xl font-black font-heading text-charcoal">{siteInfo.googleReviews.rating}</span>
           <div className="flex gap-0.5 lg:gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star key={star} size={14} className="fill-amber-500 text-amber-500 lg:w-[18px] lg:h-[18px]" />
@@ -87,7 +88,7 @@ export default function PackageBookingSidebar({
           </div>
         </div>
         <span className="text-[10px] lg:text-xs font-bold text-charcoal/50 uppercase tracking-widest">
-          {(pkg.review_count || 124).toLocaleString('en-IN')} Verified Reviews
+          {siteInfo.googleReviews.count.toLocaleString('en-IN')} Google Reviews
         </span>
       </div>
 

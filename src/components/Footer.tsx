@@ -122,7 +122,7 @@ export default async function Footer() {
             </p>
             <ul className="mt-6 flex flex-wrap gap-2.5 text-xs font-semibold">
               <li className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-white/85">
-                <Star size={13} className="fill-amber text-amber" /> {siteInfo.googleReviews.rating}.0 · {siteInfo.googleReviews.count} Google reviews
+                <Star size={13} className="fill-amber text-amber" /> {siteInfo.googleReviews.rating} · {siteInfo.googleReviews.count} Google reviews
               </li>
               <li className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-white/85">
                 <ShieldCheck size={13} className="text-teal" /> GST registered

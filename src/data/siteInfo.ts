@@ -12,9 +12,9 @@ export const siteInfo = {
   email: "arakuecostays@gmail.com",
   address: "13-134 Pendurthi, Visakhapatnam, 531173",
   googleReviews: {
-    rating: 5,
+    rating: 4.8,
     label: "EXCELLENT",
-    count: 19,
+    count: 264,
   },
 } as const;
 

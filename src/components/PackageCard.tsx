@@ -52,7 +52,7 @@ export default function PackageCard({ pkg }: PackageCardProps) {
         )}
         <span className="absolute bottom-4 left-5 flex items-center gap-1.5 text-xs font-medium text-white/90">
           <Star size={13} className="fill-amber text-amber" />
-          {pkg.rating || 4.5} <span className="text-white/60">({pkg.review_count || 120})</span>
+          {siteInfo.googleReviews.rating} <span className="text-white/60">({siteInfo.googleReviews.count})</span>
         </span>
       </Link>
 
