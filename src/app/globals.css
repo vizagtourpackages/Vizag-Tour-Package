@@ -134,6 +134,7 @@
 
 /* --- Base Styles --- */
 html {
+  scroll-padding-top: 88px; /* anchors land below the fixed header */
   scroll-behavior: auto;
   overflow-x: clip;
   max-width: 100%;

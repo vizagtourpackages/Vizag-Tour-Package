@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { siteInfo } from "@/data/siteInfo";
@@ -17,6 +17,13 @@ const sans = Hanken_Grotesk({
   variable: "--font-hanken",
   display: "swap",
 });
+
+// viewport-fit=cover makes env(safe-area-inset-*) work so the bottom bar is never clipped by device UI
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: {

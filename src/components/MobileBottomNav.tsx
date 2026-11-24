@@ -214,7 +214,7 @@ export default function MobileBottomNav() {
       {/* Docked bar: five equal tabs */}
       <nav
         aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-[150] border-t border-ocean/10 bg-white/90 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_-12px_rgba(10,42,77,.2)] backdrop-blur-xl xl:hidden"
+        className="fixed inset-x-0 bottom-0 z-[150] border-t border-ocean/10 bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-14px_rgba(10,42,77,.3)] xl:hidden"
       >
         <div className="mx-auto grid h-[62px] max-w-xl grid-cols-5 px-1">
           {tabs.map((t) => {

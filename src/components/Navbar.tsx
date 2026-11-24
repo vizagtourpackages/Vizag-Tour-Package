@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ChevronDown, Phone } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
-import { ease } from "./Motion";
 
 const WaIcon = ({ className = "" }: { className?: string }) => (
   <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -21,14 +20,11 @@ const desktopLinks = [...primaryLinks, { label: "More", subLinks: moreLinks }];
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [hidden, setHidden] = useState(false);
   const [solid, setSolid] = useState(false);
   const { scrollY, scrollYProgress } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (y) => {
-    const prev = scrollY.getPrevious() ?? 0;
     setSolid(y > 12);
-    setHidden(y > 500 && y > prev);
   });
 
   return (
@@ -38,13 +34,9 @@ export default function Navbar() {
         className="fixed left-0 top-0 z-[120] h-[3px] w-full origin-left bg-sunset"
         style={{ scaleX: scrollYProgress }}
       />
-      <motion.header
-        animate={{ y: hidden ? "-100%" : 0 }}
-        transition={{ duration: 0.45, ease }}
-        className={`fixed inset-x-0 top-0 z-[100] border-b transition-[background-color,box-shadow,border-color] duration-500 ${
-          solid
-            ? "border-ocean/10 bg-white/85 shadow-[0_10px_30px_-18px_rgba(10,42,77,.35)] backdrop-blur-xl"
-            : "border-transparent bg-warm-white"
+      <header
+        className={`fixed inset-x-0 top-0 z-[100] border-b bg-white transition-[box-shadow,border-color] duration-300 ${
+          solid ? "border-ocean/10 shadow-[0_8px_24px_-16px_rgba(10,42,77,.4)]" : "border-ocean/5"
         }`}
       >
         <div className="mx-auto flex h-[72px] max-w-[1480px] items-center justify-between gap-6 px-5 lg:px-10">
@@ -118,7 +110,7 @@ export default function Navbar() {
             </a>
           </div>
         </div>
-      </motion.header>
+      </header>
 
     </>
   );
