@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { MapPin, ArrowRight, Clock, IndianRupee } from "lucide-react";
-import Image from "next/image";
+import { MapPin, Clock } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Destination } from "@/data/destinations";
+import { Arrow } from "./Motion";
 
 interface DestinationCardProps {
   destination: Destination;
@@ -11,83 +11,53 @@ interface DestinationCardProps {
 
 export default function DestinationCard({ destination, basePath }: DestinationCardProps) {
   const slug = destination.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  
+
   // Check if this destination has a dedicated page
   const hasDedicatedPage = ["araku-valley", "lambasingi", "vanjangi"].includes(slug);
 
   // If basePath is provided, we assume it supports dynamic routes (like /devotional/[id])
   // Otherwise, default fallback is just "/route-map" (without ID)
   const fallbackHref = basePath ? `${basePath}/${destination.id}` : "/route-map";
-  
+
   const href = destination.customLink || (hasDedicatedPage ? `/${slug}` : fallbackHref);
 
   return (
-    <Link href={href} className="group block h-full">
-      <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 h-full flex flex-col overflow-hidden">
-        <div className="relative overflow-hidden">
-          {destination.imageUrl ? (
-            <div className="relative h-48 sm:h-56 w-full">
-              <Image fill 
-                src={destination.imageUrl} 
-                alt={destination.name}
-                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
-          ) : (
-            <PlaceholderImage
-              gradient={destination.imageGradient}
-              alt={destination.name}
-              className="h-48 sm:h-56 w-full transform transition-transform duration-700 group-hover:scale-105"
-            />
-          )}
-          <span className="absolute top-6 left-6 badge bg-white/90 backdrop-blur-md text-charcoal font-bold tracking-tight shadow-sm border border-charcoal/5" style={{ fontSize: '10px' }}>
-            {destination.name}
-          </span>
-          {destination.price && (
-            <span className="absolute top-6 right-6 badge bg-coral text-white font-bold tracking-tight shadow-sm">
-              {destination.price}
-            </span>
-          )}
-        </div>
+    <Link href={href} className="group flex h-full flex-col">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] bg-sand">
+        {destination.imageUrl ? (
+          <img
+            src={destination.imageUrl}
+            alt={destination.name}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-out)] group-hover:scale-110"
+          />
+        ) : (
+          <PlaceholderImage gradient={destination.imageGradient} alt={destination.name} className="absolute inset-0 h-full w-full" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#061a30]/75 via-transparent to-transparent" />
 
-        <div className="p-5 sm:p-6 flex flex-col flex-1 min-w-0">
-          <h3 className="font-heading font-bold text-xl sm:text-2xl text-charcoal mb-3 group-hover:text-coral transition-colors flex items-start justify-between gap-2 min-w-0 tracking-tight">
-            <span className="break-words min-w-0 leading-tight">{destination.name}</span>
-            <ArrowRight size={20} className="text-coral opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300 shrink-0 mt-1" />
-          </h3>
-          <p className="text-sm text-charcoal/60 line-clamp-3 mb-6 flex-1 break-words leading-relaxed font-medium">
+        {destination.price && (
+          <span className="absolute right-4 top-4 rounded-full bg-sunset px-3.5 py-1.5 text-xs font-bold text-white shadow-glow">
+            {destination.price}
+          </span>
+        )}
+
+        <div className="absolute inset-x-5 bottom-5 text-white">
+          <h3 className="font-heading text-[1.55rem] leading-tight">{destination.name}</h3>
+          <p className="mt-1 flex items-center gap-3 text-xs font-medium text-white/75">
+            <span className="flex items-center gap-1.5"><MapPin size={13} />{destination.distance || "Visakhapatnam District"}</span>
+            {destination.duration && <span className="flex items-center gap-1.5"><Clock size={13} />{destination.duration}</span>}
+          </p>
+          {/* description reveals on hover */}
+          <p className="mt-0 line-clamp-3 max-h-0 overflow-hidden text-sm leading-relaxed text-white/85 opacity-0 transition-[max-height,opacity,margin] duration-500 group-hover:mt-3 group-hover:max-h-24 group-hover:opacity-100">
             {destination.description}
           </p>
-          <div className="flex items-center justify-between gap-3 text-xs font-bold text-teal mt-auto pt-5 border-t border-charcoal/5 flex-wrap tracking-wide uppercase w-full">
-            <div className="flex items-center gap-3 flex-wrap">
-              {destination.distance ? (
-                <>
-                  <span className="flex items-center gap-1.5">
-                    <MapPin size={14} className="shrink-0" />
-                    {destination.distance}
-                  </span>
-                  {destination.duration && (
-                    <span className="flex items-center gap-1.5">
-                      <Clock size={14} className="shrink-0" />
-                      {destination.duration}
-                    </span>
-                  )}
-                </>
-              ) : (
-                <span className="flex items-center gap-1.5">
-                  <MapPin size={14} className="shrink-0" />
-                  <span className="truncate">Visakhapatnam District</span>
-                </span>
-              )}
-            </div>
-            {basePath === '/devotional' && (
-              <span className="text-coral flex items-center gap-1 font-black group-hover:underline">
-                Read More <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-              </span>
-            )}
-          </div>
         </div>
       </div>
+
+      <span className="mt-4 inline-flex items-center gap-2 px-1 text-sm font-semibold text-ocean transition-colors group-hover:text-coral">
+        {basePath === '/devotional' ? 'Read more' : 'Explore'} <Arrow className="transition-transform group-hover:translate-x-1.5" />
+      </span>
     </Link>
   );
 }

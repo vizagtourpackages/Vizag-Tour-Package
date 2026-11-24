@@ -5,8 +5,12 @@ import { useRouter } from 'next/navigation'
 import { Save } from 'lucide-react'
 import { updateDestinationPage } from '@/app/admin/destination-pages/actions'
 import ImageUpload from './ImageUpload'
+import RichTextField from './RichTextField'
+import EntityPicker from './EntityPicker'
 
-export default function DestinationPageForm({ initialData }: { initialData: any }) {
+export default function DestinationPageForm({ initialData, packages = [], hotels = [] }: { initialData: any, packages?: any[], hotels?: any[] }) {
+  const [packageIds, setPackageIds] = useState<string[]>(Array.isArray(initialData?.package_ids) ? initialData.package_ids : [])
+  const [hotelIds, setHotelIds] = useState<string[]>(Array.isArray(initialData?.hotel_ids) ? initialData.hotel_ids : [])
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || '')
   const router = useRouter()
@@ -18,6 +22,8 @@ export default function DestinationPageForm({ initialData }: { initialData: any 
     try {
       const formData = new FormData(e.currentTarget)
       formData.append('image_url', imageUrl)
+      formData.append('package_ids', JSON.stringify(packageIds))
+      formData.append('hotel_ids', JSON.stringify(hotelIds))
 
       await updateDestinationPage(initialData.id, formData)
     } catch (error) {
@@ -68,6 +74,8 @@ export default function DestinationPageForm({ initialData }: { initialData: any 
           />
         </div>
       </div>
+
+      <RichTextField name="content" label="Detailed Overview" defaultValue={initialData?.content} hint="Shown on the destination page right after the info strip. Supports headings, lists, links and multiple images." />
 
       {/* Info Strip Data */}
       <div className="space-y-4">
@@ -121,6 +129,28 @@ export default function DestinationPageForm({ initialData }: { initialData: any 
             className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-coral/20 focus:border-coral transition-colors"
           />
         </div>
+      </div>
+
+      {/* Attached packages & hotels */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Attached Tour Packages</h3>
+        <p className="text-xs text-gray-500">Packages selected here appear in the Packages tab of this page, in the order you pick them. If none are selected, packages marked for this page the old way are shown.</p>
+        <EntityPicker
+          items={packages.map((p: any) => ({ id: p.id, title: p.title, subtitle: p.duration, image: p.cover_image_url || p.image_url }))}
+          value={packageIds}
+          onChange={setPackageIds}
+          emptyText="No tour packages yet."
+        />
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Attached Hotels &amp; Resorts</h3>
+        <EntityPicker
+          items={hotels.map((h: any) => ({ id: h.id, title: h.name, subtitle: h.location, image: h.cover_image_url }))}
+          value={hotelIds}
+          onChange={setHotelIds}
+          emptyText="No hotels yet."
+        />
       </div>
 
       {/* Images */}

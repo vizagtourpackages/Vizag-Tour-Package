@@ -1,180 +1,117 @@
 'use client'
 import Link from "next/link";
-import Image from "next/image";
-import { Check, X, ArrowRight, Clock, Users, Star } from "lucide-react";
+import { Clock, Users, Star } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Package } from "@/data/packages";
-import { useBooking } from "./booking/BookingContext";
+import { siteInfo } from "@/data/siteInfo";
+import { Arrow } from "./Motion";
 
 interface PackageCardProps {
   pkg: Package;
 }
 
-export default function PackageCard({ pkg }: PackageCardProps) {
-  const { openBooking } = useBooking();
+const WaIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.95L2 22l5.2-1.36A9.9 9.9 0 1 0 12.04 2Zm0 18.1c-1.5 0-2.95-.4-4.2-1.15l-.3-.18-3.1.8.83-3.02-.2-.31A8.2 8.2 0 1 1 12.04 20.1Zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.09-.39-.12-.56.12-.17.25-.64.8-.78.97-.15.16-.29.18-.54.06a6.7 6.7 0 0 1-3.3-2.88c-.25-.43.25-.4.72-1.34.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42h-.47a.9.9 0 0 0-.65.31 2.75 2.75 0 0 0-.86 2.05c0 1.2.88 2.38 1 2.55.12.16 1.72 2.62 4.17 3.68 1.55.67 2.16.72 2.94.6.47-.07 1.46-.6 1.66-1.18.2-.58.2-1.07.14-1.18-.06-.1-.23-.16-.47-.28Z" />
+  </svg>
+);
 
-  const discountPercent = pkg.originalPrice && pkg.originalPrice > pkg.price
-    ? Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)
-    : 0;
+export default function PackageCard({ pkg }: PackageCardProps) {
+  const href = `/packages/${pkg.slug || pkg.id}`;
+  const discountPercent =
+    pkg.originalPrice && pkg.originalPrice > pkg.price
+      ? Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)
+      : 0;
+  const route = (pkg.highlights || []).slice(0, 3);
+  const showBadge = pkg.badge && !pkg.badge.match(/\d+\s*[DN]/i);
+  const waText = encodeURIComponent(`Hi! I'm interested in the "${pkg.title}" package. Could you share details?`);
 
   return (
-    <div className="bg-white border border-charcoal/5 rounded-[32px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden group h-full">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_2px_0_rgba(10,42,77,.04)] transition-shadow duration-500 hover:shadow-[0_40px_70px_-30px_rgba(10,42,77,.4)]">
       {/* Image */}
-      <div className="relative p-2">
-        <Link href={`/packages/${pkg.slug || pkg.id}`} className="relative overflow-hidden rounded-[24px] block">
-          {pkg.imageUrl ? (
-            <div className="relative w-full" style={{ aspectRatio: '3/2' }}>
-              <Image fill 
-                src={pkg.imageUrl} 
-                alt={pkg.title}
-                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/20" />
-            </div>
-          ) : (
-            <div style={{ aspectRatio: '3/2' }} className="w-full relative">
-              <PlaceholderImage
-                gradient={pkg.imageGradient}
-                alt={pkg.title}
-                className="w-full h-full transform transition-transform duration-700 group-hover:scale-105 absolute inset-0"
-                overlay
-              />
-            </div>
-          )}
-        </Link>
-        {pkg.badge && !pkg.badge.match(/\d+\s*[DN]/i) && (
-          <span className="absolute top-6 left-6 badge bg-coral text-white shadow-sm border border-coral/20 tracking-tight z-10">
+      <Link href={href} className="relative block aspect-[4/3] overflow-hidden bg-sand">
+        {pkg.imageUrl ? (
+          <img
+            src={pkg.imageUrl}
+            alt={pkg.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-out)] group-hover:scale-110"
+          />
+        ) : (
+          <PlaceholderImage gradient={pkg.imageGradient} alt={pkg.title} className="absolute inset-0 h-full w-full" overlay />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#061a30]/65 via-transparent to-transparent" />
+
+        <span className="absolute left-4 top-4 rounded-full bg-sunset px-3.5 py-1.5 text-xs font-bold text-white shadow-glow">
+          {pkg.duration}
+        </span>
+        {showBadge && (
+          <span className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-ocean backdrop-blur">
             {pkg.badge}
           </span>
         )}
+        <span className="absolute bottom-4 left-5 flex items-center gap-1.5 text-xs font-medium text-white/90">
+          <Star size={13} className="fill-amber text-amber" />
+          {pkg.rating || 4.5} <span className="text-white/60">({pkg.review_count || 120})</span>
+        </span>
+      </Link>
 
-        {/* Review Badge */}
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 flex items-center gap-1 bg-white/90 backdrop-blur-md px-2 py-1 rounded-full shadow-sm text-xs font-bold text-charcoal border border-charcoal/5">
-          <Star size={12} className="text-amber-500 fill-amber-500" />
-          <span>{pkg.rating || 4.5}</span>
-          <span className="text-charcoal/50 text-[10px]">({pkg.review_count || 120})</span>
-        </div>
-        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-sm border border-charcoal/5 z-10 flex flex-col items-end min-w-[100px]">
-          {discountPercent > 0 && (
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="text-[10px] sm:text-xs text-charcoal/40 line-through font-bold">
-                ₹{pkg.originalPrice?.toLocaleString('en-IN')}
-              </span>
-              <span className="bg-emerald-100 text-emerald-700 text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
-                {discountPercent}% OFF
-              </span>
-            </div>
-          )}
-          <div className="flex items-baseline">
-            <span className="text-sm sm:text-base font-black text-charcoal tracking-tight leading-none">₹{pkg.price.toLocaleString('en-IN')}</span>
-            <span className="text-[8px] font-bold text-charcoal/60 uppercase tracking-wider ml-0.5">/{pkg.priceLabel || 'PER COUPLE'}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-5 sm:p-7 flex flex-col flex-1 min-w-0">
-        <Link href={`/packages/${pkg.slug || pkg.id}`} className="group-hover:text-coral transition-colors">
-          <h3 className="font-heading text-2xl font-bold text-charcoal mb-4 leading-tight break-words tracking-tight">
-            {pkg.title}
-          </h3>
+      {/* Body */}
+      <div className="flex min-w-0 flex-1 flex-col p-6">
+        <Link href={href}>
+          <h3 className="font-heading text-[1.45rem] leading-tight text-ocean transition-colors group-hover:text-coral">{pkg.title}</h3>
         </Link>
 
-        {/* Duration & People */}
-        <div className="flex items-center gap-4 mb-5 text-sm text-charcoal/60 font-medium flex-wrap">
-          <span className="flex items-center gap-1.5">
-            <Clock size={16} className="text-teal shrink-0" />
-            {pkg.duration}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Users size={16} className="text-teal shrink-0" />
-            {pkg.people}
-          </span>
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.82rem] font-medium text-charcoal/60">
+          <span className="flex items-center gap-1.5"><Clock size={15} className="text-teal" />{pkg.duration}</span>
+          <span className="flex items-center gap-1.5"><Users size={15} className="text-teal" />{pkg.people}</span>
         </div>
 
-        {/* Highlights - Marquee */}
-        <div className="flex overflow-hidden relative w-full mb-6 pb-2 group/marquee">
-          <div className="flex gap-2 animate-marquee group-hover/marquee:[animation-play-state:paused] whitespace-nowrap shrink-0">
-            {pkg.highlights.map((h, i) => (
-              <span
-                key={`${h}-${i}`}
-                className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 inline-block"
-              >
-                {h}
-              </span>
-            ))}
-            {/* Duplicate for seamless loop if there are only a few items, though usually there's enough. We'll duplicate them just in case. */}
-            {pkg.highlights.map((h, i) => (
-              <span
-                key={`${h}-dup-${i}`}
-                className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 inline-block"
-              >
-                {h}
-              </span>
-            ))}
-            {pkg.highlights.map((h, i) => (
-              <span
-                key={`${h}-dup2-${i}`}
-                className="text-[11px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full bg-sand text-charcoal/70 inline-block"
-              >
-                {h}
+        {route.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[0.8rem] text-charcoal/70">
+            {route.map((r, k) => (
+              <span key={`${r}-${k}`} className="flex items-center gap-2">
+                {k > 0 && <span className="h-px w-3 bg-coral/60" />}
+                <span className="flex items-center gap-1.5"><i className="h-1.5 w-1.5 rounded-full bg-coral" />{r}</span>
               </span>
             ))}
           </div>
-        </div>
+        )}
 
-        {/* Includes / Excludes */}
-        <div className="space-y-4 mb-8 flex-1 min-w-0 border-t border-charcoal/5 pt-5">
-          <div>
-            <span className="text-[10px] font-black text-teal uppercase tracking-widest block mb-2">
-              Includes
-            </span>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {pkg.includes.map((item) => (
-                <span
-                  key={item}
-                  className="flex items-center gap-1.5 text-xs font-medium text-charcoal/70 break-words"
-                >
-                  <Check size={14} className="text-teal shrink-0" />
-                  {item}
-                </span>
-              ))}
-            </div>
+        <div className="mt-auto pt-6">
+        <div className="flex items-end justify-between gap-3 border-t border-dashed border-ocean/15 pt-5">
+          <div className="min-w-0">
+            {discountPercent > 0 && (
+              <p className="flex items-center gap-1.5 text-[0.7rem] font-semibold text-charcoal/45">
+                <span className="line-through">₹{pkg.originalPrice?.toLocaleString("en-IN")}</span>
+                <span className="rounded bg-teal/10 px-1.5 py-0.5 text-teal">{discountPercent}% OFF</span>
+              </p>
+            )}
+            <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-charcoal/45">{pkg.priceLabel || "Per couple"}</p>
+            <p className="font-heading text-[1.7rem] leading-none text-ocean">
+              <span className="text-base">₹</span>{pkg.price.toLocaleString("en-IN")}
+            </p>
           </div>
-          <div>
-            <span className="text-[10px] font-black text-coral uppercase tracking-widest block mb-2">
-              Excludes
-            </span>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {pkg.excludes.map((item) => (
-                <span
-                  key={item}
-                  className="flex items-center gap-1.5 text-xs font-medium text-charcoal/50 break-words"
-                >
-                  <X size={14} className="text-coral/70 shrink-0" />
-                  {item}
-                </span>
-              ))}
-            </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <a
+              href={`${siteInfo.whatsappLink}?text=${waText}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp enquiry"
+              className="grid h-11 w-11 place-items-center rounded-full bg-[#25d366]/15 text-[#128c4a] transition-colors duration-200 hover:bg-[#25d366] hover:text-white"
+            >
+              <WaIcon />
+            </a>
+            <Link
+              href={href}
+              className="group/b inline-flex items-center gap-2 rounded-full bg-ocean px-5 py-3 text-sm font-semibold text-white transition-[background-color,transform] duration-200 hover:bg-coral active:scale-[0.97]"
+            >
+              Details <Arrow className="transition-transform group-hover/b:translate-x-1" />
+            </Link>
           </div>
         </div>
-
-        <div className="flex gap-3 mt-auto min-w-0">
-          <Link
-            href={`/packages/${pkg.slug || pkg.id}`}
-            className="btn-whatsapp flex-1 !text-sm !py-3 !px-4 justify-center text-center whitespace-nowrap min-w-0 bg-teal hover:bg-teal-dark"
-          >
-            Book Now
-          </Link>
-          <Link
-            href={`/packages/${pkg.slug || pkg.id}`}
-            className="btn-secondary !py-3 !px-4 justify-center shrink-0 border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/5 text-charcoal"
-            aria-label={`View itinerary for ${pkg.title}`}
-          >
-            <ArrowRight size={18} />
-          </Link>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

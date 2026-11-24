@@ -7,6 +7,8 @@ import PackageBookingButton from "@/components/PackageBookingButton";
 import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
 import PackageBookingSidebar from "@/components/booking/PackageBookingSidebar";
 import PackageTabs from "@/components/PackageTabs";
+import StayOptions from "@/components/booking/StayOptions";
+import { buildStayOptions } from "@/lib/stay";
 import ScrollCarousel from "@/components/ScrollCarousel";
 import { siteInfo } from "@/data/siteInfo";
 import { Metadata } from "next";
@@ -68,6 +70,9 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
     .neq("slug", resolvedParams.slug)
     .order("created_at", { ascending: false })
     .limit(4);
+
+  const stayOptions = await buildStayOptions(supabase, pkg);
+  const pkgWithStay = { ...pkg, stay_options: stayOptions };
 
   const originalPrice = pkg.original_price || pkg.mrp;
   const discountPercent = originalPrice && originalPrice > pkg.price
@@ -173,11 +178,14 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
               )}
             </div>
 
-            {/* Rate Plan Options (Always Visible) */}
-            {pkg.rate_plans && pkg.rate_plans.length > 0 && (
+            {/* Choose Your Stay (from hotels attached to the package) */}
+            <StayOptions pkg={pkg} options={stayOptions} />
+
+            {/* Custom rate plans (legacy) – only when no hotels are attached */}
+            {stayOptions.length === 0 && pkg.rate_plans && pkg.rate_plans.length > 0 && (
               <div className="bg-white rounded-[24px] border border-charcoal/10 overflow-hidden shadow-sm">
                 <div className="p-4 sm:p-5 bg-blue-50/50 border-b border-charcoal/10 flex items-center justify-between">
-                  <h3 className="font-heading text-lg font-bold text-charcoal">Rate Plan Options</h3>
+                  <h3 className="font-heading text-lg font-bold text-charcoal">Choose Your Plan</h3>
                 </div>
                 <div className="divide-y divide-charcoal/10">
                   {pkg.rate_plans.map((plan: any, i: number) => {
@@ -257,7 +265,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
 
             {/* Mobile Booking Card (shown after Rate Plans, hidden on desktop) */}
             <div className="block lg:hidden">
-              <PackageBookingSidebar pkg={pkg} originalPrice={originalPrice} discountPercent={discountPercent} />
+              <PackageBookingSidebar pkg={pkgWithStay} originalPrice={originalPrice} discountPercent={discountPercent} />
             </div>
 
             {/* Package Tabs (Summary, Itinerary, Hotels) */}
@@ -268,7 +276,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
           {/* Sidebar / Sticky Booking Card */}
           <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-24">
-              <PackageBookingSidebar pkg={pkg} originalPrice={originalPrice} discountPercent={discountPercent} />
+              <PackageBookingSidebar pkg={pkgWithStay} originalPrice={originalPrice} discountPercent={discountPercent} />
             </div>
           </div>
         </div>

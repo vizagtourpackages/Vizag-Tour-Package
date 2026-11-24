@@ -30,6 +30,7 @@ export async function saveTopDestination(formData: FormData) {
     location: formData.get('location') as string,
     price: formData.get('price') as string,
     description: formData.get('description') as string,
+    content: formData.get('content') as string,
     distance_km: formData.get('distance_km') as string,
     duration: formData.get('duration') as string,
     image_url: formData.get('image_url') as string,

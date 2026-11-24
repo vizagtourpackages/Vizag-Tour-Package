@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import RichContent from "@/components/RichContent";
+import { EnquiryForm } from "@/components/EnquirySidebar";
 import Link from "next/link";
 import { MapPin, Star, CheckCircle2, ChevronRight, Home, Info, ArrowLeft, Utensils, Building2, Map } from "lucide-react";
 import ResortGallery from "@/components/ResortGallery";
@@ -115,6 +117,11 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
       </div>
 
       <ResortBookingButton hotel={hotel} />
+
+      <div className="mt-6 pt-6 border-t border-[#E8DDD4]">
+        <h3 className="font-heading font-bold text-lg text-[#332A20] mb-3">Have a question? Enquire</h3>
+        <EnquiryForm context={hotel.name} />
+      </div>
       
       <div className="mt-4 text-center">
         <span className="text-xs text-[#6B5744]/60">
@@ -158,9 +165,13 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
               {hotel.description && (
                 <section>
                   <h2 className="text-2xl font-bold text-[#332A20] mb-4">About the Resort</h2>
-                  <p className="text-[#6B5744] leading-relaxed whitespace-pre-line text-[15px] sm:text-[16px]">
-                    {hotel.description}
-                  </p>
+                  {hotel.content ? (
+                    <RichContent html={hotel.content} />
+                  ) : (
+                    <p className="text-[#6B5744] leading-relaxed whitespace-pre-line text-[15px] sm:text-[16px]">
+                      {hotel.description}
+                    </p>
+                  )}
                 </section>
               )}
 
@@ -185,7 +196,14 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                   <h2 className="text-2xl font-bold text-[#332A20] mb-4">Room Options</h2>
                   <div className="space-y-3">
                     {roomTypes.map((rt: any) => (
-                      <div key={rt.id} className={`flex justify-between items-center p-4 sm:p-5 rounded-[16px] border ${rt.is_available ? 'border-[#E8DDD4] bg-white' : 'border-gray-200 bg-gray-50 opacity-75'}`}>
+                      <div key={rt.id} className={`flex flex-wrap justify-between items-center gap-3 p-4 sm:p-5 rounded-[16px] border ${rt.is_available ? 'border-[#E8DDD4] bg-white' : 'border-gray-200 bg-gray-50 opacity-75'}`}>
+                        {Array.isArray(rt.images) && rt.images.length > 0 && (
+                          <div className="w-full flex gap-2 overflow-x-auto hide-scrollbar">
+                            {rt.images.map((u: string, i: number) => (
+                              <img key={i} src={u} alt={`${rt.room_type} ${i + 1}`} loading="lazy" className="h-24 w-36 rounded-xl object-cover shrink-0" />
+                            ))}
+                          </div>
+                        )}
                         <div>
                           <h4 className="font-bold text-lg text-[#332A20] mb-1">{rt.room_type}</h4>
                           <div className="flex items-center gap-2 text-sm text-[#6B5744]/70">

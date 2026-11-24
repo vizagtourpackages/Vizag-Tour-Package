@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Fraunces, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { siteInfo } from "@/data/siteInfo";
 import ScrollToTop from "@/components/ScrollToTop";
 
-const inter = Inter({
+// Editorial display serif + clean grotesk body
+const display = Fraunces({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-fraunces",
   display: "swap",
+  axes: ["opsz", "SOFT"],
 });
 
-const outfit = Outfit({
+const sans = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-hanken",
   display: "swap",
 });
 
@@ -31,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body className="antialiased min-h-screen flex flex-col bg-warm-white text-charcoal">
         <ScrollToTop />
         {children}

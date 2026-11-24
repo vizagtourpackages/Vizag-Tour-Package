@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { sortByDisplayOrder } from '@/lib/content'
+import { toggleSetting } from '@/app/admin/settings/actions'
 
 export async function deleteTourPackage(id: string) {
   const supabase = await createClient()
@@ -68,9 +70,8 @@ export async function saveTourPackage(formData: FormData) {
     show_on_home: formData.get('show_on_home') === 'true',
     show_on_packages_page: formData.get('show_on_packages_page') === 'true',
     home_order: formData.get('home_order') ? parseInt(formData.get('home_order') as string) : 0,
-    show_in_araku: formData.get('show_in_araku') === 'true',
-    show_in_lambasingi: formData.get('show_in_lambasingi') === 'true',
-    show_in_vanjangi: formData.get('show_in_vanjangi') === 'true',
+    display_order: formData.get('display_order') ? parseInt(formData.get('display_order') as string) : 0,
+    resort_ids: parseJSON('resort_ids'),
   }
 
   let packageId = id;
@@ -138,7 +139,47 @@ export async function saveTourPackage(formData: FormData) {
 
   revalidatePath('/admin/tour-packages')
   revalidatePath('/tour-packages')
+  revalidatePath('/packages/[slug]', 'page')
   revalidatePath('/')
   
   return { success: true }
+}
+
+export async function moveTourPackage(id: string, direction: 'up' | 'down') {
+  const supabase = await createClient()
+  const { data: raw } = await supabase
+    .from('tour_packages')
+    .select('id, display_order, created_at')
+    .order('created_at', { ascending: false })
+  if (!raw) return
+  const data = sortByDisplayOrder(raw)
+  const idx = data.findIndex(p => p.id === id)
+  const swapWith = direction === 'up' ? idx - 1 : idx + 1
+  if (idx < 0 || swapWith < 0 || swapWith >= data.length) return
+  const ordered = [...data]
+  ;[ordered[idx], ordered[swapWith]] = [ordered[swapWith], ordered[idx]]
+  // Re-number sequentially so ties never cause ambiguity
+  for (let i = 0; i < ordered.length; i++) {
+    if (ordered[i].display_order !== i + 1) {
+      await supabase.from('tour_packages').update({ display_order: i + 1 }).eq('id', ordered[i].id)
+    }
+  }
+  revalidatePath('/admin/tour-packages')
+  revalidatePath('/tour-packages')
+  revalidatePath('/')
+}
+
+export async function toggleFeatured(id: string, show_on_home: boolean) {
+  const supabase = await createClient()
+  const { error } = await supabase.from('tour_packages').update({ show_on_home }).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/tour-packages')
+  revalidatePath('/')
+}
+
+/** Pick which package is featured on the home hero. Clicking the current one clears it. */
+export async function setHeroPackage(id: string, currentlyHero: boolean) {
+  await toggleSetting('hero_package_id', currentlyHero ? '' : id)
+  revalidatePath('/admin/tour-packages')
+  revalidatePath('/')
 }

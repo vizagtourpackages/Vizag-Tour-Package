@@ -46,7 +46,7 @@ export default async function EditTourPackagePage({ params }: { params: Promise<
   const supabaseClient = await createClient();
   const { data: resortsData } = await supabaseClient
     .from('hotels_resorts')
-    .select('id, name')
+    .select('id, name, location, cover_image_url')
     .eq('is_published', true)
     .order('name');
   

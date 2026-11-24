@@ -1,62 +1,47 @@
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Guide } from "@/data/guides";
+import { Arrow } from "./Motion";
 
 interface GuideCardProps {
   guide: Guide;
 }
 
 export default function GuideCard({ guide }: GuideCardProps) {
+  const href = guide.slug || guide.id ? `/travel-guides/${guide.slug || guide.id}` : "/travel-guides";
   return (
-    <div className="bg-white border border-charcoal/5 rounded-[24px] shadow-card transition-all duration-500 hover:shadow-card-hover hover:-translate-y-2 flex flex-col overflow-hidden h-full group">
-      <div className="relative p-2">
-        <div className="relative overflow-hidden rounded-[16px]">
-          {guide.imageUrl ? (
-            <div className="relative h-48 sm:h-56 w-full">
-              <Image fill 
-                src={guide.imageUrl} 
-                alt={guide.title}
-                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
-          ) : (
-            <PlaceholderImage
-              gradient={guide.imageGradient}
-              alt={guide.title}
-              className="h-48 sm:h-56 w-full transform transition-transform duration-700 group-hover:scale-105"
-            />
-          )}
-        </div>
-        <div className="absolute top-5 left-5">
-          <span className="badge bg-white/90 text-charcoal shadow-sm border border-charcoal/5 font-bold tracking-tight">
-            {guide.category}
-          </span>
-        </div>
+    <Link href={href} className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_2px_0_rgba(10,42,77,.04)] transition-shadow duration-500 hover:shadow-[0_40px_70px_-30px_rgba(10,42,77,.4)]">
+      <div className="relative aspect-[16/11] overflow-hidden bg-sand">
+        {guide.imageUrl ? (
+          <img
+            src={guide.imageUrl}
+            alt={guide.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-out)] group-hover:scale-110"
+          />
+        ) : (
+          <PlaceholderImage gradient={guide.imageGradient} alt={guide.title} className="absolute inset-0 h-full w-full" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#061a30]/55 via-transparent to-transparent" />
+        <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-ocean backdrop-blur">
+          {guide.category}
+        </span>
       </div>
 
-      <div className="p-5 sm:p-6 flex flex-col flex-1 min-w-0">
-        <h3 className="font-heading font-bold text-xl sm:text-2xl text-charcoal mb-4 leading-tight group-hover:text-coral transition-colors break-words tracking-tight">
-          {guide.title}
-        </h3>
-
-        <ul className="space-y-3 mb-8 flex-1 min-w-0">
-          {guide.highlights.map((highlight, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm text-charcoal/60 font-medium min-w-0">
-              <CheckCircle2 size={18} className="text-teal shrink-0 mt-0.5" />
-              <span className="leading-relaxed break-words min-w-0">{highlight}</span>
+      <div className="flex min-w-0 flex-1 flex-col p-6">
+        <h3 className="font-heading text-[1.4rem] leading-tight text-ocean transition-colors group-hover:text-coral">{guide.title}</h3>
+        <ul className="mt-4 mb-6 flex-1 space-y-2">
+          {guide.highlights.slice(0, 3).map((h, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-[0.86rem] leading-snug text-charcoal/65">
+              <i className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-coral" />
+              <span>{h}</span>
             </li>
           ))}
         </ul>
-
-        <Link
-          href="/contact"
-          className="inline-flex items-center gap-2 text-sm font-bold text-teal group-hover:text-teal-dark transition-colors mt-auto"
-        >
-          Plan Your Trip <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform shrink-0" />
-        </Link>
+        <span className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-ocean transition-colors group-hover:text-coral">
+          Read guide <Arrow className="transition-transform group-hover:translate-x-1.5" />
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -18,9 +18,9 @@ export default function ScrollReveal({
   children,
   className = "",
   delay = 0,
-  duration = 0.8,
-  yOffset = 40,
-  xOffset = 40,
+  duration = 0.55,
+  yOffset = 24,
+  xOffset = 24,
   direction = "up",
   once = true,
 }: ScrollRevealProps) {
@@ -41,7 +41,7 @@ export default function ScrollReveal({
       transition={{
         duration,
         delay,
-        ease: [0.16, 1, 0.3, 1], // Custom easing similar to nomu.store's springy/smooth feel
+        ease: [0.23, 1, 0.32, 1], // strong ease-out: responsive start
       }}
       className={className}
     >

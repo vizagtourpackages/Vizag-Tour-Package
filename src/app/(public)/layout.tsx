@@ -6,7 +6,7 @@ import LatestUpdatesSection from "@/components/LatestUpdatesSection";
 import LatestUpdatesWrapper from "@/components/LatestUpdatesWrapper";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import EnquiryDrawer from "@/components/EnquiryDrawer";
+import SmoothScroll from "@/components/SmoothScroll";
 import { BookingProvider } from "@/components/booking/BookingContext";
 import BookingModalController from "@/components/booking/BookingModalController";
 
@@ -26,18 +26,22 @@ export default function PublicLayout({
 }>) {
   return (
     <BookingProvider>
-      <Navbar />
-      <main className="flex-1 pt-[72px] overflow-x-hidden">{children}</main>
-      <LatestUpdatesWrapper>
-        <LatestUpdatesSection />
-      </LatestUpdatesWrapper>
-      <Footer />
-      <div className="hidden md:block">
-        <WhatsAppFAB />
-      </div>
-      <MobileBottomNav />
-      <EnquiryDrawer />
-      <BookingModalController />
+      <SmoothScroll>
+        <div className="site-theme flex flex-1 flex-col">
+          <Navbar />
+          {/* overflow-x-clip (not hidden) so sticky sidebars inside still stick */}
+          <main className="flex-1 pt-[72px] overflow-x-clip">{children}</main>
+          <LatestUpdatesWrapper>
+            <LatestUpdatesSection />
+          </LatestUpdatesWrapper>
+          <Footer />
+          <div className="hidden md:block">
+            <WhatsAppFAB />
+          </div>
+          <MobileBottomNav />
+          <BookingModalController />
+        </div>
+      </SmoothScroll>
     </BookingProvider>
   );
 }

@@ -9,6 +9,9 @@ export default function PackageBookingButton({ pkg, plan }: { pkg: any, plan?: a
     title: pkg.title,
     duration: pkg.duration,
     rate_plans: pkg.rate_plans,
+    stay_options: pkg.stay_options,
+    pickup_location: pkg.pickup_location,
+    drop_location: pkg.drop_location,
     selected_plan: plan ? plan.title : null
   };
 

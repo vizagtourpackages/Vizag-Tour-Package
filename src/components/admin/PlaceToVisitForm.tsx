@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { savePlace } from '@/app/admin/places-to-visit/actions'
 import ImageUpload from './ImageUpload'
+import RichTextField from './RichTextField'
 import Link from 'next/link'
 
 export default function PlaceToVisitForm({ initialData, id }: { initialData?: any, id: string }) {
@@ -52,6 +53,9 @@ export default function PlaceToVisitForm({ initialData, id }: { initialData?: an
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
               <textarea name="description" defaultValue={initialData?.description} required rows={3} className="w-full p-2.5 border rounded-lg" />
+            </div>
+            <div className="md:col-span-2">
+              <RichTextField name="content" label="Detailed Description" defaultValue={initialData?.content} hint="Supports headings, lists, links and multiple images." />
             </div>
           </div>
         </div>

@@ -6,6 +6,8 @@ import { MapPin, ArrowLeft, Clock } from "lucide-react";
 import { Metadata } from "next";
 import DestinationCard from "@/components/DestinationCard";
 import ScrollCarousel from "@/components/ScrollCarousel";
+import RichContent from "@/components/RichContent";
+import { EnquiryForm } from "@/components/EnquirySidebar";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -139,9 +141,13 @@ export default async function DevotionalDetailPage({ params }: { params: Promise
 
               <section className="relative z-10">
                 <h2 className="text-2xl font-heading font-bold text-charcoal mb-4">About {destination.name}</h2>
-                <div className="prose prose-lg text-charcoal/70 whitespace-pre-line leading-relaxed">
-                  {destination.description || 'Experience a peaceful devotional journey with our comfortable travel services.'}
-                </div>
+                {destination.content ? (
+                  <RichContent html={destination.content} />
+                ) : (
+                  <div className="text-charcoal/70 whitespace-pre-line leading-relaxed text-lg">
+                    {destination.description || 'Experience a peaceful devotional journey with our comfortable travel services.'}
+                  </div>
+                )}
               </section>
             </div>
           </div>
@@ -176,6 +182,11 @@ export default async function DevotionalDetailPage({ params }: { params: Promise
                 <span className="text-xs text-charcoal/50">
                   Or call us directly at <strong>+917780739851</strong>
                 </span>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-charcoal/5">
+                <h3 className="font-heading font-bold text-lg text-charcoal mb-3">Send an enquiry</h3>
+                <EnquiryForm context={destination.name} />
               </div>
             </div>
           </div>

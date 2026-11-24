@@ -20,6 +20,9 @@ export async function updateDestinationPage(id: string, formData: FormData) {
     distance: formData.get('distance') as string,
     elevation: formData.get('elevation') as string,
     image_url: formData.get('image_url') as string,
+    content: formData.get('content') as string,
+    package_ids: JSON.parse((formData.get('package_ids') as string) || '[]'),
+    hotel_ids: JSON.parse((formData.get('hotel_ids') as string) || '[]'),
   }
 
   const { error } = await supabase
@@ -34,5 +37,8 @@ export async function updateDestinationPage(id: string, formData: FormData) {
 
   revalidatePath('/admin/destination-pages')
   revalidatePath(`/${id}`)
+  revalidatePath('/araku-valley')
+  revalidatePath('/lambasingi')
+  revalidatePath('/vanjangi')
   redirect('/admin/destination-pages')
 }

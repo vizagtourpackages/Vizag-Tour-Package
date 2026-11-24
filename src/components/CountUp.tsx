@@ -22,7 +22,7 @@ export default function CountUp({
   className = "",
 }: CountUpProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-10%" });
+  const isInView = useInView(ref, { once: true, margin: "0px" });
 
   return (
     <span ref={ref} className={className}>

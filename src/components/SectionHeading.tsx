@@ -1,10 +1,14 @@
-import ScrollReveal from "./ScrollReveal";
+import { Reveal, SplitWords } from "./Motion";
 
 interface SectionHeadingProps {
   title: string;
   subtitle?: string;
   centered?: boolean;
   light?: boolean;
+  /** Small uppercase label above the title. */
+  kicker?: string;
+  /** Words of the title rendered as italic sunset accent. Defaults to the last word. */
+  accent?: string[];
 }
 
 export default function SectionHeading({
@@ -12,36 +16,37 @@ export default function SectionHeading({
   subtitle,
   centered = true,
   light = false,
+  kicker,
+  accent,
 }: SectionHeadingProps) {
+  const words = title.trim().split(" ");
+  const accentWords = accent ?? [words[words.length - 1]];
+
   return (
-    <div className={`mb-8 sm:mb-12 w-full ${centered ? "text-center flex flex-col items-center" : "overflow-hidden"}`}>
-      <ScrollReveal delay={0} className="w-full min-w-0 max-w-full px-2">
-        <h2
-          className={`text-xl sm:text-3xl lg:text-4xl font-heading font-bold leading-[1.2] tracking-tight ${
-            light ? "text-white" : "text-charcoal"
-          }`}
-        >
-          {title}
-        </h2>
-      </ScrollReveal>
+    <div className={`mb-10 sm:mb-14 w-full ${centered ? "text-center flex flex-col items-center" : ""}`}>
+      {kicker && (
+        <Reveal>
+          <p className={`kicker mb-4 ${light ? "!text-amber" : ""}`}>{kicker}</p>
+        </Reveal>
+      )}
+      <h2
+        className={`font-heading text-[clamp(1.85rem,4.2vw,3.2rem)] leading-[1.08] max-w-4xl ${
+          light ? "text-white" : "text-ocean"
+        }`}
+      >
+        <SplitWords text={title} accent={accentWords} light={light} />
+      </h2>
       {subtitle && (
-        <ScrollReveal delay={0.1} className="w-full min-w-0 max-w-full px-4">
+        <Reveal delay={0.12}>
           <p
-            className={`mt-3 sm:mt-6 text-sm sm:text-lg font-medium leading-relaxed max-w-4xl lg:max-w-5xl ${centered ? "mx-auto" : ""} ${
-              light ? "text-white/70" : "text-charcoal/60"
+            className={`mt-5 max-w-2xl text-[0.98rem] sm:text-[1.05rem] leading-relaxed ${centered ? "mx-auto" : ""} ${
+              light ? "text-white/70" : "text-charcoal/65"
             }`}
           >
             {subtitle}
           </p>
-        </ScrollReveal>
+        </Reveal>
       )}
-      <ScrollReveal delay={0.2} className="w-full flex justify-center">
-        <div
-          className={`mt-4 sm:mt-8 h-1 sm:h-1.5 w-16 sm:w-20 rounded-full bg-coral ${
-            centered ? "mx-auto" : ""
-          }`}
-        />
-      </ScrollReveal>
     </div>
   );
 }

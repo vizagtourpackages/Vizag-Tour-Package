@@ -56,6 +56,7 @@ export async function saveHotelResort(formData: FormData) {
     slug: formData.get('slug') as string,
     tagline: formData.get('tagline') as string,
     description: formData.get('description') as string,
+    content: formData.get('content') as string,
     category: formData.get('category') as string,
     location: formData.get('location') as string,
     latitude: formData.get('latitude') ? parseFloat(formData.get('latitude') as string) : null,
@@ -110,13 +111,16 @@ export async function saveHotelResort(formData: FormData) {
   
   // Then insert the new ones
   if (resortId && roomTypes.length > 0) {
-    const roomTypesToInsert = roomTypes.map((rt: any) => ({
-      resort_id: resortId,
-      room_type: rt.room_type,
-      price: parseFloat(rt.price),
-      has_ac: rt.has_ac,
-      is_available: rt.is_available
-    }))
+    const roomTypesToInsert = roomTypes
+      .filter((rt: any) => rt.room_type && (rt.is_available || rt.price !== '' ))
+      .map((rt: any) => ({
+        resort_id: resortId,
+        room_type: rt.room_type,
+        price: parseFloat(rt.price) || 0,
+        has_ac: rt.has_ac ?? (/ac/i.test(rt.room_type) && !/non/i.test(rt.room_type)),
+        is_available: rt.is_available,
+        images: rt.images || []
+      }))
     const { error: insertError } = await supabase.from('resort_room_types').insert(roomTypesToInsert)
     if (insertError) console.error("Error inserting room types", insertError)
   }

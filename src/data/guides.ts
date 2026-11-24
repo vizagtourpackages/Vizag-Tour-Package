@@ -5,6 +5,7 @@ export interface Guide {
   highlights: string[];
   imageGradient: string;
   imageUrl?: string;
+  slug?: string;
 }
 
 export const guides: Guide[] = [

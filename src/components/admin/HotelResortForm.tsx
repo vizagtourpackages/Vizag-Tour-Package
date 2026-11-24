@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import { saveHotelResort } from '@/app/admin/hotels-resorts/actions'
 import { fetchNearbyPlaces } from '@/app/admin/hotels-resorts/mapbox-actions'
 import ImageUpload from './ImageUpload'
+import AccommodationTypesEditor from './AccommodationTypesEditor'
+import RichTextField from './RichTextField'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, X, MapPin, Loader2, BedDouble } from 'lucide-react'
+import { Plus, X, MapPin, Loader2 } from 'lucide-react'
 
 export default function HotelResortForm({ initialData, id, initialRoomTypes = [] }: { initialData?: any, id: string, initialRoomTypes?: any[] }) {
   const [imageUrl, setImageUrl] = useState(initialData?.cover_image_url || '')
@@ -231,8 +233,12 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Short Description (shown on cards)</label>
             <textarea name="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" />
+          </div>
+
+          <div className="md:col-span-2">
+            <RichTextField name="content" label="Detailed Description" defaultValue={initialData?.content} hint="Shown on the hotel page. Supports headings, lists, links and multiple images." />
           </div>
 
           <div className="md:col-span-2">
@@ -488,94 +494,8 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
         )}
       </div>
 
-      {/* Room Types */}
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-        <div className="flex justify-between items-center mb-6">
-          <h4 className="font-bold text-gray-900 text-xl flex items-center gap-2">
-            <BedDouble className="text-gray-500" />
-            Room Types
-          </h4>
-          <button 
-            type="button" 
-            onClick={() => setShowRoomModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-700 text-white rounded-lg font-medium hover:bg-emerald-800 transition-colors"
-          >
-            <Plus size={16} /> Add Room Type
-          </button>
-        </div>
-
-        {showRoomModal && (
-          <div className="mb-6 p-4 border border-emerald-200 bg-emerald-50 rounded-lg">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Room Type</label>
-                <input type="text" value={newRoom.room_type} onChange={e => setNewRoom({...newRoom, room_type: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-emerald-500" placeholder="e.g. Deluxe AC" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Price (₹)</label>
-                <input type="number" value={newRoom.price} onChange={e => setNewRoom({...newRoom, price: e.target.value})} className="w-full p-2 border rounded focus:ring-1 focus:ring-emerald-500" />
-              </div>
-              <div className="flex items-end pb-1 gap-4">
-                <label className="flex items-center gap-1.5 cursor-pointer text-sm">
-                  <input type="checkbox" checked={newRoom.has_ac} onChange={e => setNewRoom({...newRoom, has_ac: e.target.checked})} className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
-                  AC
-                </label>
-                <label className="flex items-center gap-1.5 cursor-pointer text-sm">
-                  <input type="checkbox" checked={newRoom.is_available} onChange={e => setNewRoom({...newRoom, is_available: e.target.checked})} className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
-                  Available
-                </label>
-              </div>
-              <div className="flex items-end gap-2">
-                <button type="button" onClick={addRoomType} className="px-4 py-2 bg-emerald-700 text-white rounded font-medium hover:bg-emerald-800 w-full sm:w-auto">Save</button>
-                <button type="button" onClick={() => setShowRoomModal(false)} className="px-4 py-2 border bg-white rounded font-medium hover:bg-gray-50 w-full sm:w-auto">Cancel</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {roomTypes.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 border border-dashed border-gray-300 rounded-lg text-gray-500">
-            No room types configured yet.
-          </div>
-        ) : (
-          <div className="border rounded-lg overflow-hidden">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="p-4 font-semibold text-gray-700">Room Type</th>
-                  <th className="p-4 font-semibold text-gray-700">Price</th>
-                  <th className="p-4 font-semibold text-gray-700 text-center">AC</th>
-                  <th className="p-4 font-semibold text-gray-700 text-center">Available</th>
-                  <th className="p-4 font-semibold text-gray-700 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {roomTypes.map((rt: any, i: number) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    <td className="p-4 font-medium text-gray-900">{rt.room_type}</td>
-                    <td className="p-4 text-gray-600">₹{rt.price}</td>
-                    <td className="p-4 text-center">
-                      <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${rt.has_ac ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
-                        {rt.has_ac ? 'Yes' : 'No'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${rt.is_available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                        {rt.is_available ? 'Yes' : 'No'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      <button type="button" onClick={() => removeRoomType(i)} className="text-red-500 hover:text-red-700 font-medium text-sm">
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Accommodation Types */}
+      <AccommodationTypesEditor value={roomTypes} onChange={setRoomTypes} />
 
     </form>
   )

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { saveTourPackage } from '@/app/admin/tour-packages/actions'
 import ImageUpload from './ImageUpload'
 import RichTextEditor from './RichTextEditor'
+import EntityPicker from './EntityPicker'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Plus, X, Trash2, AlertCircle } from 'lucide-react'
@@ -38,6 +39,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
   const [days, setDays] = useState<any[]>(initialDays.length > 0 ? initialDays : [])
   const [hotels, setHotels] = useState<any[]>(initialHotels.length > 0 ? initialHotels : [])
   const [ratePlans, setRatePlans] = useState<any[]>(initialData?.rate_plans || [])
+  const [resortIds, setResortIds] = useState<string[]>(Array.isArray(initialData?.resort_ids) ? initialData.resort_ids : [])
 
   // SEO Defaults
   const [metaTitle, setMetaTitle] = useState(initialData?.meta_title || '')
@@ -222,6 +224,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
     formData.append('days', JSON.stringify(days))
     formData.append('hotels', JSON.stringify(hotels))
     formData.append('rate_plans', JSON.stringify(ratePlans))
+    formData.append('resort_ids', JSON.stringify(resortIds))
     
     try {
       const result = await saveTourPackage(formData)
@@ -547,10 +550,25 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
         )}
       </div>
 
+      {/* Attached Hotels */}
+      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-emerald-500">
+        <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-2">Attached Hotels &amp; Resorts</h3>
+        <p className="text-sm text-gray-500 mb-5">
+          Select the hotels guests can choose for this package. The public page shows a &quot;Choose Your Stay&quot; section with the
+          accommodation types (Non AC / Deluxe AC / Premium AC) available across these hotels, with each hotel&apos;s price and photos.
+        </p>
+        <EntityPicker
+          items={availableResorts.map((r: any) => ({ id: r.id, title: r.name, subtitle: r.location, image: r.cover_image_url }))}
+          value={resortIds}
+          onChange={setResortIds}
+          emptyText="No published hotels yet. Add hotels first under Hotels & Resorts."
+        />
+      </div>
+
       {/* Rate Plans (Optional) */}
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
         <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
-          <h3 className="text-xl font-heading font-bold">Rate Plans / Options</h3>
+          <h3 className="text-xl font-heading font-bold">Custom Rate Plans <span className="text-sm font-medium text-gray-400">(optional – shown only when no hotels are attached)</span></h3>
           <button type="button" onClick={addRatePlan} className="flex items-center gap-1 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition-colors">
             <Plus size={16} /> Add Rate Plan
           </button>
@@ -733,12 +751,12 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
 
       {/* 9. Visibility & Placement */}
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-coral">
-        <h3 className="text-xl font-heading font-bold mb-6">Visibility & Placement</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <h3 className="text-xl font-heading font-bold mb-6">Visibility &amp; Placement</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-4 bg-gray-50 rounded-lg border">
             <label className="flex items-center gap-3 cursor-pointer">
               <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-              <span className="font-bold text-gray-700">Show on Home Page</span>
+              <span className="font-bold text-gray-700">Featured on Home Page</span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer mt-4">
               <input type="checkbox" name="show_on_packages_page" value="true" defaultChecked={initialData ? initialData.show_on_packages_page !== false : true} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
@@ -750,22 +768,9 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
             </div>
           </div>
           <div className="p-4 bg-gray-50 rounded-lg border">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" name="show_in_araku" value="true" defaultChecked={initialData?.show_in_araku} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-              <span className="font-bold text-gray-700">Show on Araku Page</span>
-            </label>
-          </div>
-          <div className="p-4 bg-gray-50 rounded-lg border">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" name="show_in_lambasingi" value="true" defaultChecked={initialData?.show_in_lambasingi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-              <span className="font-bold text-gray-700">Show on Lambasingi Page</span>
-            </label>
-          </div>
-          <div className="p-4 bg-gray-50 rounded-lg border">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" name="show_in_vanjangi" value="true" defaultChecked={initialData?.show_in_vanjangi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-              <span className="font-bold text-gray-700">Show on Vanjangi Page</span>
-            </label>
+            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Listing Order (1 is first)</label>
+            <input type="number" name="display_order" defaultValue={initialData?.display_order || 0} className="w-full p-2 border rounded-md" />
+            <p className="text-xs text-gray-500 mt-2">Controls the order on the Tour Packages page. You can also reorder with the arrows on the packages list. To show this package on a destination page (Araku, Lambasingi, Vanjangi), attach it from Destination Pages in the admin.</p>
           </div>
         </div>
       </div>

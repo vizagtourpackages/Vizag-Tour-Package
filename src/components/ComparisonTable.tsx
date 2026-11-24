@@ -1,103 +1,109 @@
 import { Check, X } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import ScrollReveal from "./ScrollReveal";
+import { Reveal } from "./Motion";
+import { siteInfo } from "@/data/siteInfo";
 
 const comparisonData = [
-  {
-    feature: "Driver Cancellation Rate",
-    us: "0% Guaranteed (No Cancellations)",
-    others: "High Cancellation Risk",
-  },
-  {
-    feature: "Pricing & Surge",
-    us: "100% Fixed Rates (Zero Surge)",
-    others: "2x to 3x Surge Charges",
-  },
-  {
-    feature: "Ghat Road Safety",
-    us: "Mountain-Experienced Chauffeurs",
-    others: "Random/Unexperienced Drivers",
-  },
-  {
-    feature: "Luggage & Waiting",
-    us: "Free Waiting & Luggage Assist",
-    others: "Per-Minute Wait Penalties",
-  },
-  {
-    feature: "Vehicle Quality",
-    us: "100% Sanitized AC Fleet",
-    others: "Inconsistent Condition",
-  },
-  {
-    feature: "Customer Support",
-    us: "Instant Human Helpline",
-    others: "Automated Chatbots",
-  },
+  { feature: "Driver cancellations", us: "0% — your ride is guaranteed", others: "High cancellation risk" },
+  { feature: "Pricing & surge", us: "100% fixed rates, zero surge", others: "2x to 3x surge charges" },
+  { feature: "Ghat road safety", us: "Mountain-experienced chauffeurs", others: "Random, unfamiliar drivers" },
+  { feature: "Luggage & waiting", us: "Free waiting and luggage help", others: "Per-minute wait penalties" },
+  { feature: "Vehicle quality", us: "Sanitised AC fleet, every trip", others: "Inconsistent condition" },
+  { feature: "Customer support", us: "A real person on the helpline", others: "Automated chatbots" },
+];
+
+const proof = [
+  { big: "0%", label: "cancellations" },
+  { big: "₹0", label: "surge charges" },
+  { big: "24/7", label: "human helpline" },
 ];
 
 export default function ComparisonTable() {
   return (
     <section className="section-padding bg-warm-white">
-      <div className="container-max max-w-5xl mx-auto">
+      <div className="container-max">
         <SectionHeading
+          kicker="The difference"
           title="Travel Better. Travel with Confidence."
-          subtitle="See how our commitment to safety, comfort, transparency, and customer service sets us apart."
+          subtitle="See how our commitment to safety, comfort, transparency and customer service sets us apart."
         />
 
-        <ScrollReveal delay={0.2}>
-          <div className="mt-8 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="min-w-[500px] md:min-w-[800px] w-full rounded-[32px] overflow-hidden shadow-card hover:shadow-card-hover transition-shadow duration-500 border border-charcoal/5 bg-white">
-              <div className="flex flex-col w-full text-left">
-                {/* Colored Header */}
-                <div className="grid grid-cols-3 bg-charcoal text-white">
-                  <div className="py-4 px-4 md:py-6 md:px-8 font-heading text-sm md:text-xl font-bold border-r border-white/10 flex items-center">
-                    Feature Comparison
-                  </div>
-                  <div className="py-4 px-4 md:py-6 md:px-8 flex flex-col items-center justify-center border-r border-white/10 bg-teal text-center">
-                    <span className="font-heading text-sm md:text-2xl font-black text-white tracking-tight">Vizag Tour Packages</span>
-                    <span className="text-[10px] md:text-xs text-teal-dark bg-white/20 px-3 py-1 rounded-full uppercase tracking-widest font-bold mt-1.5 shadow-sm">The Gold Standard</span>
-                  </div>
-                  <div className="py-4 px-4 md:py-6 md:px-8 flex flex-col items-center justify-center bg-sand text-charcoal text-center">
-                    <span className="font-heading text-sm md:text-xl font-bold text-charcoal/90">Other Aggregators</span>
-                    <span className="text-[10px] md:text-xs text-charcoal/50 uppercase tracking-widest mt-1.5">Standard Cabs</span>
-                  </div>
-                </div>
+        <div className="grid gap-6 lg:grid-cols-[0.82fr_1.3fr] lg:gap-8">
+          {/* Promise panel */}
+          <Reveal>
+            <div className="grain relative flex h-full flex-col justify-between overflow-hidden rounded-[32px] bg-ocean-gradient p-8 text-white sm:p-10">
+              <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-coral/35 blur-[80px]" />
+              <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-teal/30 blur-[80px]" />
 
-                {/* Table Body */}
-                <div className="flex flex-col divide-y divide-charcoal/5">
-                  {comparisonData.map((row, idx) => (
-                    <div key={idx} className="grid grid-cols-3 hover:bg-sand transition-colors group">
-                      {/* Feature Column */}
-                      <div className="py-4 px-4 md:py-6 md:px-8 font-bold text-xs md:text-base text-charcoal/80 border-r border-charcoal/5 bg-white group-hover:bg-sand transition-colors tracking-tight flex items-center">
-                        {row.feature}
-                      </div>
+              <div className="relative">
+                <p className="kicker !text-amber mb-5">Our promise</p>
+                <h3 className="font-heading text-[clamp(1.9rem,3.4vw,2.7rem)] leading-[1.1]">
+                  Fixed fares. Verified drivers. <span className="italic text-sunset">Zero surprises.</span>
+                </h3>
+                <p className="mt-5 max-w-sm text-[0.98rem] leading-relaxed text-white/70">
+                  Every trip is priced upfront and driven by someone who knows the ghat roads — so the only thing you plan for is the view.
+                </p>
+              </div>
 
-                      {/* Our Advantage Column (Colored Background) */}
-                      <div className="py-4 px-4 md:py-6 md:px-8 border-r border-charcoal/5 bg-teal/5 group-hover:bg-teal/10 transition-colors flex items-center justify-start md:justify-start">
-                        <div className="flex items-start gap-2 md:gap-3">
-                          <div className="w-5 h-5 md:w-8 md:h-8 rounded-full bg-teal flex items-center justify-center shrink-0 shadow-sm">
-                            <Check size={14} className="text-white md:w-5 md:h-5" strokeWidth={3} />
-                          </div>
-                          <span className="font-bold text-xs md:text-lg text-teal-dark tracking-tight leading-tight">{row.us}</span>
-                        </div>
-                      </div>
-
-                      {/* Others Column */}
-                      <div className="py-4 px-4 md:py-6 md:px-8 bg-charcoal/5 group-hover:bg-charcoal/10 transition-colors flex items-start justify-start md:justify-start">
-                        <div className="flex items-start gap-2 md:gap-3">
-                          <div className="w-4 h-4 md:w-6 md:h-6 rounded-full bg-coral/20 flex items-center justify-center shrink-0">
-                            <X size={12} className="text-coral md:w-4 md:h-4" strokeWidth={3} />
-                          </div>
-                          <span className="font-medium text-xs md:text-base text-charcoal/60 leading-tight">{row.others}</span>
-                        </div>
-                      </div>
+              <div className="relative mt-10">
+                <div className="grid grid-cols-3 gap-3 border-t border-white/15 pt-6">
+                  {proof.map((p) => (
+                    <div key={p.label}>
+                      <p className="font-heading text-[2rem] leading-none text-white">{p.big}</p>
+                      <p className="mt-1.5 text-[0.7rem] font-semibold uppercase tracking-wide text-white/60">{p.label}</p>
                     </div>
                   ))}
                 </div>
+                <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-coral mt-8 w-full sm:w-auto">
+                  Book with confidence
+                </a>
               </div>
             </div>
-          </div>
-        </ScrollReveal>
+          </Reveal>
+
+          {/* Comparison rows */}
+          <Reveal delay={0.1}>
+            <div className="overflow-hidden rounded-[32px] border border-ocean/10 bg-white shadow-card">
+              {/* column heads (desktop) */}
+              <div className="hidden grid-cols-[0.9fr_1.1fr_1fr] items-center border-b border-ocean/10 bg-sand/60 px-8 py-5 md:grid">
+                <span className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-charcoal/45">What matters</span>
+                <span className="flex items-center gap-2 font-heading text-lg text-ocean">
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-teal text-white"><Check size={14} strokeWidth={3} /></span>
+                  Vizag Tour Packages
+                </span>
+                <span className="text-sm font-semibold text-charcoal/45">Typical aggregators</span>
+              </div>
+
+              <ul className="divide-y divide-ocean/8">
+                {comparisonData.map((row) => (
+                  <li key={row.feature} className="group grid gap-3 px-6 py-5 transition-colors duration-300 hover:bg-sand/40 sm:px-8 md:grid-cols-[0.9fr_1.1fr_1fr] md:items-center md:gap-6">
+                    <p className="font-heading text-[1.12rem] text-ocean">{row.feature}</p>
+
+                    <p className="flex items-start gap-3 text-[0.95rem] font-semibold leading-snug text-ocean">
+                      <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-teal text-white transition-transform duration-300 group-hover:scale-110">
+                        <Check size={14} strokeWidth={3} />
+                      </span>
+                      <span>
+                        <span className="mb-0.5 block text-[0.62rem] font-bold uppercase tracking-wider text-teal md:hidden">Us</span>
+                        {row.us}
+                      </span>
+                    </p>
+
+                    <p className="flex items-start gap-3 text-[0.9rem] leading-snug text-charcoal/50">
+                      <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-coral/12 text-coral">
+                        <X size={13} strokeWidth={3} />
+                      </span>
+                      <span>
+                        <span className="mb-0.5 block text-[0.62rem] font-bold uppercase tracking-wider text-charcoal/40 md:hidden">Others</span>
+                        {row.others}
+                      </span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

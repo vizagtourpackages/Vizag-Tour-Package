@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { siteInfo } from '@/data/siteInfo'
 import { submitPackageBooking } from '@/app/actions/booking'
 import { createClient } from '@/lib/supabase/client'
+import StayPicker, { StayOption } from './StayPicker'
 
 export default function PackageBookingModal({ data, onClose }: { data: any, onClose: () => void }) {
   const [formData, setFormData] = useState({
@@ -12,13 +13,13 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
     whatsappNumber: '',
     sameAsContact: false,
     email: '',
-    startDate: '',
+    startDate: data?.prefill?.date || '',
     endDate: '',
     vehiclePreference: 'Sedan/Hatchback 4+1',
-    accommodationType: data?.isCustomEnquiry ? 'Standard (2/3 Star)' : ((data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D') 
+    accommodationType: data?.isCustomEnquiry ? 'Standard (2/3 Star)' : (data?.stay_options?.length > 0 ? '' : (data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D') 
       ? 'Not Required' 
       : (data?.selected_plan || ((data?.rate_plans && data.rate_plans.length > 0) ? '' : 'Not Required'))),
-    guests: 2,
+    guests: data?.prefill?.guests || 2,
     rooms: 1,
     specialRequests: ''
   })
@@ -47,7 +48,11 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
   }, [])
   const [error, setError] = useState('')
   
-  const hasRatePlans = data?.rate_plans && data.rate_plans.length > 0;
+  const stayOptions: StayOption[] = data?.stay_options || [];
+  const hasStay = stayOptions.length > 0 && !data?.isCustomEnquiry;
+  const [stayStep, setStayStep] = useState(hasStay);
+  const [stayHotel, setStayHotel] = useState('');
+  const hasRatePlans = !hasStay && data?.rate_plans && data.rate_plans.length > 0;
   const isOneDayPackage = data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D';
   
   // State for Rate Plan Selector step
@@ -81,6 +86,12 @@ export default function PackageBookingModal({ data, onClose }: { data: any, onCl
       }
     }
   }, [data?.selected_plan, data?.rate_plans]);
+
+  const handleStayConfirm = (type: string, hotel: { name: string }) => {
+    setStayHotel(hotel.name);
+    setFormData(prev => ({ ...prev, accommodationType: `${type} - ${hotel.name}` }));
+    setStayStep(false);
+  };
 
   const handlePlanSelect = async (plan: any) => {
     setSelectedPlan(plan.title);
@@ -201,11 +212,13 @@ Special Requests: ${bookingData.special_requests || 'None'}`
   }
 
   return (
-    <div className="fixed inset-0 z-[300] overflow-y-auto bg-black/50 backdrop-blur-sm p-4 sm:p-6">
+    <div data-lenis-prevent className="fixed inset-0 z-[300] overflow-y-auto bg-black/50 backdrop-blur-sm p-4 sm:p-6">
       <div className="relative mx-auto w-full max-w-2xl bg-white rounded-2xl p-5 sm:p-6 shadow-xl mt-4 mb-4 sm:mt-10 sm:mb-10">
         <button type="button" onClick={onClose} className="absolute top-4 right-4 z-10 text-gray-400 hover:text-charcoal bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
         
-        {showPlanSelector ? (
+        {stayStep ? (
+          <StayPicker options={stayOptions} initialType={data?.initial_stay_type} onConfirm={handleStayConfirm} />
+        ) : showPlanSelector ? (
           <div className="animate-fade-in">
             <div className="mb-6 mt-2 pr-10">
               <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-1">Select Rate Plan</h2>
@@ -387,7 +400,12 @@ Special Requests: ${bookingData.special_requests || 'None'}`
 
             <div>
               <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Accommodation *</label>
-              {selectedPlan || hasRatePlans ? (
+              {hasStay ? (
+                <div className="flex gap-2">
+                  <input type="text" readOnly value={formData.accommodationType} className="w-full p-2 border rounded-lg text-sm bg-gray-100 border-gray-200 text-gray-700 font-medium" />
+                  <button type="button" onClick={() => setStayStep(true)} className="shrink-0 px-3 text-xs font-bold text-coral border border-coral/30 rounded-lg hover:bg-coral/5">Change</button>
+                </div>
+              ) : selectedPlan || hasRatePlans ? (
                 <input 
                   type="text" 
                   readOnly 

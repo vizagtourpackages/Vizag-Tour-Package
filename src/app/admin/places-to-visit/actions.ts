@@ -29,6 +29,7 @@ export async function savePlace(formData: FormData) {
     name: formData.get('name') as string,
     category: formData.get('category') as string,
     description: formData.get('description') as string,
+    content: formData.get('content') as string,
     location: formData.get('location') as string,
     image_url: formData.get('image_url') as string,
     is_published: formData.get('is_published') === 'true',

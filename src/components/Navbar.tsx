@@ -1,85 +1,92 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, Phone, MessageCircle, ChevronDown } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { ChevronDown, Phone } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
+import { ease } from "./Motion";
+
+const WaIcon = ({ className = "" }: { className?: string }) => (
+  <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.95L2 22l5.2-1.36A9.9 9.9 0 1 0 12.04 2Zm0 18.1c-1.5 0-2.95-.4-4.2-1.15l-.3-.18-3.1.8.83-3.02-.2-.31A8.2 8.2 0 1 1 12.04 20.1Zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.09-.39-.12-.56.12-.17.25-.64.8-.78.97-.15.16-.29.18-.54.06a6.7 6.7 0 0 1-3.3-2.88c-.25-.43.25-.4.72-1.34.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42h-.47a.9.9 0 0 0-.65.31 2.75 2.75 0 0 0-.86 2.05c0 1.2.88 2.38 1 2.55.12.16 1.72 2.62 4.17 3.68 1.55.67 2.16.72 2.94.6.47-.07 1.46-.6 1.66-1.18.2-.58.2-1.07.14-1.18-.06-.1-.23-.16-.47-.28Z" />
+  </svg>
+);
+
+// Desktop shows the essentials; the rest live under "More" so the bar never overflows.
+const primaryLinks = navLinks.slice(0, 5);
+const moreLinks = navLinks.slice(5).filter((l) => l.href) as { label: string; href: string }[];
+const desktopLinks = [...primaryLinks, { label: "More", subLinks: moreLinks }];
 
 export default function Navbar() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
-  const [isOpen, setIsOpen] = useState(false);
-  const [expandedMobileMenu, setExpandedMobileMenu] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [solid, setSolid] = useState(false);
+  const { scrollY, scrollYProgress } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    setSolid(y > 12);
+    setHidden(y > 500 && y > prev && !open);
+  });
+
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Lock body scroll when drawer is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
-
-  const showSolid = true; // Always solid so hero section can start after it
+  }, [open]);
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${showSolid
-          ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-charcoal/5 py-4"
-          : "bg-gradient-to-b from-black/60 to-transparent py-6"
-          }`}
+      <motion.div
+        aria-hidden
+        className="fixed left-0 top-0 z-[120] h-[3px] w-full origin-left bg-sunset"
+        style={{ scaleX: scrollYProgress }}
+      />
+      <motion.header
+        animate={{ y: hidden ? "-100%" : 0 }}
+        transition={{ duration: 0.45, ease }}
+        className={`fixed inset-x-0 top-0 z-[100] border-b transition-[background-color,box-shadow,border-color] duration-500 ${
+          solid
+            ? "border-ocean/10 bg-white/85 shadow-[0_10px_30px_-18px_rgba(10,42,77,.35)] backdrop-blur-xl"
+            : "border-transparent bg-warm-white"
+        }`}
       >
-        <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="mx-auto flex h-[72px] max-w-[1480px] items-center justify-between gap-6 px-5 lg:px-10">
           {/* Logo */}
-          <Link href="/" prefetch={true} className="flex items-center gap-3 shrink-0 group" onClick={() => setIsOpen(false)}>
-            <div className="w-12 h-12 rounded-[16px] bg-white flex items-center justify-center transition-colors duration-500 shadow-sm border border-charcoal/5 group-hover:bg-coral">
-              <span className="text-charcoal font-black text-xl group-hover:text-white transition-colors">V</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className={`font-heading font-bold text-lg leading-tight block tracking-tight ${showSolid ? "text-charcoal" : "text-white"}`}>
-                Vizag Tour Packages
-              </span>
-            </div>
+          <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label={siteInfo.name}>
+            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-sunset shadow-glow transition-transform duration-500 group-hover:rotate-6 group-hover:scale-105">
+              <span className="font-heading text-xl font-medium text-white">V</span>
+            </span>
+            <span className="hidden leading-tight sm:block">
+              <span className="block font-heading text-[1.15rem] text-ocean">Vizag Tour Packages</span>
+              <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-coral">Araku Eco Stays</span>
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
-            {navLinks.map((link) => (
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-0.5 xl:flex">
+            {desktopLinks.map((link) =>
               link.subLinks ? (
-                <div key={link.label} className="relative group">
-                  <button
-                    className={`flex items-center gap-1 px-1.5 xl:px-2 py-1 xl:py-1.5 rounded-full text-[9px] xl:text-[10px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
-                      ? "text-charcoal/80 hover:text-charcoal hover:bg-charcoal/5"
-                      : "text-white/90 hover:text-white hover:bg-white/10"
-                      }`}
-                  >
+                <div key={link.label} className="group relative">
+                  <button className="flex items-center gap-1 px-3.5 py-2 text-[0.88rem] font-semibold text-ocean/75 transition-colors hover:text-ocean">
                     {link.label}
-                    <ChevronDown size={14} className="opacity-70 group-hover:rotate-180 transition-transform duration-300" />
+                    <ChevronDown size={14} className="opacity-60 transition-transform duration-300 group-hover:rotate-180" />
                   </button>
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                    <div className="bg-white rounded-[24px] shadow-card border border-charcoal/5 p-3 min-w-[240px]">
-                      {link.subLinks.map((subLink) => (
+                  <div className="invisible absolute left-1/2 top-full -translate-x-1/2 pt-3 opacity-0 transition-[opacity,visibility] duration-300 group-hover:visible group-hover:opacity-100">
+                    <div className="min-w-[230px] overflow-hidden rounded-3xl border border-ocean/10 bg-white p-2 shadow-[0_30px_60px_-20px_rgba(10,42,77,.35)]">
+                      {link.subLinks.map((s) => (
                         <Link
-                          key={subLink.href}
-                          href={subLink.href}
-                          className="block px-4 py-3 font-bold text-charcoal/80 hover:bg-sand hover:text-coral rounded-[12px] transition-colors"
-                          style={{ fontSize: '12px' }}
+                          key={s.href}
+                          href={s.href}
+                          className="block rounded-2xl px-4 py-3 text-sm font-semibold text-ocean transition-colors hover:bg-sand hover:text-coral"
                         >
-                          {subLink.label}
+                          {s.label}
                         </Link>
                       ))}
                     </div>
@@ -89,108 +96,88 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href!}
-                  prefetch={true}
-                  className={`px-1.5 xl:px-2 py-1 xl:py-1.5 rounded-full text-[9px] xl:text-[10px] font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-300 ${showSolid
-                    ? "text-charcoal/80 hover:text-charcoal hover:bg-charcoal/5"
-                    : "text-white/90 hover:text-white hover:bg-white/10"
-                    }`}
+                  className={`group relative px-3.5 py-2 text-[0.88rem] font-semibold transition-colors hover:text-ocean ${
+                    pathname === link.href ? "text-ocean" : "text-ocean/75"
+                  }`}
                 >
                   {link.label}
+                  <span
+                    className={`absolute inset-x-3.5 bottom-1 h-[2px] origin-left rounded-full bg-sunset transition-transform duration-500 ${
+                      pathname === link.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    }`}
+                  />
                 </Link>
               )
-            ))}
-          </div>
-
-
-
-          {/* Mobile Hamburger */}
-          <button
-            className="lg:hidden p-2 rounded-lg transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? (
-              <X size={24} className={showSolid ? "text-charcoal" : "text-white"} />
-            ) : (
-              <Menu size={24} className={showSolid ? "text-charcoal" : "text-white"} />
             )}
-          </button>
+          </nav>
+
+          <div className="flex items-center gap-3 sm:gap-5">
+            <a href={`tel:${siteInfo.whatsapp}`} className="hidden items-center gap-2 text-[0.86rem] font-semibold text-ocean/80 hover:text-coral 2xl:flex">
+              <Phone size={16} /> {siteInfo.whatsapp.replace("+91", "+91 ")}
+            </a>
+            <a
+              href={siteInfo.whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Book on WhatsApp"
+              className="group relative inline-flex h-10 w-10 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25d366] text-white sm:h-auto sm:w-auto sm:bg-ocean sm:px-5 sm:py-2.5 sm:text-[0.84rem] sm:font-semibold"
+            >
+              <span className="absolute inset-0 -translate-x-full skew-x-[-20deg] bg-white/25 transition-transform duration-700 group-hover:translate-x-full" />
+              <WaIcon className="relative h-[22px] w-[22px] sm:h-[17px] sm:w-[17px] sm:text-[#25d366]" />
+              <span className="relative hidden sm:inline">Book on WhatsApp</span>
+            </a>
+            <button
+              aria-label="Menu"
+              aria-expanded={open}
+              onClick={() => setOpen((o) => !o)}
+              className="grid h-10 w-10 place-items-center rounded-full border border-ocean/20 xl:hidden"
+            >
+              <span className="relative block h-3 w-5">
+                <span className={`absolute left-0 h-[1.5px] w-full bg-ocean transition-all duration-300 ${open ? "top-[5px] rotate-45" : "top-0"}`} />
+                <span className={`absolute left-0 top-[5px] h-[1.5px] w-full bg-ocean transition-opacity ${open ? "opacity-0" : ""}`} />
+                <span className={`absolute left-0 h-[1.5px] w-full bg-ocean transition-all duration-300 ${open ? "top-[5px] -rotate-45" : "top-[10px]"}`} />
+              </span>
+            </button>
+          </div>
         </div>
-      </nav>
+      </motion.header>
 
-      {/* Mobile Drawer Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-[90] lg:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Mobile Drawer */}
-      <div
-        className={`fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white z-[100] transform transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:hidden flex flex-col shadow-2xl ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-      >
-        <div className="flex items-center justify-between p-6 border-b border-charcoal/5 bg-sand/30">
-          <Link href="/" prefetch={true} className="flex items-center gap-3 group" onClick={() => setIsOpen(false)}>
-            <div className="w-10 h-10 rounded-[12px] bg-white flex items-center justify-center shadow-sm border border-charcoal/5 group-hover:bg-coral transition-colors">
-              <span className="text-charcoal font-black group-hover:text-white transition-colors">V</span>
-            </div>
-            <span className="font-heading font-bold text-lg text-charcoal tracking-tight">Vizag Tour</span>
-          </Link>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="w-10 h-10 rounded-full flex items-center justify-center bg-white border border-charcoal/5 hover:bg-sand transition-colors shadow-sm"
-            aria-label="Close menu"
+      {/* Mobile menu: light, circular reveal, numbered display links */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            data-lenis-prevent
+            initial={{ clipPath: "circle(0% at 92% 4%)" }}
+            animate={{ clipPath: "circle(150% at 92% 4%)" }}
+            exit={{ clipPath: "circle(0% at 92% 4%)" }}
+            transition={{ duration: 0.7, ease }}
+            className="fixed inset-0 z-[90] overflow-y-auto bg-warm-white px-7 pb-10 pt-28 xl:hidden"
           >
-            <X size={20} className="text-charcoal" />
-          </button>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto py-6 px-4">
-          {navLinks.map((link) => (
-            link.subLinks ? (
-              <div key={link.label} className="mb-2">
-                <button
-                  onClick={() => setExpandedMobileMenu(expandedMobileMenu === link.label ? null : link.label)}
-                  className="w-full px-8 py-4 text-sm font-bold text-charcoal hover:bg-sand hover:text-coral rounded-[16px] transition-colors flex items-center justify-between"
+            <ul>
+              {navLinks.flatMap((l) => (l.subLinks ? l.subLinks : [{ label: l.label, href: l.href! }])).map((n, i) => (
+                <motion.li
+                  key={n.href}
+                  initial={{ opacity: 0, x: -28 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + i * 0.04, duration: 0.6, ease }}
                 >
-                  <span>{link.label}</span>
-                  <ChevronDown size={16} className={`transition-transform duration-300 ${expandedMobileMenu === link.label ? "rotate-180" : ""}`} />
-                </button>
-                <div className={`pl-8 pr-4 overflow-hidden transition-all duration-300 ${expandedMobileMenu === link.label ? "max-h-[500px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-                  <div className={link.label === "Destination" ? "grid grid-cols-3 gap-2 pb-2" : "space-y-1 pb-2"}>
-                    {link.subLinks.map((subLink) => (
-                      <Link
-                        key={subLink.href}
-                        href={subLink.href}
-                        className={
-                          link.label === "Destination"
-                            ? "px-1 py-2 text-[10px] leading-[1.2] font-bold text-center flex items-center justify-center text-charcoal bg-sand border border-charcoal/5 rounded-[12px] hover:text-coral transition-colors"
-                            : "block px-4 py-3 text-sm font-bold text-charcoal/80 hover:text-coral hover:bg-sand rounded-[12px] transition-colors"
-                        }
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {subLink.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Link
-                key={link.href}
-                href={link.href!}
-                prefetch={true}
-                className="block px-8 py-4 mb-2 text-sm font-bold text-charcoal hover:bg-sand hover:text-coral rounded-[16px] transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.label}
-              </Link>
-            )
-          ))}
-        </nav>
-      </div>
+                  <Link
+                    href={n.href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-baseline gap-4 border-b border-ocean/10 py-3 font-heading text-[1.55rem] text-ocean active:text-coral"
+                  >
+                    <span className="text-xs font-semibold text-coral">{String(i + 1).padStart(2, "0")}</span>
+                    {n.label}
+                  </Link>
+                </motion.li>
+              ))}
+            </ul>
+            <a href={siteInfo.whatsappLink} className="btn-coral mt-8 w-full">
+              <WaIcon /> Book on WhatsApp
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

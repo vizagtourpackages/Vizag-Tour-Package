@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // Media is stored and served by Cloudflare R2. Skip Vercel's image optimizer entirely
+    // so no transformations / source-image quota is consumed; next/image just renders the original URL.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

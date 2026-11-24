@@ -3,19 +3,19 @@ import { ArrowRight, Car, Plane, MapPin, Building, Heart, Map as MapIcon, Mounta
 import HeroSection from "@/components/HeroSection";
 import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
+import { stripHtml } from "@/lib/content";
+import Marquee from "@/components/Marquee";
 import PackageCard from "@/components/PackageCard";
 import DestinationCard from "@/components/DestinationCard";
 import GuideCard from "@/components/GuideCard";
 import EventCard from "@/components/EventCard";
 import FleetSection from "@/components/VehicleCard";
 
-import CustomizeTourForm from "@/components/CustomizeTourForm";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ScrollCarousel from "@/components/ScrollCarousel";
 import GoldStandardGrid from "@/components/GoldStandardGrid";
 import ComparisonTable from "@/components/ComparisonTable";
 import FAQAccordion from "@/components/FAQAccordion";
-import TrustedPartners from "@/components/TrustedPartners";
 import PromoBannerSection from "@/components/PromoBannerSection";
 import CommunityCTA from "@/components/CommunityCTA";
 import {
@@ -86,6 +86,7 @@ export default async function Home() {
   const displayGuides = dbGuides && dbGuides.length > 0
     ? dbGuides.map(guide => ({
       id: guide.id,
+      slug: guide.slug,
       title: guide.title,
       category: guide.category,
       highlights: guide.highlights || [],
@@ -245,21 +246,46 @@ export default async function Home() {
     href: item.href
   })) || [];
 
+  // Hero collage: the admin-chosen package first (site_settings.hero_package_id), then other home packages.
+  let heroPkg: any = null;
+  const { data: heroSetting } = await supabase.from('site_settings').select('value').eq('key', 'hero_package_id').maybeSingle();
+  if (heroSetting?.value) {
+    const { data } = await supabase.from('tour_packages').select('*').eq('id', heroSetting.value).eq('is_published', true).maybeSingle();
+    heroPkg = data;
+  }
+  const heroCandidates = [heroPkg, ...(dbPackages || [])]
+    .filter(Boolean)
+    .filter((p: any, i: number, arr: any[]) => arr.findIndex((q: any) => q.id === p.id) === i)
+    .filter((p: any) => p.cover_image_url || p.image_url)
+    .slice(0, 3);
+  const heroTiles = heroCandidates.map((p: any) => ({
+    title: p.title,
+    image: p.cover_image_url || p.image_url,
+    href: `/packages/${p.slug || p.id}`,
+    price: p.price,
+    duration: p.duration,
+    badge: p.badge && !/\d+\s*[DN]/i.test(p.badge) ? p.badge : undefined,
+    description: stripHtml(p.overview_description || p.description).slice(0, 170),
+  }));
+
   return (
     <>
       {/* 1. Home/Hero section */}
-      <HeroSection />
+      <HeroSection tiles={heroTiles} />
+
+      <Marquee />
 
       {/* NEW: Promotional Banner */}
       <PromoBannerSection />
 
       {/* 2. Trending Packages */}
-      <section className="section-padding bg-warm-white relative overflow-hidden ">
+      <section className="section-padding bg-sand relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-teal/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
 
         <div className="container-max relative z-10">
           <SectionHeading
+            kicker="Popular tour packages"
             title="Vizag Tour Packages & Itineraries"
             subtitle="Explore the best Vizag tour packages to Araku Valley, Vanjangi and Lambasingi with perfect itineraries, comfortable vehicles, hotels and resorts. Book customized Vizag to Araku tours today."
           />
@@ -285,11 +311,12 @@ export default async function Home() {
 
 
       {/* 7. Top Destinations from Vizag */}
-      <section className="section-padding bg-white relative overflow-hidden">
+      <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-sand rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
 
         <div className="container-max relative z-10">
           <SectionHeading
+            kicker="Spiritual journeys"
             title="Spiritual & Devotional Tours from Vizag"
             subtitle="Explore Vizag temples and pilgrimage destinations with comfortable travel, customized itineraries, experienced drivers, and reliable support for a peaceful devotional journey."
           />
@@ -306,14 +333,10 @@ export default async function Home() {
       </section>
 
       {/* 4. Our Premium Fleet */}
-      <section className="section-padding bg-warm-white relative overflow-hidden">
+      <section className="section-padding bg-sand relative overflow-hidden">
         <div className="container-max">
-          <div className="text-center mb-2">
-            <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 border border-ocean/20 px-4 py-1.5 rounded-full uppercase tracking-widest mb-4">
-              Fleet
-            </span>
-          </div>
           <SectionHeading
+            kicker="Our fleet"
             title="Best Travels for Vizag Tours & Outstation Trips"
             subtitle="Book reliable Vizag tour vehicles including Sedans, SUVs, Tempo Travellers, Urbania, and Buses for local and outstation travel."
           />
@@ -325,6 +348,7 @@ export default async function Home() {
       <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max relative z-10">
           <SectionHeading
+            kicker="Hotels & stays"
             title="Book Hotels & Resorts in Vizag"
             subtitle="Find the right stay for your journey—from budget-friendly hotels and family stays to premium resorts and beachfront properties across Vizag and nearby destinations."
           />
@@ -348,12 +372,13 @@ export default async function Home() {
       </section>
 
       {/* NEW: Hill Station Destinations */}
-      <section className="section-padding bg-white relative overflow-hidden">
+      <section className="section-padding bg-sand relative overflow-hidden">
         {/* Background Decorative Blob */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-teal/5 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/4 pointer-events-none -z-10"></div>
 
         <div className="container-max relative z-10">
           <SectionHeading
+            kicker="Hill-station escapes"
             title="Near by Eastern Ghats Getaways"
             subtitle="Experience cool weather, breathtaking mountain views, coffee plantations, waterfalls, valleys, and tribal culture on unforgettable trips from Vizag."
           />
@@ -380,6 +405,7 @@ export default async function Home() {
       <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="container-max">
           <SectionHeading
+            kicker="Sightseeing"
             title="Vizag Sightseeing – Top Tourist Places in Visakhapatnam"
             subtitle="Explore the top tourist attractions in Visakhapatnam, including beautiful beaches, scenic viewpoints, historic museums, temples, parks, and family-friendly destinations."
           />
@@ -403,9 +429,10 @@ export default async function Home() {
       </section>
 
       {/* 9. Travel Guides */}
-      <section className="section-padding bg-warm-white relative overflow-hidden">
+      <section className="section-padding bg-sand relative overflow-hidden">
         <div className="container-max">
           <SectionHeading
+            kicker="Travel guides"
             title="Vizag Travel Guide – Things to Do & Places to Visit"
             subtitle="Plan your Visakhapatnam trip with helpful guides covering tourist places, beaches, sightseeing, local food, best time to visit, travel tips, and nearby destinations."
           />
@@ -422,10 +449,11 @@ export default async function Home() {
       </section>
 
       {/* 10. Upcoming Events */}
-      <section className="section-padding bg-white relative overflow-hidden">
+      <section className="section-padding bg-warm-white relative overflow-hidden">
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-sand rounded-full blur-[120px] opacity-50 -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
         <div className="container-max relative z-10">
           <SectionHeading
+            kicker="Events"
             title="Upcoming Activities & Events in Vizag (Visakhapatnam) – 2026"
             subtitle="Stay updated with Vizag’s upcoming festivals, cultural celebrations, tourism events, exhibitions, and special activities—then plan your perfect trip around them."
           />
@@ -442,7 +470,7 @@ export default async function Home() {
       </section>
 
       {/* 5. What We Offer */}
-      <section className="section-padding bg-white relative overflow-hidden">
+      <section className="section-padding bg-sand relative overflow-hidden">
         {/* Background decorative blob */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
           <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-teal/5 blur-[120px]"></div>
@@ -514,11 +542,8 @@ export default async function Home() {
       {/* NEW: Comparison Table */}
       <ComparisonTable />
 
-      {/* Your Trusted Travel Partner (Redesigned) */}
-      <TrustedPartners />
-
       {/* NEW: Promotions & News */}
-      <section className="section-padding bg-charcoal relative overflow-hidden">
+      <section className="section-padding bg-ocean-gradient grain relative overflow-hidden">
         {/* Decorative Grid */}
         <div className="absolute inset-0 opacity-5">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -536,6 +561,7 @@ export default async function Home() {
 
         <div className="container-max relative z-10">
           <SectionHeading
+            kicker="Latest offers"
             title="Vizag Travel Updates, Offers & Tour Deals"
             subtitle="Stay updated with the latest Vizag travel news, new tour packages, seasonal offers, special deals, and exciting travel opportunities from Vizag to Araku, Vanjangi, Lambasingi, and beyond."
             light
@@ -579,16 +605,14 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Your Trusted Travel Partner (Redesigned) */}
-      <TrustedPartners />
-
       {/* NEW: FAQ Section */}
       <FAQAccordion faqs={displayFaqs} />
 
       {/* 11. Customer Reviews */}
-      <section className="section-padding bg-sand-light overflow-hidden">
+      <section className="section-padding bg-warm-white overflow-hidden">
         <div className="container-max">
           <SectionHeading
+            kicker="Reviews"
             title="What Our Travelers Say"
             subtitle="Don't just take our word for it. Read honest reviews from our happy customers."
           />
