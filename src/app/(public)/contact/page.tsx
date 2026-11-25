@@ -4,7 +4,6 @@ import { useState } from "react";
 import { MapPin, Phone, Mail } from "lucide-react";
 import { Reveal } from "@/components/Motion";
 import SectionHeading from "@/components/SectionHeading";
-import { siteInfo } from "@/data/siteInfo";
 import { submitCustomEnquiry } from "@/app/actions/booking";
 import { waMessages } from "@/lib/whatsapp";
 import { FormError, FormSuccess, PhoneInput, SelectInput, SubmitButton, TextArea, TextInput } from "@/components/forms/Fields";

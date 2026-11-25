@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, Coffee, MapPin, Snowflake, Star, Sun, Utensils } from "lucide-react";
+import { ArrowLeft, Check, MapPin, Snowflake, Star, Sun, Utensils } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import RichContent from "@/components/RichContent";
 import { EnquiryForm } from "@/components/EnquirySidebar";

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUpload from './ImageUpload'
 import { savePromoBanner } from '@/app/admin/promo-banner/actions'
-import { Loader2, Trash2, GripVertical, Plus } from 'lucide-react'
+import { Loader2, Trash2, GripVertical } from 'lucide-react'
 
 export default function PromoBannerForm({ id, initialData, initialImages = [] }: { id: string, initialData: any, initialImages: {image_url: string}[] }) {
   const router = useRouter()

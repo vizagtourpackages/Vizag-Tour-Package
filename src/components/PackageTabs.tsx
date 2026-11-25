@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
-import { Check, X, MapPin, Clock, Calendar, Star, Bed } from 'lucide-react'
+import { Check, X, MapPin, Clock } from 'lucide-react'
 
 // SAFELIST FOR RICH TEXT EDITOR DYNAMIC CLASSES:
 // grid grid-cols-2 grid-cols-3 grid-cols-4 md:grid-cols-4 gap-4 my-6

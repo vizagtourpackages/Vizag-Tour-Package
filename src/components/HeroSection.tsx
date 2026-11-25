@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { CalendarDays, MapPin, Star, Users } from "lucide-react";
+import { CalendarDays, Star, Users } from "lucide-react";
 import { siteInfo, stats } from "@/data/siteInfo";
 import CountUp from "./CountUp";
 import MobileTrustBanner from "./MobileTrustBanner";

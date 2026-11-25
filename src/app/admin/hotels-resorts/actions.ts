@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { normalizeArea } from '@/lib/areas'
 
 export async function deleteHotelResort(id: string) {

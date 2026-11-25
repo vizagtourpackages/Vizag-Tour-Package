@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { saveHotelResort } from '@/app/admin/hotels-resorts/actions'
 import { fetchNearbyPlaces } from '@/app/admin/hotels-resorts/mapbox-actions'
 import ImageUpload from './ImageUpload'

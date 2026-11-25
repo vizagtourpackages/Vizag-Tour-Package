@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Car, Plane, MapPin, Building, Heart, Map as MapIcon, Mountain, Sunrise, Users } from "lucide-react";
+import { ArrowRight, Plane, MapPin, Building, Mountain, Users } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
@@ -18,17 +18,11 @@ import GoldStandardGrid from "@/components/GoldStandardGrid";
 import ComparisonTable from "@/components/ComparisonTable";
 import FAQAccordion from "@/components/FAQAccordion";
 import PromoBannerSection from "@/components/PromoBannerSection";
-import {
-  trendingPackages,
-} from "@/data/packages";
-import { topPlaces, vizagPlaces, destinationDetails } from "@/data/destinations";
-import { guides } from "@/data/guides";
-import { events } from "@/data/events";
 
-import { hotels } from "@/data/hotels";
+
 import HotelCard from "@/components/HotelCard";
 import NewsPromoCard from "@/components/NewsPromoCard";
-import { newsData, promotionsData } from "@/data/news";
+
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {

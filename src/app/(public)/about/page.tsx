@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Award, CreditCard, Clock, Headset, MapPin, ShieldCheck, Star, Users, Car, Phone } from "lucide-react";
+import { Award, CreditCard, Clock, MapPin, ShieldCheck, Star, Users, Car, Phone } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Reveal, Arrow } from "@/components/Motion";
 import SectionHeading from "@/components/SectionHeading";

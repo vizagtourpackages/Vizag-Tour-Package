@@ -1,10 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Clock, Users, Check, X, ChevronRight, Home, Star, MessageCircle, ChevronDown } from "lucide-react";
+import { Check, ChevronRight, Star } from "lucide-react";
 import PackageCard from "@/components/PackageCard";
 import PackageBookingButton from "@/components/PackageBookingButton";
-import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
 import PackageBookingSidebar from "@/components/booking/PackageBookingSidebar";
 import PackageTabs from "@/components/PackageTabs";
 import StayOptions from "@/components/booking/StayOptions";

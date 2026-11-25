@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import HotelCard from '@/components/HotelCard';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 import FilterSheet, { FilterGroup, OptionPill } from '@/components/FilterSheet';
 import { AREAS, DEFAULT_AREA, normalizeArea, areaLabel, type AreaId } from '@/lib/areas';
 

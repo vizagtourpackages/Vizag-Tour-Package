@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Star } from "lucide-react";
 import PackageBookingButton from "@/components/PackageBookingButton";
 import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";

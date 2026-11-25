@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, FileText, CheckCircle2 } from 'lucide-react'
+import { X, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import ReactMarkdown from 'react-markdown'
 import { siteInfo } from '@/data/siteInfo'

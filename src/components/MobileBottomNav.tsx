@@ -23,7 +23,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { navLinks, siteInfo } from "@/data/siteInfo";
+import { navLinks } from "@/data/siteInfo";
 import { waMessages } from "@/lib/whatsapp";
 import { allPackages } from "@/data/packages";
 import { topPlaces, vizagPlaces } from "@/data/destinations";

@@ -8,7 +8,6 @@ import DestinationTabs from "@/components/DestinationTabs";
 import EnquirySidebar from "@/components/EnquirySidebar";
 import RichContent from "@/components/RichContent";
 import { destinationDetails } from "@/data/destinations";
-import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import { getSiteSettings } from "@/lib/settings";
 import { createClient } from "@/lib/supabase/server";
