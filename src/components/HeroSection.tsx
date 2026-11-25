@@ -231,20 +231,20 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
                           {tiles[0].description}
                         </p>
                       )}
-                      <div className="mt-3.5 flex items-center justify-between gap-3">
+                      <div className="mt-3.5 flex items-center pr-16">
                         {tiles[0].price ? (
                           <span className="text-[0.8rem] text-white/75">
                             from <span className="font-heading text-[1.3rem] text-white">₹{tiles[0].price.toLocaleString("en-IN")}</span>
                           </span>
                         ) : <span />}
-                        <span
-                          aria-hidden
-                          className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/45 bg-[radial-gradient(circle_at_30%_22%,rgba(255,255,255,.7),rgba(255,255,255,.18)_46%,rgba(255,255,255,.06)_100%)] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,.75),inset_0_-10px_16px_rgba(255,255,255,.14),0_12px_26px_-8px_rgba(0,0,0,.55)] backdrop-blur-md transition-[transform,background-color] duration-300 group-hover:scale-110 group-hover:bg-white/30"
-                        >
-                          <Arrow className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                        </span>
                       </div>
                     </div>
+                  <span
+                  aria-hidden
+                  className="absolute bottom-4 right-4 z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/45 bg-[radial-gradient(circle_at_30%_22%,rgba(255,255,255,.7),rgba(255,255,255,.18)_46%,rgba(255,255,255,.06)_100%)] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,.75),inset_0_-10px_16px_rgba(255,255,255,.14),0_12px_26px_-8px_rgba(0,0,0,.55)] backdrop-blur-md transition-[transform,background-color] duration-300 group-hover:scale-110 group-hover:bg-white/30"
+                  >
+                    <Arrow className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </span>
                   </>
                 )}
               </Link>

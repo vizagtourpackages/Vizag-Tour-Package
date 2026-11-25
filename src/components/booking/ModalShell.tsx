@@ -5,7 +5,7 @@ import { ArrowLeft, X } from "lucide-react";
 
 /**
  * Shared shell for booking popups: bottom sheet on phones, centered card on larger screens.
- * Sticky header (title + close) so the close button never scrolls away.
+ * Sticky header: [back arrow] title … [close]. The back control is an icon only, left of the title.
  */
 export default function ModalShell({
   title,
@@ -49,20 +49,23 @@ export default function ModalShell({
       >
         <div aria-hidden className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-ocean/15 sm:hidden" />
 
-        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-ocean/8 px-5 pb-3.5 pt-3 sm:px-6 sm:pt-5">
-          <div className="min-w-0">
-            {onBack && (
-              <button
-                type="button"
-                onClick={onBack}
-                className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-ocean/12 bg-white px-3.5 py-2 text-sm font-semibold text-ocean shadow-sm transition-[background-color,transform] duration-150 hover:bg-sand active:scale-95"
-              >
-                <ArrowLeft size={16} /> {backLabel}
-              </button>
-            )}
-            <h2 className="font-heading text-[1.4rem] leading-tight text-ocean sm:text-[1.6rem]">{title}</h2>
-            {subtitle && <p className="mt-1 text-[0.86rem] text-charcoal/60">{subtitle}</p>}
+        <header className="flex shrink-0 items-center gap-3 border-b border-ocean/8 px-4 pb-3.5 pt-3 sm:px-6 sm:pt-5">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label={backLabel}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ocean/15 bg-white text-ocean shadow-[0_4px_14px_-6px_rgba(10,42,77,.3)] transition-[background-color,transform] duration-150 hover:bg-sand active:scale-90"
+            >
+              <ArrowLeft size={20} />
+            </button>
+          )}
+
+          <div className="min-w-0 flex-1">
+            <h2 className="font-heading text-[1.3rem] leading-tight text-ocean sm:text-[1.5rem]">{title}</h2>
+            {subtitle && <p className="mt-0.5 text-[0.84rem] leading-snug text-charcoal/60">{subtitle}</p>}
           </div>
+
           <button
             type="button"
             onClick={onClose}

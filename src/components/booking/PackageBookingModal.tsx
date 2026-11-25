@@ -179,16 +179,15 @@ Special Requests: ${booking.special_requests || 'None'}`
 
   if (stayStep) {
     return (
-      <ModalShell title="Choose your stay" subtitle="Pick a room type, then the hotel you prefer." onClose={onClose}>
-        <StayPicker
-          options={stayOptions}
-          initialType={data?.initial_stay_type}
-          onConfirm={(type, hotel) => {
-            set({ accommodation: `${type} - ${hotel.name}` })
-            setStayStep(false)
-          }}
-        />
-      </ModalShell>
+      <StayPicker
+        options={stayOptions}
+        initialType={data?.initial_stay_type}
+        onClose={onClose}
+        onConfirm={(type, hotel) => {
+          set({ accommodation: `${type} - ${hotel.name}` })
+          setStayStep(false)
+        }}
+      />
     )
   }
 
