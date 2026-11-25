@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Plus, Edit2, Check, X } from 'lucide-react'
 import { deleteHotelResort, togglePublish } from './actions'
 import DeleteButton from '@/components/admin/DeleteButton'
+import { areaLabel } from '@/lib/areas'
 
 export default async function HotelsResortsPage() {
   const supabase = await createClient()
@@ -30,6 +31,7 @@ export default async function HotelsResortsPage() {
             <tr className="bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-600">
               <th className="p-4">Name</th>
               <th className="p-4">Type</th>
+              <th className="p-4">Area</th>
               <th className="p-4">Location</th>
               <th className="p-4">Price</th>
               <th className="p-4 text-center">Status</th>
@@ -41,6 +43,7 @@ export default async function HotelsResortsPage() {
               <tr key={resort.id} className="border-b border-gray-100 hover:bg-gray-50/50">
                 <td className="p-4 font-medium text-gray-900">{resort.name}</td>
                 <td className="p-4 text-gray-600">{resort.category || resort.type}</td>
+                <td className="p-4 text-gray-600">{areaLabel(resort.area ?? (resort.show_in_araku ? 'araku-valley' : resort.show_in_lambasingi ? 'lambasingi' : resort.show_in_vanjangi ? 'vanjangi' : 'vizag'))}</td>
                 <td className="p-4 text-gray-600">{resort.location}</td>
                 <td className="p-4 text-gray-600">{resort.price_per_night ? `₹${resort.price_per_night}` : resort.price}</td>
                 <td className="p-4 text-center">

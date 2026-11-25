@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 import { Snowflake, Sun } from 'lucide-react'
 import { submitResortBooking } from '@/app/actions/booking'
 import { createClient } from '@/lib/supabase/client'
-import { openWhatsApp } from '@/lib/whatsapp'
 import ModalShell from './ModalShell'
 import { FormError, FormSuccess, PhoneInput, Stepper, SubmitButton, TextArea, TextInput, Field, controlClass } from '../forms/Fields'
+import { useSite } from '@/components/SiteProvider'
+import { formatDate } from '@/lib/format'
 
 const priceUnit = (label?: string) => {
   const base = 'per night'
@@ -16,6 +17,7 @@ const priceUnit = (label?: string) => {
 }
 
 export default function ResortBookingModal({ data, onClose }: { data: any; onClose: () => void }) {
+  const { openWhatsApp } = useSite();
   const [step, setStep] = useState<1 | 2>(1)
   const [rooms, setRooms] = useState<any[]>([])
   const [loadingRooms, setLoadingRooms] = useState(true)
@@ -93,7 +95,7 @@ Resort: ${booking.resort_name}
 Room Type: ${booking.room_type}
 Name: ${booking.full_name}
 Contact: +91 ${booking.contact_number}${booking.whatsapp_number ? ` (WA: +91 ${booking.whatsapp_number})` : ''}
-Dates: ${booking.check_in} to ${booking.check_out}
+Dates: ${formatDate(booking.check_in)} to ${formatDate(booking.check_out)}
 Guests: ${booking.guests}
 Special Requests: ${booking.special_requests || 'None'}`
     setDone(text)

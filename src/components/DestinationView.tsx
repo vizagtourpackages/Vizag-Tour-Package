@@ -10,6 +10,7 @@ import RichContent from "@/components/RichContent";
 import { destinationDetails } from "@/data/destinations";
 import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/settings";
 import { createClient } from "@/lib/supabase/server";
 import { sortByDisplayOrder } from "@/lib/content";
 
@@ -31,6 +32,7 @@ const GRADIENT: Record<string, string> = {
  */
 export default async function DestinationView({ slug }: { slug: "araku-valley" | "lambasingi" | "vanjangi" }) {
   const supabase = await createClient();
+  const { contact } = await getSiteSettings();
 
   const { data: dbDest } = await supabase.from("destination_pages").select("*").eq("id", slug).single();
 
@@ -276,10 +278,10 @@ export default async function DestinationView({ slug }: { slug: "araku-valley" |
               Contact our experts to customize your itinerary and book your trip today.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3">
-              <a href={waUrl(waMessages.destination(dest.name))} target="_blank" rel="noopener noreferrer" className="btn-coral">
+              <a href={waUrl(waMessages.destination(dest.name), contact.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn-coral">
                 Plan on WhatsApp
               </a>
-              <a href={`tel:${siteInfo.whatsapp}`} className="btn-secondary !border-white/30 !text-white hover:!bg-white hover:!text-charcoal">
+              <a href={`tel:${contact.phone}`} className="btn-secondary !border-white/30 !text-white hover:!bg-white hover:!text-charcoal">
                 Call Us Now
               </a>
             </div>

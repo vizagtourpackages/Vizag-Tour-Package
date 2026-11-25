@@ -2,6 +2,7 @@ import { Check, X } from "lucide-react";
 import SectionHeading from "./SectionHeading";
 import { Reveal } from "./Motion";
 import { waMessages, waUrl } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/settings";
 
 const comparisonData = [
   { feature: "Driver cancellations", us: "0% — your ride is guaranteed", others: "High cancellation risk" },
@@ -18,7 +19,8 @@ const proof = [
   { big: "24/7", label: "human helpline" },
 ];
 
-export default function ComparisonTable() {
+export default async function ComparisonTable() {
+  const { contact } = await getSiteSettings();
   return (
     <section className="section-padding bg-warm-white">
       <div className="container-max">
@@ -54,7 +56,7 @@ export default function ComparisonTable() {
                     </div>
                   ))}
                 </div>
-                <a href={waUrl(waMessages.fixedPrices)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-8 w-full sm:w-auto">
+                <a href={waUrl(waMessages.fixedPrices, contact.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-8 w-full sm:w-auto">
                   Book with confidence
                 </a>
               </div>

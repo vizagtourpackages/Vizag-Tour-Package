@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import { CloudSun, Clock, Moon, Navigation, Sun, Sunrise, Sunset } from "lucide-react";
 import { Arrow, Reveal, ease } from "@/components/Motion";
 import { useBooking } from "@/components/booking/BookingContext";
-import { waUrl } from "@/lib/whatsapp";
+import { useSite } from "@/components/SiteProvider";
 
 type Stop = { time: string; name: string; type: string; icon: any; desc: string };
 type Day = { day: string; short: string; theme: string; description: string; stops: Stop[] };
@@ -51,6 +51,7 @@ const DAYS: Day[] = [
 ];
 
 export default function ItineraryClient() {
+  const { wa } = useSite();
   const [active, setActive] = useState(0);
   const day = DAYS[active];
   const { openBooking } = useBooking();
@@ -178,7 +179,7 @@ export default function ItineraryClient() {
                 See ready-made packages
               </Link>
               <a
-                href={waUrl("Hi! I'd like to customise your 3-day Vizag itinerary (Vizag city, Araku Valley, Vanjangi/Lambasingi). Could you help me plan it?")}
+                href={wa("Hi! I'd like to customise your 3-day Vizag itinerary (Vizag city, Araku Valley, Vanjangi/Lambasingi). Could you help me plan it?")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex min-h-[3rem] items-center justify-center rounded-full border border-white/30 px-8 py-4 text-[0.95rem] font-semibold text-white transition-[background-color,color,transform] duration-200 hover:bg-white hover:text-ocean active:scale-[0.97]"

@@ -4,12 +4,12 @@ import { useState } from "react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { siteInfo } from "@/data/siteInfo";
+import { useSite } from "@/components/SiteProvider";
 
-const defaultFaqs = [
+const makeDefaultFaqs = (phone: string) => [
   {
     q: "How do I book a tour package or cab with you?",
-    a: `You can book online through our platform, send a WhatsApp message to ${siteInfo.whatsapp}, or call our 24/7 helpline. Zero advance deposit required for standard bookings!`,
+    a: `You can book online through our platform, send a WhatsApp message to ${phone}, or call our 24/7 helpline. Zero advance deposit required for standard bookings!`,
   },
   {
     q: "Are highway tolls and driver allowances included in tour packages?",
@@ -43,14 +43,15 @@ interface FAQAccordionProps {
   faqs?: FaqItem[];
 }
 
-export default function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) {
+export default function FAQAccordion({ faqs }: FAQAccordionProps) {
+  const { contact } = useSite();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const displayFaqs = faqs && faqs.length > 0 ? faqs : defaultFaqs;
+  const displayFaqs = faqs && faqs.length > 0 ? faqs : makeDefaultFaqs(contact.phone);
 
   return (
     <section className="section-padding bg-warm-white">
@@ -118,7 +119,7 @@ export default function FAQAccordion({ faqs = defaultFaqs }: FAQAccordionProps) 
               <h4 className="text-xl font-medium text-charcoal font-heading tracking-tight">Have a custom query or large group?</h4>
               <p className="text-base text-charcoal/60 font-medium mt-1">Our 24/7 human desk is standing by.</p>
             </div>
-            <a href={`tel:${siteInfo.whatsapp.replace(/\D/g, '')}`} className="btn-primary shrink-0 whitespace-nowrap bg-teal hover:bg-teal-dark w-full sm:w-auto">
+            <a href={`tel:${contact.phone.replace(/\D/g, '')}`} className="btn-primary shrink-0 whitespace-nowrap bg-teal hover:bg-teal-dark w-full sm:w-auto">
               Call Support Now
             </a>
           </div>

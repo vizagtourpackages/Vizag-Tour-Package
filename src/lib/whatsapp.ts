@@ -1,18 +1,14 @@
 import { siteInfo } from "@/data/siteInfo";
 
-const NUMBER = siteInfo.whatsapp.replace(/\D/g, ""); // e.g. 917780739851
+const DEFAULT_NUMBER = siteInfo.whatsapp; // overridden by the number set in admin Settings
 
 /**
  * WhatsApp click-to-chat URL with an optional pre-filled message.
  * Uses the universal wa.me link, which opens the app on iPhone/Android and WhatsApp Web on desktop.
  */
-export function waUrl(message?: string): string {
-  return message ? `https://wa.me/${NUMBER}?text=${encodeURIComponent(message)}` : `https://wa.me/${NUMBER}`;
-}
-
-/** Navigate to WhatsApp (safe after an async call; avoids pop-up blockers on iOS Safari). */
-export function openWhatsApp(message: string) {
-  window.location.href = waUrl(message);
+export function waUrl(message?: string, number: string = DEFAULT_NUMBER): string {
+  const digits = (number || DEFAULT_NUMBER).replace(/\D/g, "");
+  return message ? `https://wa.me/${digits}?text=${encodeURIComponent(message)}` : `https://wa.me/${digits}`;
 }
 
 /** Ready-made messages so no WhatsApp button ever opens an empty chat. */

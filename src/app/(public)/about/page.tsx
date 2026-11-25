@@ -7,6 +7,7 @@ import SectionHeading from "@/components/SectionHeading";
 import CountUp from "@/components/CountUp";
 import { siteInfo, stats } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -25,6 +26,7 @@ const statIcons = [Award, MapPin, Car, Users];
 export default async function AboutPage() {
   // Real package photos for the collage (falls back to the brand image)
   const supabase = await createClient();
+  const { contact } = await getSiteSettings();
   const { data: pkgs } = await supabase
     .from("tour_packages")
     .select("title, cover_image_url, image_url")
@@ -177,9 +179,9 @@ export default async function AboutPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-white/70">Tell us about your trip and we&apos;ll plan it with you.</p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="btn-coral !px-8 !py-4">Chat on WhatsApp</a>
-              <a href={`tel:${siteInfo.whatsapp}`} className="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-4 text-[0.95rem] font-semibold text-white transition-[background-color,color,transform] duration-200 hover:bg-white hover:text-ocean active:scale-[0.97]">
-                <Phone size={17} /> Call {siteInfo.whatsapp.replace("+91", "+91 ")}
+              <a href={waUrl(waMessages.general, contact.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn-coral !px-8 !py-4">Chat on WhatsApp</a>
+              <a href={`tel:${contact.phone}`} className="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-4 text-[0.95rem] font-semibold text-white transition-[background-color,color,transform] duration-200 hover:bg-white hover:text-ocean active:scale-[0.97]">
+                <Phone size={17} /> Call {contact.phone.replace("+91", "+91 ")}
               </a>
             </div>
           </div>

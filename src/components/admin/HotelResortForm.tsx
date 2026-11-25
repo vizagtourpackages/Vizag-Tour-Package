@@ -7,6 +7,7 @@ import ImageUpload from './ImageUpload'
 import AccommodationTypesEditor from './AccommodationTypesEditor'
 import RichTextField from './RichTextField'
 import Link from 'next/link'
+import { AREAS, normalizeArea } from '@/lib/areas'
 import { useRouter } from 'next/navigation'
 import { Plus, X, MapPin, Loader2 } from 'lucide-react'
 
@@ -396,49 +397,46 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
 
           {/* Publishing & Visibility */}
           <div className="md:col-span-2 pt-4 border-t border-gray-100">
-            <h4 className="font-bold text-gray-900 mb-4">Visibility & Placement</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg border">
+            <h4 className="font-bold text-gray-900 mb-4">Area &amp; Placement</h4>
+            <div className="max-w-md space-y-6">
+              {/* one place per hotel; Vizag is the default */}
+              <fieldset>
+                <legend className="text-sm font-semibold text-gray-700 mb-2">Which place is this hotel in?</legend>
+                <div className="space-y-2.5">
+                  {AREAS.map(a => (
+                    <label key={a.id} className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="area"
+                        value={a.id}
+                        defaultChecked={normalizeArea(initialData?.area ?? (initialData?.show_in_araku ? 'araku-valley' : initialData?.show_in_lambasingi ? 'lambasingi' : initialData?.show_in_vanjangi ? 'vanjangi' : 'vizag')) === a.id}
+                        className="w-5 h-5 border-gray-300 text-teal focus:ring-teal"
+                      />
+                      <span className="font-medium text-gray-800">{a.label}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Used for the area switch on the Hotels page, the stay choices in packages, and the destination pages.</p>
+              </fieldset>
+
+              <div className="space-y-3">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input type="checkbox" name="is_published" value="true" defaultChecked={initialData ? initialData.is_published : true} className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                  <span className="font-semibold text-gray-800">Published (Global)</span>
+                  <span className="font-medium text-gray-800">Published</span>
                 </label>
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg border">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home || false} className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500" />
-                  <span className="font-semibold text-gray-800">Show on Home</span>
+                  <span className="font-medium text-gray-800">Show on Home</span>
                 </label>
-                <label className="flex items-center gap-3 cursor-pointer mt-4">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input type="checkbox" name="show_on_resorts_page" value="true" defaultChecked={initialData ? initialData.show_on_resorts_page !== false : true} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-                  <span className="font-semibold text-gray-800">Show on Resorts Page</span>
-                </label>
-                <div className="mt-4">
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>
-                  <input type="number" name="home_order" defaultValue={initialData?.home_order || 0} className="w-full p-2 border rounded-md" />
-                </div>
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg border">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" name="show_in_araku" value="true" defaultChecked={initialData?.show_in_araku} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-                  <span className="font-semibold text-gray-800">Show on Araku Page</span>
+                  <span className="font-medium text-gray-800">Show on Hotels Page</span>
                 </label>
               </div>
 
-              <div className="p-4 bg-gray-50 rounded-lg border">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" name="show_in_lambasingi" value="true" defaultChecked={initialData?.show_in_lambasingi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-                  <span className="font-semibold text-gray-800">Show on Lambasingi Page</span>
-                </label>
-              </div>
-              
-              <div className="p-4 bg-gray-50 rounded-lg border">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" name="show_in_vanjangi" value="true" defaultChecked={initialData?.show_in_vanjangi} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-                  <span className="font-semibold text-gray-800">Show on Vanjangi Page</span>
-                </label>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>
+                <input type="number" name="home_order" defaultValue={initialData?.home_order || 0} className="w-full p-2 border rounded-md" />
               </div>
             </div>
           </div>

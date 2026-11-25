@@ -64,3 +64,9 @@ export function sortByDisplayOrder<T extends { display_order?: number | null }>(
     })
     .map(x => x.row)
 }
+
+/** Estimated reading time in whole minutes (≈200 words per minute). */
+export function readingMinutes(html?: string | null): number {
+  const words = stripHtml(html).split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.ceil(words / 200))
+}

@@ -30,7 +30,7 @@ export default function SectionHeading({
         </Reveal>
       )}
       <h2
-        className={`font-heading text-[clamp(1.85rem,4.2vw,3.2rem)] leading-[1.08] max-w-4xl ${
+        className={`font-heading text-[clamp(1.45rem,5.2vw,3.2rem)] leading-[1.1] max-w-4xl ${
           light ? "text-white" : "text-ocean"
         }`}
       >

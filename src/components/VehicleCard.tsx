@@ -7,7 +7,8 @@ import type { Vehicle } from "@/data/vehicles";
 import { useBooking } from "./booking/BookingContext";
 import ScrollCarousel from "./ScrollCarousel";
 import { Arrow } from "./Motion";
-import { waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
+import { useSite } from "@/components/SiteProvider";
 
 const WaIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -21,6 +22,7 @@ interface VehicleCardProps {
 }
 
 export function VehicleCard({ vehicle, isHomepage }: VehicleCardProps) {
+  const { wa } = useSite();
   const { openBooking } = useBooking();
   const router = useRouter();
 
@@ -48,7 +50,8 @@ export function VehicleCard({ vehicle, isHomepage }: VehicleCardProps) {
       <div className="flex min-w-0 flex-1 flex-col p-5">
         <h3 className="font-heading text-[1.35rem] leading-tight text-ocean">{vehicle.model}</h3>
 
-        <p className="mt-2 font-heading text-[1.9rem] leading-none text-ocean">
+        <p className="mt-3 text-[0.68rem] font-semibold uppercase tracking-wider text-charcoal/45">Starting from</p>
+        <p className="font-heading text-[1.9rem] leading-none text-ocean">
           {vehicle.pricePerKm}
           <span className="ml-1.5 font-sans text-sm font-medium text-charcoal/55">per km</span>
         </p>
@@ -71,7 +74,7 @@ export function VehicleCard({ vehicle, isHomepage }: VehicleCardProps) {
             Book this vehicle <Arrow className="transition-transform group-hover/b:translate-x-1" />
           </button>
           <a
-            href={waUrl(waMessages.vehicle(vehicle.model))}
+            href={wa(waMessages.vehicle(vehicle.model))}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Ask about ${vehicle.model} on WhatsApp`}

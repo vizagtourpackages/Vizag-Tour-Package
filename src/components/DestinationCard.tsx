@@ -37,8 +37,9 @@ export default function DestinationCard({ destination, basePath }: DestinationCa
         <div className="absolute inset-0 bg-gradient-to-t from-[#061a30]/75 via-transparent to-transparent" />
 
         {destination.price && (
-          <span className="absolute right-4 top-4 rounded-full bg-sunset px-3.5 py-1.5 text-xs font-bold text-white shadow-glow">
-            {destination.price}
+          <span className="absolute right-4 top-4 rounded-2xl bg-sunset px-3.5 py-1.5 text-center text-white shadow-glow">
+            <span className="block text-[0.55rem] font-semibold uppercase leading-tight tracking-wider text-white/85">Starting from</span>
+            <span className="block text-sm font-bold leading-tight">{destination.price}</span>
           </span>
         )}
 

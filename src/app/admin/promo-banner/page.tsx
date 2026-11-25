@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Plus, Edit } from 'lucide-react'
 import DeleteButton from '@/components/admin/DeleteButton'
 import { deletePromoBanner, togglePublishPromoBanner } from './actions'
+import { formatDateTime } from '@/lib/format'
 
 export const metadata = {
   title: 'Manage Promo Banners - Admin',
@@ -46,7 +47,7 @@ export default async function PromoBannersPage() {
                 </td>
                 <td className="p-4 font-medium text-gray-900">{item.headline}</td>
                 <td className="p-4 text-gray-600 text-sm">
-                  {item.offer_end_datetime ? new Date(item.offer_end_datetime).toLocaleString() : 'N/A'}
+                  {item.offer_end_datetime ? formatDateTime(item.offer_end_datetime) : 'N/A'}
                 </td>
                 <td className="p-4">
                   <form action={async () => {

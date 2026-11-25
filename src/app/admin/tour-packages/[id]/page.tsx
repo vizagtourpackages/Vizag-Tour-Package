@@ -7,7 +7,6 @@ export default async function EditTourPackagePage({ params }: { params: Promise<
   const isNew = resolvedParams.id === 'new'
   let initialData = null
   let initialDays = []
-  let initialHotels = []
 
   if (!isNew) {
     const supabase = await createClient()
@@ -30,23 +29,13 @@ export default async function EditTourPackagePage({ params }: { params: Promise<
       }))
     }
 
-    // Fetch Hotels
-    const { data: hotelsData } = await supabase
-      .from('package_hotels')
-      .select('*')
-      .eq('package_id', resolvedParams.id)
-      .order('created_at', { ascending: true })
-
-    if (hotelsData) {
-      initialHotels = hotelsData
-    }
   }
 
-  // Always fetch available resorts for the rate plans dropdown
+  // Published hotels that can be attached to the package
   const supabaseClient = await createClient();
   const { data: resortsData } = await supabaseClient
     .from('hotels_resorts')
-    .select('id, name, location, cover_image_url')
+    .select('id, name, location, area, cover_image_url')
     .eq('is_published', true)
     .order('name');
   
@@ -61,7 +50,6 @@ export default async function EditTourPackagePage({ params }: { params: Promise<
         initialData={initialData} 
         id={resolvedParams.id} 
         initialDays={initialDays} 
-        initialHotels={initialHotels} 
         availableResorts={availableResorts}
       />
     </div>

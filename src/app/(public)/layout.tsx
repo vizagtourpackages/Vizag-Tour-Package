@@ -7,6 +7,8 @@ import LatestUpdatesWrapper from "@/components/LatestUpdatesWrapper";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import SmoothScroll from "@/components/SmoothScroll";
+import { SiteProvider } from "@/components/SiteProvider";
+import { getSiteSettings } from "@/lib/settings";
 import BackToTopFab from "@/components/BackToTopFab";
 import { BookingProvider } from "@/components/booking/BookingContext";
 import BookingModalController from "@/components/booking/BookingModalController";
@@ -20,12 +22,15 @@ export const metadata: Metadata = {
   keywords: ["Vizag Tour Packages", "Araku Valley", "Lambasingi", "Visakhapatnam Tourism", "Travel Agency Vizag"],
 };
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await getSiteSettings();
+
   return (
+    <SiteProvider settings={settings}>
     <BookingProvider>
       <SmoothScroll>
         <div className="site-theme flex flex-1 flex-col">
@@ -45,5 +50,6 @@ export default function PublicLayout({
         </div>
       </SmoothScroll>
     </BookingProvider>
+    </SiteProvider>
   );
 }

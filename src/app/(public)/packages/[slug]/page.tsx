@@ -9,6 +9,7 @@ import PackageBookingSidebar from "@/components/booking/PackageBookingSidebar";
 import PackageTabs from "@/components/PackageTabs";
 import StayOptions from "@/components/booking/StayOptions";
 import { buildStayOptions } from "@/lib/stay";
+import { stayLegs } from "@/lib/areas";
 import ScrollCarousel from "@/components/ScrollCarousel";
 import { siteInfo } from "@/data/siteInfo";
 import { Metadata } from "next";
@@ -44,8 +45,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
       package_itinerary_days (
         *,
         package_itinerary_stops (*)
-      ),
-      package_hotels (*)
+      )
     `)
     .eq("slug", resolvedParams.slug)
     .single();
@@ -72,7 +72,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
     .limit(4);
 
   const stayOptions = await buildStayOptions(supabase, pkg);
-  const pkgWithStay = { ...pkg, stay_options: stayOptions };
+  const pkgWithStay = { ...pkg, stay_options: stayOptions, stay_legs: stayLegs(pkg.stay_plan) };
 
   const originalPrice = pkg.original_price || pkg.mrp;
   const discountPercent = originalPrice && originalPrice > pkg.price
@@ -179,7 +179,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
             </div>
 
             {/* Choose Your Stay (from hotels attached to the package) */}
-            <StayOptions pkg={pkg} options={stayOptions} />
+            <StayOptions pkg={pkg} options={stayOptions} legs={stayLegs(pkg.stay_plan)} />
 
             {/* Custom rate plans (legacy) – only when no hotels are attached */}
             {stayOptions.length === 0 && pkg.rate_plans && pkg.rate_plans.length > 0 && (

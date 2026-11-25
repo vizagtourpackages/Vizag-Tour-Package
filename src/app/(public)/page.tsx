@@ -4,6 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
 import { stripHtml } from "@/lib/content";
+import { getSiteSettings } from "@/lib/settings";
 import Marquee from "@/components/Marquee";
 import PackageCard from "@/components/PackageCard";
 import DestinationCard from "@/components/DestinationCard";
@@ -17,7 +18,6 @@ import GoldStandardGrid from "@/components/GoldStandardGrid";
 import ComparisonTable from "@/components/ComparisonTable";
 import FAQAccordion from "@/components/FAQAccordion";
 import PromoBannerSection from "@/components/PromoBannerSection";
-import CommunityCTA from "@/components/CommunityCTA";
 import {
   trendingPackages,
 } from "@/data/packages";
@@ -246,19 +246,14 @@ export default async function Home() {
     href: item.href
   })) || [];
 
-  // Hero collage: the admin-chosen package first (site_settings.hero_package_id), then other home packages.
+  // Hero collage (admin → Settings → Home hero): chosen package first, then two images with their own links.
+  const { hero } = await getSiteSettings();
   let heroPkg: any = null;
-  const { data: heroSetting } = await supabase.from('site_settings').select('value').eq('key', 'hero_package_id').maybeSingle();
-  if (heroSetting?.value) {
-    const { data } = await supabase.from('tour_packages').select('*').eq('id', heroSetting.value).eq('is_published', true).maybeSingle();
+  if (hero.packageId) {
+    const { data } = await supabase.from('tour_packages').select('*').eq('id', hero.packageId).eq('is_published', true).maybeSingle();
     heroPkg = data;
   }
-  const heroCandidates = [heroPkg, ...(dbPackages || [])]
-    .filter(Boolean)
-    .filter((p: any, i: number, arr: any[]) => arr.findIndex((q: any) => q.id === p.id) === i)
-    .filter((p: any) => p.cover_image_url || p.image_url)
-    .slice(0, 3);
-  const heroTiles = heroCandidates.map((p: any) => ({
+  const pkgTile = (p: any) => ({
     title: p.title,
     image: p.cover_image_url || p.image_url,
     href: `/packages/${p.slug || p.id}`,
@@ -266,7 +261,16 @@ export default async function Home() {
     duration: p.duration,
     badge: p.badge && !/\d+\s*[DN]/i.test(p.badge) ? p.badge : undefined,
     description: stripHtml(p.overview_description || p.description).slice(0, 170),
-  }));
+  });
+  const candidates = [heroPkg, ...(dbPackages || [])]
+    .filter(Boolean)
+    .filter((p: any, i: number, arr: any[]) => arr.findIndex((q: any) => q.id === p.id) === i)
+    .filter((p: any) => p.cover_image_url || p.image_url);
+  const first = candidates[0] ? pkgTile(candidates[0]) : null;
+  const spare = candidates.slice(1).map(pkgTile);
+  const custom = (t: { image: string; url: string }, fallback: any) =>
+    t.image ? { title: '', image: t.image, href: t.url || '/tour-packages' } : fallback;
+  const heroTiles = [first, custom(hero.tile2, spare[0]), custom(hero.tile3, spare[1])] as any[]; // positions matter: index 0 = arch, 1 and 2 = small tiles
 
   return (
     <>

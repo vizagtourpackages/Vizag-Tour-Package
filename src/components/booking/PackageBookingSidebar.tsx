@@ -5,8 +5,9 @@ import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
 import TermsButton from "@/components/TermsButton";
 import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/settings";
 
-export default function PackageBookingSidebar({ 
+export default async function PackageBookingSidebar({ 
   pkg, 
   originalPrice, 
   discountPercent 
@@ -15,6 +16,7 @@ export default function PackageBookingSidebar({
   originalPrice: number | null; 
   discountPercent: number; 
 }) {
+  const { contact } = await getSiteSettings();
   return (
     <div className="bg-white border border-charcoal/10 shadow-xl rounded-[16px] lg:rounded-[24px] p-4 lg:p-6 flex flex-col gap-3 lg:gap-5">
       {/* Pricing Block */}
@@ -29,6 +31,7 @@ export default function PackageBookingSidebar({
             </span>
           </div>
         )}
+        <div className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.18em] text-charcoal/50">Starting from</div>
         <div className="text-3xl lg:text-4xl font-heading font-black tracking-tight text-charcoal">
           ₹{pkg.price.toLocaleString('en-IN')}
         </div>
@@ -66,14 +69,18 @@ export default function PackageBookingSidebar({
           <span className="text-charcoal/60 font-medium">Price for</span>
           <span className="font-bold text-charcoal text-right">{pkg.price_label || 'Per Couple'}</span>
         </div>
-        <div className="flex justify-between items-start text-xs lg:text-sm">
-          <span className="text-charcoal/60 font-medium">Pickup</span>
-          <span className="font-bold text-charcoal text-right max-w-[120px] lg:max-w-[150px] leading-tight">{pkg.pickup_location || 'Visakhapatnam (Vizag)'}</span>
-        </div>
-        <div className="flex justify-between items-start text-xs lg:text-sm">
-          <span className="text-charcoal/60 font-medium">Drop</span>
-          <span className="font-bold text-charcoal text-right max-w-[120px] lg:max-w-[150px] leading-tight">{pkg.drop_location || 'Visakhapatnam (Vizag)'}</span>
-        </div>
+        {pkg.pickup_location && (
+          <div className="flex justify-between items-start gap-3 text-xs lg:text-sm">
+            <span className="text-charcoal/60 font-medium">Pickup</span>
+            <span className="font-bold text-charcoal text-right max-w-[150px] leading-tight">{pkg.pickup_location}</span>
+          </div>
+        )}
+        {pkg.drop_location && (
+          <div className="flex justify-between items-start gap-3 text-xs lg:text-sm">
+            <span className="text-charcoal/60 font-medium">Drop</span>
+            <span className="font-bold text-charcoal text-right max-w-[150px] leading-tight">{pkg.drop_location}</span>
+          </div>
+        )}
       </div>
 
       <div className="h-px bg-charcoal/10 w-full" />
@@ -98,7 +105,7 @@ export default function PackageBookingSidebar({
       {/* Enquire Button */}
       <CustomEnquiryButton />
       <a
-        href={waUrl(waMessages.package(pkg.title))}
+        href={waUrl(waMessages.package(pkg.title), contact.whatsapp)}
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-center gap-2 rounded-full border border-[#25d366]/40 py-3 text-sm font-semibold text-[#128c4a] transition-colors hover:bg-[#25d366]/10"

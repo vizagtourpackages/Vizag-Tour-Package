@@ -3,6 +3,7 @@ import { updatePackageBookingStatus } from '@/app/actions/booking'
 import StatusBadge from '@/components/admin/StatusBadge'
 import StatusActions from '@/components/admin/StatusActions'
 import BookingFilter from '@/components/admin/BookingFilter'
+import { formatDate } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,7 +43,7 @@ export default async function PackageBookingsPage(props: { searchParams?: Promis
               bookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-gray-50">
                   <td className="p-4 text-sm text-gray-500 align-top">
-                    {new Date(booking.created_at).toLocaleDateString()}
+                    {formatDate(booking.created_at)}
                   </td>
                   <td className="p-4 align-top">
                     <p className="font-bold text-gray-900 text-sm">{booking.full_name}</p>
@@ -60,8 +61,8 @@ export default async function PackageBookingsPage(props: { searchParams?: Promis
                     )}
                   </td>
                   <td className="p-4 align-top">
-                    <p className="text-sm font-medium text-gray-900">{booking.start_date}</p>
-                    <p className="text-xs text-gray-500">to {booking.end_date}</p>
+                    <p className="text-sm font-medium text-gray-900">{formatDate(booking.start_date)}</p>
+                    <p className="text-xs text-gray-500">to {formatDate(booking.end_date)}</p>
                   </td>
                   <td className="p-4 align-top">
                     <StatusBadge status={booking.status} />

@@ -21,7 +21,8 @@ import {
   Image as ImageIcon,
   Search,
   FileText,
-  Settings
+  Settings,
+  Newspaper
 } from 'lucide-react';
 
 const mainNavigation = [
@@ -33,6 +34,7 @@ const mainNavigation = [
   { name: 'Places to Visit', href: '/admin/places-to-visit', icon: Navigation },
   { name: 'Hill Stations', href: '/admin/hill-stations', icon: Mountain },
   { name: 'Destination Pages', href: '/admin/destination-pages', icon: MapPin },
+  { name: 'Blog', href: '/admin/blog', icon: Newspaper },
   { name: 'Travel Guides', href: '/admin/travel-guides', icon: BookOpen },
   { name: 'Upcoming Events', href: '/admin/upcoming-events', icon: Calendar },
   { name: 'Updates & Offers', href: '/admin/updates-offers', icon: Megaphone },

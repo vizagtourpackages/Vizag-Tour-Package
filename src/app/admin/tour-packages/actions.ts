@@ -50,8 +50,8 @@ export async function saveTourPackage(formData: FormData) {
     
     // Arrays
     destination_tags: parseJSON('destination_tags'),
-    pickup_location: formData.get('pickup_location') as string,
-    drop_location: formData.get('drop_location') as string,
+    pickup_location: ((formData.get('pickup_location') as string) || '').trim() || null,
+    drop_location: ((formData.get('drop_location') as string) || '').trim() || null,
     important_notes: parseJSON('important_notes'),
     includes: parseJSON('includes'),
     excludes: parseJSON('excludes'),
@@ -72,6 +72,7 @@ export async function saveTourPackage(formData: FormData) {
     home_order: formData.get('home_order') ? parseInt(formData.get('home_order') as string) : 0,
     display_order: formData.get('display_order') ? parseInt(formData.get('display_order') as string) : 0,
     resort_ids: parseJSON('resort_ids'),
+    stay_plan: parseJSON('stay_plan'),
   }
 
   let packageId = id;
@@ -92,7 +93,6 @@ export async function saveTourPackage(formData: FormData) {
     
     // Clean up old nested relationships if updating
     await supabase.from('package_itinerary_days').delete().eq('package_id', packageId)
-    await supabase.from('package_hotels').delete().eq('package_id', packageId)
   }
 
   // Insert Nested Entities
@@ -115,26 +115,6 @@ export async function saveTourPackage(formData: FormData) {
       }))
       await supabase.from('package_itinerary_stops').insert(stopsData)
     }
-  }
-
-  // 2. Hotels
-  const hotels = parseJSON('hotels')
-  if (hotels.length > 0) {
-    const hotelsData = hotels.map((h: any) => ({
-      package_id: packageId,
-      day_label: h.day_label,
-      hotel_name: h.hotel_name,
-      location_name: h.location_name,
-      latitude: h.latitude ? parseFloat(h.latitude) : null,
-      longitude: h.longitude ? parseFloat(h.longitude) : null,
-      star_category: h.star_category,
-      room_type: h.room_type,
-      check_in_time: h.check_in_time,
-      check_out_time: h.check_out_time,
-      hotel_image_url: h.hotel_image_url,
-      amenities: h.amenities || []
-    }))
-    await supabase.from('package_hotels').insert(hotelsData)
   }
 
   revalidatePath('/admin/tour-packages')

@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react'
 import { Users } from 'lucide-react'
 import { submitCabBooking } from '@/app/actions/booking'
 import { createClient } from '@/lib/supabase/client'
-import { openWhatsApp } from '@/lib/whatsapp'
 import TermsButton from '@/components/TermsButton'
 import ModalShell from './ModalShell'
 import { FormError, FormSuccess, PhoneInput, SelectInput, Stepper, SubmitButton, TextInput, Field, controlClass } from '../forms/Fields'
+import { useSite } from '@/components/SiteProvider'
+import { formatDate } from '@/lib/format'
 
 export default function CabBookingModal({ data, onClose }: { data: any; onClose: () => void }) {
+  const { openWhatsApp } = useSite();
   const [step, setStep] = useState<1 | 2>(data ? 2 : 1)
   const [vehicle, setVehicle] = useState<any>(data)
   const [vehicles, setVehicles] = useState<any[]>([])
@@ -70,7 +72,7 @@ Name: ${booking.full_name}
 Contact: +91 ${booking.phone_number}
 Pickup: ${booking.pickup_location}
 Drop: ${booking.drop_location}
-Dates: ${booking.start_date} to ${booking.end_date}
+Dates: ${formatDate(booking.start_date)} to ${formatDate(booking.end_date)}
 Passengers: ${booking.adults} Adults, ${booking.kids} Kids`
     setDone(text)
     setLoading(false)

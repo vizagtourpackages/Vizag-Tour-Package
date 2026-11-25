@@ -7,6 +7,7 @@ import { CalendarDays, MapPin, Star, Users } from "lucide-react";
 import { siteInfo, stats } from "@/data/siteInfo";
 import CountUp from "./CountUp";
 import MobileTrustBanner from "./MobileTrustBanner";
+import DestinationMultiSelect from "./DestinationMultiSelect";
 import { useBooking } from "./booking/BookingContext";
 import { Arrow, ease } from "./Motion";
 
@@ -20,12 +21,12 @@ export interface HeroTile {
   description?: string;
 }
 
-const destinations = ["Vizag city sightseeing", "Araku Valley", "Lambasingi", "Vanjangi", "Devotional tour", "Not sure yet"];
+const destinations = ["Vizag city sightseeing", "Araku Valley", "Lambasingi", "Vanjangi", "Devotional tour", "Other places"];
 
 export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
   const { openBooking } = useBooking();
 
-  const [dest, setDest] = useState(destinations[0]);
+  const [dest, setDest] = useState<string[]>([destinations[0]]);
   const [date, setDate] = useState("");
   const [guests, setGuests] = useState(2);
   const today = new Date().toISOString().split("T")[0];
@@ -41,7 +42,7 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
   const plan = (e: React.FormEvent) => {
     e.preventDefault();
     openBooking("package", {
-      title: `Custom trip: ${dest}`,
+      title: `Custom trip: ${dest.length ? dest.join(", ") : "Not decided yet"}`,
       isCustomEnquiry: true,
       prefill: { date, guests },
     });
@@ -122,21 +123,7 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
             aria-label="Plan your trip"
           >
             <div className="grid gap-2 sm:grid-cols-[1.35fr_1fr_0.7fr]">
-              <label className="group flex items-center gap-3 rounded-2xl bg-sand/60 px-4 py-3 transition-colors focus-within:bg-sand">
-                <MapPin size={18} className="shrink-0 text-coral" />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[0.64rem] font-bold uppercase tracking-wider text-charcoal/45">Where to?</span>
-                  <select
-                    value={dest}
-                    onChange={(e) => setDest(e.target.value)}
-                    className="w-full cursor-pointer bg-transparent text-base font-semibold text-ocean outline-none"
-                  >
-                    {destinations.map((d) => (
-                      <option key={d}>{d}</option>
-                    ))}
-                  </select>
-                </span>
-              </label>
+              <DestinationMultiSelect options={destinations} value={dest} onChange={setDest} />
               <label className="flex items-center gap-3 rounded-2xl bg-sand/60 px-4 py-3 transition-colors focus-within:bg-sand">
                 <CalendarDays size={18} className="shrink-0 text-coral" />
                 <span className="min-w-0 flex-1">
@@ -234,7 +221,7 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
                       <div className="mt-3.5 flex items-center pr-16">
                         {tiles[0].price ? (
                           <span className="text-[0.8rem] text-white/75">
-                            from <span className="font-heading text-[1.3rem] text-white">₹{tiles[0].price.toLocaleString("en-IN")}</span>
+                            Starting from <span className="font-heading text-[1.3rem] text-white">₹{tiles[0].price.toLocaleString("en-IN")}</span>
                           </span>
                         ) : <span />}
                       </div>

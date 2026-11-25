@@ -38,6 +38,7 @@ export const navLinks: NavLink[] = [
     ]
   },
   { label: "Itineraries", href: "/itinerary" },
+  { label: "Blog", href: "/blog" },
   { label: "Travel Guides", href: "/travel-guides" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "About Us", href: "/about" },

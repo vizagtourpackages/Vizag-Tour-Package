@@ -4,10 +4,12 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BedDouble, Check, ChevronLeft, ChevronRight, Images, MapPin } from 'lucide-react'
 import ModalShell from './ModalShell'
+import { areaLabel } from '@/lib/areas'
 
 export interface StayHotel {
   id: string
   name: string
+  area?: string
   location?: string
   category?: string
   cover?: string
@@ -21,66 +23,117 @@ export interface StayOption {
   hotels: StayHotel[]
 }
 
+/** One stay in the trip, e.g. "Araku Valley, nights 1–2". */
+export interface StayLeg {
+  area: string
+  nights: number
+  from: number
+}
+
+export interface StayPick {
+  leg: StayLeg | null
+  hotel: StayHotel
+}
+
 const money = (n: number) => `₹${n.toLocaleString('en-IN')}`
+const nightsText = (l: StayLeg) =>
+  l.nights === 1 ? `Night ${l.from}` : `Nights ${l.from}–${l.from + l.nights - 1}`
 
 /**
- * The whole "choose your stay" popup. Step 1: accommodation type. Step 2: hotel for that type
- * (radio, price, view images). Photos view is step 3. The back arrow lives in the popup header,
- * left of the title, and always goes back one step.
+ * The whole "choose your stay" popup.
+ * 1) pick the room type (applies to the whole trip), 2) pick a hotel for each place in order
+ * (each hotel shows its place), 3) optional photo view. The back arrow lives in the popup header, left of the title.
  */
 export default function StayPicker({
   options,
+  legs = [],
   initialType,
   onConfirm,
   onClose,
 }: {
   options: StayOption[]
+  legs?: StayLeg[]
   initialType?: string | null
-  onConfirm: (type: string, hotel: StayHotel) => void
+  onConfirm: (type: string, picks: StayPick[]) => void
   onClose: () => void
 }) {
+  // no plan → one stay with every attached hotel
+  const stays: (StayLeg | null)[] = legs.length > 0 ? legs : [null]
+  const multi = stays.length > 1
+
   const [type, setType] = useState<string | null>(initialType || null)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [li, setLi] = useState(0)
+  const [picks, setPicks] = useState<Record<number, string>>({})
   const [gallery, setGallery] = useState<StayHotel | null>(null)
   const [imgIdx, setImgIdx] = useState(0)
 
   const active = options.find(o => o.type === type)
+  const leg = stays[li]
+
+  // hotels for the current stay: same place first; if none are attached there, show them all
+  const hotelsFor = (opt: StayOption, l: StayLeg | null) => {
+    if (!l) return opt.hotels
+    const inArea = opt.hotels.filter(h => h.area === l.area)
+    return inArea.length > 0 ? inArea : opt.hotels
+  }
+
+  const typeFrom = (o: StayOption) => Math.min(...o.hotels.map(h => h.price))
 
   // ---- Step 1: accommodation types ----
   if (!active) {
     return (
-      <ModalShell title="Choose your stay" subtitle="Pick a room type, then the hotel you prefer." onClose={onClose}>
+      <ModalShell
+        title="Choose your stay"
+        subtitle={multi ? `Pick a room type for the whole trip, then a hotel in each place.` : 'Pick a room type, then the hotel you prefer.'}
+        onClose={onClose}
+      >
+        {multi && (
+          <ol className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl bg-sand/70 px-4 py-3 text-[0.82rem] font-semibold text-ocean">
+            {stays.map((l, i) => l && (
+              <li key={i} className="flex items-center gap-2">
+                {i > 0 && <ChevronRight size={14} className="text-ocean/35" />}
+                <span>{areaLabel(l.area)} <span className="font-medium text-charcoal/50">· {l.nights} night{l.nights > 1 ? 's' : ''}</span></span>
+              </li>
+            ))}
+          </ol>
+        )}
         <div className="space-y-3">
-          {options.map((o, i) => {
-            const from = Math.min(...o.hotels.map(h => h.price))
-            return (
-              <motion.button
-                key={o.type}
-                type="button"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-                onClick={() => setType(o.type)}
-                className="flex w-full items-center gap-4 rounded-2xl border-2 border-ocean/10 p-4 text-left transition-colors hover:border-coral hover:bg-coral/5"
-              >
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-sunset text-white">
-                  <BedDouble size={22} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-heading text-lg text-ocean">{o.type}</span>
-                  <span className="block text-xs text-charcoal/55">{o.hotels.length} hotel{o.hotels.length > 1 ? 's' : ''} available</span>
-                </span>
-                <span className="shrink-0 text-right">
-                  <span className="block text-[0.62rem] font-bold uppercase tracking-wider text-charcoal/40">from</span>
-                  <span className="block font-heading text-lg leading-tight text-ocean">{money(from)}</span>
-                  <span className="block text-[0.62rem] text-charcoal/50">/ {o.hotels[0]?.unit || 'night'}</span>
-                </span>
-              </motion.button>
-            )
-          })}
+          {options.map((o, i) => (
+            <motion.button
+              key={o.type}
+              type="button"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+              onClick={() => { setType(o.type); setLi(0); setPicks({}) }}
+              className="flex w-full items-center gap-4 rounded-2xl border-2 border-ocean/10 p-4 text-left transition-colors hover:border-coral hover:bg-coral/5"
+            >
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-sunset text-white">
+                <BedDouble size={22} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-heading text-lg text-ocean">{o.type}</span>
+                <span className="block text-xs text-charcoal/55">{o.hotels.length} hotel{o.hotels.length > 1 ? 's' : ''} available</span>
+              </span>
+              <span className="shrink-0 text-right">
+                <span className="block text-[0.62rem] font-bold uppercase tracking-wider text-charcoal/40">Starting from</span>
+                <span className="block font-heading text-lg leading-tight text-ocean">{money(typeFrom(o))}</span>
+                <span className="block text-[0.62rem] text-charcoal/50">/ {o.hotels[0]?.unit || 'night'}</span>
+              </span>
+            </motion.button>
+          ))}
         </div>
       </ModalShell>
     )
+  }
+
+  const list = hotelsFor(active, leg)
+  const selectedId = picks[li] || null
+  const chosen = list.find(h => h.id === selectedId)
+
+  const goBack = () => {
+    if (li > 0) setLi(li - 1)
+    else { setType(null); setPicks({}) }
   }
 
   // ---- Step 3: images of one hotel ----
@@ -89,7 +142,7 @@ export default function StayPicker({
     return (
       <ModalShell
         title={gallery.name}
-        subtitle={`${active.type} room photos`}
+        subtitle={`${active.type} room photos${gallery.area ? ` · ${areaLabel(gallery.area)}` : ''}`}
         onClose={onClose}
         onBack={() => { setGallery(null); setImgIdx(0) }}
         backLabel="Back to hotels"
@@ -137,7 +190,7 @@ export default function StayPicker({
           )}
           <button
             type="button"
-            onClick={() => { setSelected(gallery.id); setGallery(null); setImgIdx(0) }}
+            onClick={() => { setPicks({ ...picks, [li]: gallery.id }); setGallery(null); setImgIdx(0) }}
             className="btn-coral mt-5 w-full !py-3.5 text-sm"
           >
             Select this hotel
@@ -147,28 +200,63 @@ export default function StayPicker({
     )
   }
 
-  // ---- Step 2: hotels list ----
-  const chosen = active.hotels.find(h => h.id === selected)
+  // ---- Step 2: hotels for the current stay ----
+  const lastStay = li === stays.length - 1
+  const next = !lastStay ? stays[li + 1] : null
+
+  const advance = () => {
+    if (!chosen) return
+    if (!lastStay) {
+      setLi(li + 1)
+      return
+    }
+    const finalPicks: StayPick[] = stays.map((l, i) => {
+      const h = (i === li ? chosen : hotelsFor(active, l).find(x => x.id === picks[i])) as StayHotel
+      return { leg: l, hotel: h }
+    })
+    onConfirm(active.type, finalPicks)
+  }
+
   return (
     <ModalShell
-      title={`${active.type} hotels`}
-      subtitle="Select the hotel you would like to stay in."
+      title={multi && leg ? `${areaLabel(leg.area)} · ${active.type}` : `${active.type} hotels`}
+      subtitle={multi && leg ? `Stay ${li + 1} of ${stays.length} · ${nightsText(leg)} (${leg.nights} night${leg.nights > 1 ? 's' : ''})` : 'Select the hotel you would like to stay in.'}
       onClose={onClose}
-      onBack={options.length > 1 ? () => { setType(null); setSelected(null) } : undefined}
-      backLabel="Back to room types"
+      onBack={options.length > 1 || li > 0 ? goBack : undefined}
+      backLabel={li > 0 ? 'Back to the previous stay' : 'Back to room types'}
     >
-      <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
-        <div role="radiogroup" aria-label={`${active.type} hotels`} className="space-y-3">
-          {active.hotels.map(h => {
-            const on = selected === h.id
+      <motion.div key={li} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
+        {/* where am I in the trip */}
+        {multi && (
+          <ol className="mb-4 flex gap-2 overflow-x-auto pb-1" aria-label="Your stays">
+            {stays.map((l, i) => l && (
+              <li
+                key={i}
+                aria-current={i === li ? 'step' : undefined}
+                className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold ${
+                  i === li ? 'border-coral bg-coral/8 text-ocean' : picks[i] ? 'border-teal/40 bg-teal/8 text-ocean' : 'border-ocean/12 text-ocean/50'
+                }`}
+              >
+                <span className={`grid h-5 w-5 place-items-center rounded-full text-[0.65rem] text-white ${picks[i] ? 'bg-teal' : i === li ? 'bg-coral' : 'bg-ocean/25'}`}>
+                  {picks[i] ? <Check size={11} strokeWidth={3} /> : i + 1}
+                </span>
+                {areaLabel(l.area)}
+              </li>
+            ))}
+          </ol>
+        )}
+
+        <div role="radiogroup" aria-label={`${active.type} hotels in ${leg ? areaLabel(leg.area) : 'your trip'}`} className="space-y-3">
+          {list.map(h => {
+            const on = selectedId === h.id
             return (
               <div
                 key={h.id}
                 role="radio"
                 aria-checked={on}
                 tabIndex={0}
-                onClick={() => setSelected(h.id)}
-                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setSelected(h.id))}
+                onClick={() => setPicks({ ...picks, [li]: h.id })}
+                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setPicks({ ...picks, [li]: h.id }))}
                 className={`relative flex cursor-pointer gap-3 rounded-2xl border-2 p-3 transition-colors ${on ? 'border-coral bg-coral/5' : 'border-ocean/10 hover:border-ocean/25'}`}
               >
                 <span className={`absolute left-3 top-3 z-10 grid h-5 w-5 place-items-center rounded-full border-2 bg-white ${on ? 'border-coral' : 'border-ocean/30'}`}>
@@ -180,9 +268,16 @@ export default function StayPicker({
                   <div className="h-24 w-24 shrink-0 rounded-xl bg-sand sm:h-28 sm:w-28" />
                 )}
                 <div className="flex min-w-0 flex-1 flex-col">
-                  {h.category && <span className="text-[0.62rem] font-bold uppercase tracking-wider text-teal">{h.category}</span>}
+                  <span className="mb-1 flex flex-wrap items-center gap-1.5">
+                    {h.area && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-sky/12 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-sky">
+                        <MapPin size={10} /> {areaLabel(h.area)}
+                      </span>
+                    )}
+                    {h.category && <span className="text-[0.62rem] font-bold uppercase tracking-wider text-teal">{h.category}</span>}
+                  </span>
                   <h4 className="font-heading text-[1.05rem] leading-tight text-ocean">{h.name}</h4>
-                  {h.location && <p className="mt-1 flex items-center gap-1 text-xs text-charcoal/55"><MapPin size={12} /> {h.location}</p>}
+                  {h.location && <p className="mt-1 text-xs text-charcoal/55">{h.location}</p>}
                 </div>
                 <div className="flex shrink-0 flex-col items-end justify-between text-right">
                   <div>
@@ -205,10 +300,14 @@ export default function StayPicker({
         <button
           type="button"
           disabled={!chosen}
-          onClick={() => chosen && onConfirm(active.type, chosen)}
+          onClick={advance}
           className="btn-coral mt-5 w-full !py-3.5 text-sm disabled:pointer-events-none disabled:opacity-50"
         >
-          {chosen ? (<><Check size={16} /> Continue with {chosen.name}</>) : 'Select a hotel to continue'}
+          {!chosen
+            ? 'Select a hotel to continue'
+            : lastStay
+              ? <><Check size={16} /> {multi ? 'Confirm my stays' : `Continue with ${chosen.name}`}</>
+              : <>Next: {next ? areaLabel(next.area) : ''} <ChevronRight size={16} /></>}
         </button>
       </motion.div>
     </ModalShell>

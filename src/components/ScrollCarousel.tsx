@@ -72,7 +72,7 @@ export default function ScrollCarousel({ children, gap = "gap-5" }: ScrollCarous
       <div
         ref={containerRef}
         onScroll={measure}
-        className={`flex ${gap} overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 hide-scrollbar`}
+        className={`flex ${gap} overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 pr-6 hide-scrollbar [&>*]:max-w-[84%] md:pr-0 md:[&>*]:max-w-none`}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {children}

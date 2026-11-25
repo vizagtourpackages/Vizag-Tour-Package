@@ -13,6 +13,7 @@ import TermsButton from "@/components/TermsButton";
 import { Reveal } from "@/components/Motion";
 import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/settings";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -47,6 +48,7 @@ const unitLabel = (label?: string) => {
 export default async function ResortDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = await createClient();
+  const { contact } = await getSiteSettings();
 
   const { data: hotel } = await supabase.from("hotels_resorts").select("*").eq("slug", slug).maybeSingle();
   if (!hotel) notFound();
@@ -130,7 +132,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
       <div className="space-y-3 p-5 sm:p-6">
         <ResortBookingButton hotel={bookingHotel} />
         <a
-          href={waUrl(waMessages.hotel(hotel.name))}
+          href={waUrl(waMessages.hotel(hotel.name), contact.whatsapp)}
           target="_blank"
           rel="noopener noreferrer"
           className="flex min-h-[3rem] items-center justify-center gap-2 rounded-full border border-[#25d366]/40 text-sm font-semibold text-[#128c4a] transition-colors hover:bg-[#25d366]/10"

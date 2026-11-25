@@ -2,14 +2,18 @@
 import { useEffect, useState } from 'react'
 import { submitPackageBooking } from '@/app/actions/booking'
 import { createClient } from '@/lib/supabase/client'
-import { openWhatsApp } from '@/lib/whatsapp'
-import StayPicker, { StayOption } from './StayPicker'
+import StayPicker, { StayLeg, StayOption, StayPick } from './StayPicker'
+import { areaLabel } from '@/lib/areas'
+import { formatDate } from '@/lib/format'
 import ModalShell from './ModalShell'
 import { FormError, FormSuccess, PhoneInput, SelectInput, Stepper, SubmitButton, TextArea, TextInput, Field, controlClass } from '../forms/Fields'
+import { useSite } from '@/components/SiteProvider'
 
 export default function PackageBookingModal({ data, onClose }: { data: any; onClose: () => void }) {
+  const { openWhatsApp } = useSite();
   const isCustom = !!data?.isCustomEnquiry
   const stayOptions: StayOption[] = data?.stay_options || []
+  const stayLegs: StayLeg[] = data?.stay_legs || []
   const hasStay = stayOptions.length > 0 && !isCustom
   const hasRatePlans = !hasStay && !isCustom && data?.rate_plans && data.rate_plans.length > 0
   const isOneDay = data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D'
@@ -44,6 +48,8 @@ export default function PackageBookingModal({ data, onClose }: { data: any; onCl
 
   // steps
   const [stayStep, setStayStep] = useState(hasStay)
+  const [stayType, setStayType] = useState('')
+  const [stayPicks, setStayPicks] = useState<StayPick[]>([])
   const [planStep, setPlanStep] = useState(!!hasRatePlans && !data?.selected_plan)
   const [resortStep, setResortStep] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<string>(data?.selected_plan || '')
@@ -140,8 +146,8 @@ export default function PackageBookingModal({ data, onClose }: { data: any; onCl
       guests: form.guests,
       rooms: form.rooms,
       special_requests: form.notes,
-      pickup_location: data?.pickup_location || 'Visakhapatnam (Vizag)',
-      drop_location: data?.drop_location || 'Visakhapatnam (Vizag)',
+      pickup_location: data?.pickup_location || '',
+      drop_location: data?.drop_location || '',
     }
 
     const res = await submitPackageBooking(booking)
@@ -155,12 +161,10 @@ export default function PackageBookingModal({ data, onClose }: { data: any; onCl
 Package: ${booking.package_name}
 Name: ${booking.full_name}
 Contact: +91 ${booking.contact_number}${booking.whatsapp_number ? ` (WA: +91 ${booking.whatsapp_number})` : ''}
-Dates: ${booking.start_date} to ${booking.end_date}
+Dates: ${formatDate(booking.start_date)} to ${formatDate(booking.end_date)}
 Guests: ${booking.guests} | Rooms: ${booking.rooms}
 Vehicle: ${booking.vehicle_preference}
-Accommodation: ${booking.accommodation_type}
-Pickup: ${booking.pickup_location}
-Drop: ${booking.drop_location}
+Accommodation: ${booking.accommodation_type}${booking.pickup_location ? `\nPickup: ${booking.pickup_location}` : ''}${booking.drop_location ? `\nDrop: ${booking.drop_location}` : ''}
 Special Requests: ${booking.special_requests || 'None'}`
 
     setDone(text)
@@ -181,10 +185,18 @@ Special Requests: ${booking.special_requests || 'None'}`
     return (
       <StayPicker
         options={stayOptions}
+        legs={stayLegs}
         initialType={data?.initial_stay_type}
         onClose={onClose}
-        onConfirm={(type, hotel) => {
-          set({ accommodation: `${type} - ${hotel.name}` })
+        onConfirm={(type, picks) => {
+          const nightsLabel = (l: StayLeg) => (l.nights === 1 ? `night ${l.from}` : `nights ${l.from}-${l.from + l.nights - 1}`)
+          const text =
+            picks.length > 1
+              ? `${type} | ` + picks.map(p => `${p.leg ? areaLabel(p.leg.area) + ' (' + nightsLabel(p.leg) + ')' : 'Stay'}: ${p.hotel.name}`).join(' | ')
+              : `${type} - ${picks[0].hotel.name}`
+          setStayType(type)
+          setStayPicks(picks)
+          set({ accommodation: text })
           setStayStep(false)
         }}
       />
@@ -323,18 +335,40 @@ Special Requests: ${booking.special_requests || 'None'}`
 
         {hasStay || hasRatePlans ? (
           <Field label="Your stay" required>
-            {(id) => (
-              <div className="flex items-center gap-2">
-                <input id={id} readOnly required value={form.accommodation} placeholder="Not chosen yet" className={controlClass} />
-                <button
-                  type="button"
-                  onClick={() => (hasStay ? setStayStep(true) : setPlanStep(true))}
-                  className="shrink-0 rounded-full border border-coral/40 px-4 py-3 text-sm font-semibold text-coral transition-[background-color,transform] duration-150 hover:bg-coral/5 active:scale-95"
-                >
-                  {form.accommodation ? 'Change' : 'Choose'}
-                </button>
-              </div>
-            )}
+            {(id) =>
+              hasStay && stayPicks.length > 1 ? (
+                <div className="rounded-2xl border border-ocean/12 bg-sand/50 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-heading text-[1.05rem] text-ocean">{stayType}</p>
+                      <ul className="mt-2 space-y-1.5 text-[0.86rem] text-charcoal/75">
+                        {stayPicks.map((p, i) => (
+                          <li key={i}>
+                            <span className="font-semibold text-ocean">{p.leg ? areaLabel(p.leg.area) : 'Stay'}</span>
+                            {p.leg ? <span className="text-charcoal/50"> · {p.leg.nights} night{p.leg.nights > 1 ? 's' : ''}</span> : null} — {p.hotel.name}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <button type="button" onClick={() => setStayStep(true)} className="shrink-0 rounded-full border border-coral/40 px-4 py-2.5 text-sm font-semibold text-coral transition-[background-color,transform] duration-150 hover:bg-coral/5 active:scale-95">
+                      Change
+                    </button>
+                  </div>
+                  <input id={id} readOnly required value={form.accommodation} className="sr-only" tabIndex={-1} aria-hidden />
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <input id={id} readOnly required value={form.accommodation} placeholder="Not chosen yet" className={controlClass} />
+                  <button
+                    type="button"
+                    onClick={() => (hasStay ? setStayStep(true) : setPlanStep(true))}
+                    className="shrink-0 rounded-full border border-coral/40 px-4 py-3 text-sm font-semibold text-coral transition-[background-color,transform] duration-150 hover:bg-coral/5 active:scale-95"
+                  >
+                    {form.accommodation ? 'Change' : 'Choose'}
+                  </button>
+                </div>
+              )
+            }
           </Field>
         ) : (
           <SelectInput label="Accommodation" required disabled={!isCustom && isOneDay} value={form.accommodation} onChange={(e) => set({ accommodation: e.target.value })}>

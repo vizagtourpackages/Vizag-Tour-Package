@@ -4,8 +4,9 @@ import { Clock, Users, Star } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Package } from "@/data/packages";
 import { siteInfo } from "@/data/siteInfo";
-import { waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
 import { Arrow } from "./Motion";
+import { useSite } from "@/components/SiteProvider";
 
 interface PackageCardProps {
   pkg: Package;
@@ -18,6 +19,7 @@ const WaIcon = () => (
 );
 
 export default function PackageCard({ pkg }: PackageCardProps) {
+  const { wa } = useSite();
   const href = `/packages/${pkg.slug || pkg.id}`;
   const discountPercent =
     pkg.originalPrice && pkg.originalPrice > pkg.price
@@ -87,14 +89,15 @@ export default function PackageCard({ pkg }: PackageCardProps) {
                 <span className="rounded bg-teal/10 px-1.5 py-0.5 text-teal">{discountPercent}% OFF</span>
               </p>
             )}
-            <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-charcoal/45">{pkg.priceLabel || "Per couple"}</p>
+            <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-charcoal/45">Starting from</p>
             <p className="font-heading text-[1.7rem] leading-none text-ocean">
               <span className="text-base">₹</span>{pkg.price.toLocaleString("en-IN")}
+              <span className="ml-1 font-sans text-[0.68rem] font-medium text-charcoal/50">/ {(pkg.priceLabel || "per couple").toLowerCase().replace(/^per\s+/, "")}</span>
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <a
-              href={waUrl(waMessages.package(pkg.title))}
+              href={wa(waMessages.package(pkg.title))}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp enquiry"

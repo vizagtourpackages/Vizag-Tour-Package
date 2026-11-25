@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import { Check, Loader2, Minus, Plus } from "lucide-react";
-import { waUrl } from "@/lib/whatsapp";
+import { useSite } from "@/components/SiteProvider";
 
 /*
  * Shared form building blocks.
@@ -204,6 +204,7 @@ export function FormSuccess({
   whatsappMessage: string;
   onClose?: () => void;
 }) {
+  const { wa } = useSite();
   return (
     <div className="py-6 text-center">
       <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-teal/12 text-teal">
@@ -213,7 +214,7 @@ export function FormSuccess({
       <p className="mx-auto mt-2 max-w-sm text-[0.95rem] leading-relaxed text-charcoal/65">
         {message || "We've saved your details. WhatsApp is opening so you can send us the message — we'll reply shortly."}
       </p>
-      <a href={waUrl(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-6 w-full !py-4">
+      <a href={wa(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-6 w-full !py-4">
         Open WhatsApp
       </a>
       {onClose && (

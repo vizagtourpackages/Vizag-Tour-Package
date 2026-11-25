@@ -5,11 +5,12 @@ import { saveTourPackage } from '@/app/admin/tour-packages/actions'
 import ImageUpload from './ImageUpload'
 import RichTextEditor from './RichTextEditor'
 import EntityPicker from './EntityPicker'
+import { AREAS, areaLabel, normalizeArea, stayLegs } from '@/lib/areas'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Plus, X, Trash2, AlertCircle } from 'lucide-react'
 
-export default function TourPackageForm({ initialData, id, initialDays = [], initialHotels = [], availableResorts = [] }: { initialData?: any, id: string, initialDays?: any[], initialHotels?: any[], availableResorts?: any[] }) {
+export default function TourPackageForm({ initialData, id, initialDays = [], availableResorts = [] }: { initialData?: any, id: string, initialDays?: any[], availableResorts?: any[] }) {
   const [imageUrl, setImageUrl] = useState(initialData?.cover_image_url || initialData?.image_url || '')
   const [loading, setLoading] = useState(false)
   const [title, setTitle] = useState(initialData?.title || '')
@@ -37,7 +38,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
 
   // Nested structures
   const [days, setDays] = useState<any[]>(initialDays.length > 0 ? initialDays : [])
-  const [hotels, setHotels] = useState<any[]>(initialHotels.length > 0 ? initialHotels : [])
+  const [stayPlan, setStayPlan] = useState<string[]>(Array.isArray(initialData?.stay_plan) ? initialData.stay_plan.map((a: string) => normalizeArea(a)) : [])
   const [ratePlans, setRatePlans] = useState<any[]>(initialData?.rate_plans || [])
   const [resortIds, setResortIds] = useState<string[]>(Array.isArray(initialData?.resort_ids) ? initialData.resort_ids : [])
 
@@ -119,33 +120,16 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
     setDays(newDays)
   }
 
-  // Hotels Logic
-  const addHotel = () => {
-    setHotels([...hotels, {
-      id: `temp-hotel-${Date.now()}`,
-      day_label: '',
-      hotel_name: '',
-      location_name: '',
-      latitude: '',
-      longitude: '',
-      star_category: '3 Star',
-      room_type: '',
-      check_in_time: '12:00 PM',
-      check_out_time: '10:00 AM',
-      hotel_image_url: '',
-      amenities: []
-    }])
+  // Stay plan helpers
+  const setNights = (n: number) => {
+    const count = Math.max(0, Math.min(14, n))
+    setStayPlan(prev => {
+      if (count <= prev.length) return prev.slice(0, count)
+      const fill = prev[prev.length - 1] || 'vizag'
+      return [...prev, ...Array(count - prev.length).fill(fill)]
+    })
   }
-
-  const updateHotel = (hotelIndex: number, field: string, value: any) => {
-    const newHotels = [...hotels]
-    newHotels[hotelIndex][field] = value
-    setHotels(newHotels)
-  }
-
-  const removeHotel = (hotelIndex: number) => {
-    setHotels(hotels.filter((_, i) => i !== hotelIndex))
-  }
+  const attachedAreas = new Set(availableResorts.filter((r: any) => resortIds.includes(r.id)).map((r: any) => normalizeArea(r.area)))
 
   // Rate Plans Logic
   const addRatePlan = () => {
@@ -222,7 +206,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
     
     // Nested Data
     formData.append('days', JSON.stringify(days))
-    formData.append('hotels', JSON.stringify(hotels))
+    formData.append('stay_plan', JSON.stringify(stayPlan))
     formData.append('rate_plans', JSON.stringify(ratePlans))
     formData.append('resort_ids', JSON.stringify(resortIds))
     
@@ -293,12 +277,14 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
             </select>
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Pickup Location</label>
-            <input type="text" name="pickup_location" defaultValue={initialData?.pickup_location || 'Visakhapatnam (Vizag)'} className="w-full p-3 border rounded-lg bg-gray-50" />
+            <label className="block text-sm font-bold text-gray-700 mb-1">Pickup point <span className="font-normal text-gray-400">(optional – start of the trip)</span></label>
+            <input type="text" name="pickup_location" defaultValue={initialData?.pickup_location || ''} placeholder="e.g. Vizag Airport / Railway Station" className="w-full p-3 border rounded-lg bg-gray-50" />
+            <p className="text-xs text-gray-500 mt-1">Shown to guests only when filled.</p>
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Drop Location</label>
-            <input type="text" name="drop_location" defaultValue={initialData?.drop_location || 'Visakhapatnam (Vizag)'} className="w-full p-3 border rounded-lg bg-gray-50" />
+            <label className="block text-sm font-bold text-gray-700 mb-1">Drop point <span className="font-normal text-gray-400">(optional – end of the trip)</span></label>
+            <input type="text" name="drop_location" defaultValue={initialData?.drop_location || ''} placeholder="e.g. Vizag Railway Station" className="w-full p-3 border rounded-lg bg-gray-50" />
+            <p className="text-xs text-gray-500 mt-1">Shown to guests only when filled.</p>
           </div>
 
           <div>
@@ -474,91 +460,55 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
         )}
       </div>
 
-      {/* 5. Package Hotels */}
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
-          <h3 className="text-xl font-heading font-bold">Package Hotels</h3>
-          <button type="button" onClick={addHotel} className="flex items-center gap-1 px-4 py-2 bg-coral/10 text-coral rounded-lg font-bold text-sm hover:bg-coral/20 transition-colors">
-            <Plus size={16} /> Add Hotel
-          </button>
-        </div>
-        
-        {hotels.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-            <p className="text-gray-500 mb-4">No hotels added to this package yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {hotels.map((hotel, hIdx) => (
-              <div key={hIdx} className="bg-gray-50 p-6 rounded-xl border border-gray-200 relative">
-                <button type="button" onClick={() => removeHotel(hIdx)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 flex items-center gap-1 text-sm"><Trash2 size={16}/> Delete</button>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Day Label</label>
-                    <input type="text" value={hotel.day_label} onChange={e => updateHotel(hIdx, 'day_label', e.target.value)} placeholder="e.g. Day 1 & 2 (Vizag)" className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                  <div className="lg:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Hotel Name</label>
-                    <input type="text" value={hotel.hotel_name} onChange={e => updateHotel(hIdx, 'hotel_name', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Category</label>
-                    <select value={hotel.star_category} onChange={e => updateHotel(hIdx, 'star_category', e.target.value)} className="w-full p-2 border rounded-md text-sm">
-                      <option value="3 Star">3 Star</option>
-                      <option value="4 Star">4 Star</option>
-                      <option value="5 Star">5 Star</option>
-                      <option value="Resort">Resort</option>
-                      <option value="Budget">Budget</option>
-                    </select>
-                  </div>
-
-                  <div className="lg:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Location Name</label>
-                    <input type="text" value={hotel.location_name} onChange={e => updateHotel(hIdx, 'location_name', e.target.value)} placeholder="e.g. RK Beach, Vizag" className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Lat (Optional)</label>
-                    <input type="text" value={hotel.latitude || ''} onChange={e => updateHotel(hIdx, 'latitude', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Lng (Optional)</label>
-                    <input type="text" value={hotel.longitude || ''} onChange={e => updateHotel(hIdx, 'longitude', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Room Type</label>
-                    <input type="text" value={hotel.room_type} onChange={e => updateHotel(hIdx, 'room_type', e.target.value)} placeholder="e.g. AC Deluxe" className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Check In</label>
-                    <input type="text" value={hotel.check_in_time} onChange={e => updateHotel(hIdx, 'check_in_time', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Check Out</label>
-                    <input type="text" value={hotel.check_out_time} onChange={e => updateHotel(hIdx, 'check_out_time', e.target.value)} className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                   <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Amenities (Comma separated)</label>
-                   <input type="text" defaultValue={hotel.amenities?.join(', ')} onChange={e => updateHotel(hIdx, 'amenities', e.target.value.split(',').map(s=>s.trim()).filter(Boolean))} placeholder="Pool, WiFi, Sea View" className="w-full p-2 border rounded-md text-sm" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Attached Hotels */}
+      {/* Stay plan & attached hotels */}
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-emerald-500">
-        <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-2">Attached Hotels &amp; Resorts</h3>
+        <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-2">Stay Plan &amp; Hotels</h3>
         <p className="text-sm text-gray-500 mb-5">
-          Select the hotels guests can choose for this package. The public page shows a &quot;Choose Your Stay&quot; section with the
-          accommodation types (Non AC / Deluxe AC / Premium AC) available across these hotels, with each hotel&apos;s price and photos.
+          Set how many nights the package includes and where each night is spent. Guests then pick a room type
+          (Non AC / Deluxe AC / Premium AC) and choose a hotel for each place, in order.
         </p>
+
+        {/* nights + location per night */}
+        <div className="mb-6 rounded-lg border bg-gray-50 p-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="text-sm font-bold text-gray-700" htmlFor="nights">Number of nights</label>
+            <div className="flex items-center overflow-hidden rounded-lg border bg-white">
+              <button type="button" onClick={() => setNights(stayPlan.length - 1)} className="px-3 py-2 hover:bg-gray-100">−</button>
+              <input id="nights" type="number" min={0} max={14} value={stayPlan.length} onChange={e => setNights(parseInt(e.target.value) || 0)} className="w-16 border-x p-2 text-center outline-none" />
+              <button type="button" onClick={() => setNights(stayPlan.length + 1)} className="px-3 py-2 hover:bg-gray-100">+</button>
+            </div>
+            <span className="text-xs text-gray-500">0 = day trip (no stay step).</span>
+          </div>
+
+          {stayPlan.length > 0 && (
+            <>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {stayPlan.map((area, i) => (
+                  <label key={i} className="flex items-center gap-3 rounded-lg border bg-white p-2.5">
+                    <span className="w-20 shrink-0 text-sm font-bold text-gray-700">Night {i + 1}</span>
+                    <select value={area} onChange={e => setStayPlan(stayPlan.map((a, k) => (k === i ? e.target.value : a)))} className="w-full rounded-md border p-2 text-sm">
+                      {AREAS.map(a => <option key={a.id} value={a.id}>{a.label}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </div>
+              <p className="mt-3 text-sm text-gray-600">
+                <span className="font-semibold">Guests will choose:</span>{' '}
+                {stayLegs(stayPlan).map((l, i) => (
+                  <span key={i}>{i > 0 ? ' → ' : ''}{areaLabel(l.area)} ({l.nights} night{l.nights > 1 ? 's' : ''})</span>
+                ))}
+              </p>
+              {stayLegs(stayPlan).filter(l => !attachedAreas.has(l.area)).map(l => (
+                <p key={l.area} className="mt-2 text-xs font-medium text-amber-700">
+                  No attached hotel is in {areaLabel(l.area)} yet — guests will see all attached hotels for that stay.
+                </p>
+              ))}
+            </>
+          )}
+        </div>
+
         <EntityPicker
-          items={availableResorts.map((r: any) => ({ id: r.id, title: r.name, subtitle: r.location, image: r.cover_image_url }))}
+          items={availableResorts.map((r: any) => ({ id: r.id, title: r.name, subtitle: `${areaLabel(r.area)}${r.location ? ' · ' + r.location : ''}`, image: r.cover_image_url }))}
           value={resortIds}
           onChange={setResortIds}
           emptyText="No published hotels yet. Add hotels first under Hotels & Resorts."
@@ -749,28 +699,26 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ini
         </div>
       </div>
 
-      {/* 9. Visibility & Placement */}
+      {/* 9. Visibility & Placement (one column) */}
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-coral">
-        <h3 className="text-xl font-heading font-bold mb-6">Visibility &amp; Placement</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-4 bg-gray-50 rounded-lg border">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-              <span className="font-bold text-gray-700">Featured on Home Page</span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer mt-4">
-              <input type="checkbox" name="show_on_packages_page" value="true" defaultChecked={initialData ? initialData.show_on_packages_page !== false : true} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
-              <span className="font-bold text-gray-700">Show on Tour Packages Page</span>
-            </label>
-            <div className="mt-4">
-              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>
-              <input type="number" name="home_order" defaultValue={initialData?.home_order || 0} className="w-full p-2 border rounded-md" />
-            </div>
+        <h3 className="text-xl font-heading font-bold mb-5">Visibility &amp; Placement</h3>
+        <div className="max-w-md space-y-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" name="show_on_home" value="true" defaultChecked={initialData?.show_on_home} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+            <span className="font-medium text-gray-800">Featured on Home Page</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" name="show_on_packages_page" value="true" defaultChecked={initialData ? initialData.show_on_packages_page !== false : true} className="w-5 h-5 rounded border-gray-300 text-teal focus:ring-teal" />
+            <span className="font-medium text-gray-800">Show on Tour Packages Page</span>
+          </label>
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Home Order (1 is first)</label>
+            <input type="number" name="home_order" defaultValue={initialData?.home_order || 0} className="w-full p-2 border rounded-md" />
           </div>
-          <div className="p-4 bg-gray-50 rounded-lg border">
+          <div>
             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Listing Order (1 is first)</label>
             <input type="number" name="display_order" defaultValue={initialData?.display_order || 0} className="w-full p-2 border rounded-md" />
-            <p className="text-xs text-gray-500 mt-2">Controls the order on the Tour Packages page. You can also reorder with the arrows on the packages list. To show this package on a destination page (Araku, Lambasingi, Vanjangi), attach it from Destination Pages in the admin.</p>
+            <p className="text-xs text-gray-500 mt-1">Controls the order on the Tour Packages page. To show this package on a destination page (Araku, Lambasingi, Vanjangi), attach it from Destination Pages.</p>
           </div>
         </div>
       </div>

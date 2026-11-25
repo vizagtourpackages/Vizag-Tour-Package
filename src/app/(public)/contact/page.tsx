@@ -6,8 +6,9 @@ import { Reveal } from "@/components/Motion";
 import SectionHeading from "@/components/SectionHeading";
 import { siteInfo } from "@/data/siteInfo";
 import { submitCustomEnquiry } from "@/app/actions/booking";
-import { openWhatsApp, waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
 import { FormError, FormSuccess, PhoneInput, SelectInput, SubmitButton, TextArea, TextInput } from "@/components/forms/Fields";
+import { useSite } from "@/components/SiteProvider";
 
 const subjects = ["Tour package enquiry", "Hotel booking", "Cab booking", "Corporate event", "Other enquiry"];
 
@@ -18,6 +19,7 @@ const WaIcon = () => (
 );
 
 export default function ContactPage() {
+  const { wa, contact, openWhatsApp } = useSite();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -64,8 +66,8 @@ Message: ${message}`;
       title: "Call us",
       body: (
         <>
-          <a href={`tel:${siteInfo.whatsapp}`} className="block hover:text-coral">+91 {siteInfo.whatsapp.replace("+91", "")}</a>
-          <a href={`tel:${siteInfo.landline}`} className="block hover:text-coral">{siteInfo.landline}</a>
+          <a href={`tel:${contact.phone}`} className="block hover:text-coral">+91 {contact.phone.replace("+91", "")}</a>
+          <a href={`tel:${contact.landline}`} className="block hover:text-coral">{contact.landline}</a>
         </>
       ),
     },
@@ -73,7 +75,7 @@ Message: ${message}`;
       icon: WaIcon,
       title: "WhatsApp",
       body: (
-        <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="block hover:text-coral">
+        <a href={wa(waMessages.general)} target="_blank" rel="noopener noreferrer" className="block hover:text-coral">
           Chat with us directly
         </a>
       ),
@@ -81,9 +83,9 @@ Message: ${message}`;
     {
       icon: Mail,
       title: "Email",
-      body: <a href={`mailto:${siteInfo.email}`} className="block break-all hover:text-coral">{siteInfo.email}</a>,
+      body: <a href={`mailto:${contact.email}`} className="block break-all hover:text-coral">{contact.email}</a>,
     },
-    { icon: MapPin, title: "Office", body: <p className="leading-relaxed">{siteInfo.address}</p> },
+    { icon: MapPin, title: "Office", body: <p className="leading-relaxed">{contact.address}</p> },
   ];
 
   return (

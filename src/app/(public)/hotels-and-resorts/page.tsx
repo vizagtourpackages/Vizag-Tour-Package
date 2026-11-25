@@ -25,7 +25,8 @@ export default async function HotelsPage() {
     no_of_persons: r.no_of_persons,
     image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
     amenities: r.amenities || [],
-    reviews: r.reviews || 0
+    reviews: r.reviews || 0,
+    area: r.area ?? (r.show_in_araku ? 'araku-valley' : r.show_in_lambasingi ? 'lambasingi' : r.show_in_vanjangi ? 'vanjangi' : 'vizag'),
   }));
 
   return (

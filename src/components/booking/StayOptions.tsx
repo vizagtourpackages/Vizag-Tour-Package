@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion'
 import { BedDouble, ChevronRight, Snowflake, Sparkles } from 'lucide-react'
 import { useBooking } from './BookingContext'
-import type { StayOption } from './StayPicker'
+import type { StayLeg, StayOption } from './StayPicker'
+import { areaLabel } from '@/lib/areas'
 
 const META: Record<string, { icon: any; blurb: string; gradient: string }> = {
   'Non AC': { icon: BedDouble, blurb: 'Clean, comfortable rooms at the best price', gradient: 'from-teal to-sky' },
@@ -12,7 +13,7 @@ const META: Record<string, { icon: any; blurb: string; gradient: string }> = {
 }
 
 /** "Choose Your Stay" – one card per accommodation type offered by the hotels attached to the package. */
-export default function StayOptions({ pkg, options }: { pkg: any; options: StayOption[] }) {
+export default function StayOptions({ pkg, options, legs = [] }: { pkg: any; options: StayOption[]; legs?: StayLeg[] }) {
   const { openBooking } = useBooking()
   if (!options.length) return null
 
@@ -20,7 +21,21 @@ export default function StayOptions({ pkg, options }: { pkg: any; options: StayO
     <section className="rounded-[28px] border border-charcoal/10 bg-white shadow-card overflow-hidden">
       <div className="px-5 sm:px-6 py-5 bg-sunset-soft border-b border-charcoal/5">
         <h3 className="font-heading text-xl font-black text-charcoal">Choose Your Stay</h3>
-        <p className="text-sm text-charcoal/60 mt-0.5">Pick a room type, then your favourite hotel. Prices shown per night unless noted.</p>
+        <p className="text-sm text-charcoal/60 mt-0.5">
+          {legs.length > 0
+            ? 'Pick a room type, then a hotel for each place on your trip. Prices shown per night unless noted.'
+            : 'Pick a room type, then your favourite hotel. Prices shown per night unless noted.'}
+        </p>
+        {legs.length > 0 && (
+          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.82rem] font-semibold text-ocean">
+            {legs.map((l, i) => (
+              <span key={i} className="inline-flex items-center gap-2">
+                {i > 0 && <span aria-hidden className="text-ocean/30">→</span>}
+                {areaLabel(l.area)} <span className="font-medium text-charcoal/50">({l.nights} night{l.nights > 1 ? 's' : ''})</span>
+              </span>
+            ))}
+          </p>
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 sm:p-6">
         {options.map((o, i) => {
@@ -42,6 +57,7 @@ export default function StayOptions({ pkg, options }: { pkg: any; options: StayO
                   duration: pkg.duration,
                   rate_plans: pkg.rate_plans,
                   stay_options: options,
+                  stay_legs: legs,
                   initial_stay_type: o.type,
                   pickup_location: pkg.pickup_location,
                   drop_location: pkg.drop_location,
@@ -61,7 +77,7 @@ export default function StayOptions({ pkg, options }: { pkg: any; options: StayO
               </div>
               <div className="mt-4 flex items-end justify-between">
                 <div>
-                  <div className="text-[10px] uppercase font-bold tracking-wider text-charcoal/40">From</div>
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-charcoal/40">Starting from</div>
                   <div className="font-heading font-black text-xl text-charcoal">₹{from.toLocaleString('en-IN')}<span className="text-[10px] text-charcoal/50 font-bold"> /{o.hotels[0]?.unit || 'night'}</span></div>
                 </div>
                 <span className="text-xs font-bold text-coral flex items-center gap-0.5">

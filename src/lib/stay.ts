@@ -1,5 +1,6 @@
 import { ACCOMMODATION_TYPES } from "@/lib/content";
 import type { StayOption } from "@/components/booking/StayPicker";
+import { normalizeArea } from "@/lib/areas";
 
 const norm = (s: string) => (s || "").toLowerCase().replace(/[^a-z]/g, "");
 
@@ -32,7 +33,7 @@ export async function buildStayOptions(
   const [{ data: resorts }, { data: rooms }] = await Promise.all([
     supabase
       .from("hotels_resorts")
-      .select("id, name, location, category, cover_image_url, gallery_images")
+      .select("*")
       .in("id", ids)
       .eq("is_published", true),
     supabase.from("resort_room_types").select("*").in("resort_id", ids).eq("is_available", true),
@@ -48,6 +49,7 @@ export async function buildStayOptions(
     return {
       id: r.id,
       name: r.name,
+      area: normalizeArea(r.area ?? (r.show_in_araku ? "araku-valley" : r.show_in_lambasingi ? "lambasingi" : r.show_in_vanjangi ? "vanjangi" : "vizag")),
       location: r.location,
       category: r.category,
       cover: roomImages[0] || r.cover_image_url,

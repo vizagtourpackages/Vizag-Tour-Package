@@ -4,11 +4,15 @@ import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import TermsButton from "@/components/TermsButton";
 import { createClient } from "@/lib/supabase/server";
+import { getSiteSettings } from "@/lib/settings";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const explore = [
   { label: "Tour Packages", href: "/tour-packages" },
   { label: "Hotels & Resorts", href: "/hotels-and-resorts" },
   { label: "Cabs & Travels", href: "/travels" },
+  { label: "Blog", href: "/blog" },
   { label: "Travel Guides", href: "/travel-guides" },
   { label: "Itineraries", href: "/itinerary" },
   { label: "How It Works", href: "/how-it-works" },
@@ -49,6 +53,8 @@ function LinkGroup({ title, links }: { title: string; links: { label: string; hr
 export default async function Footer() {
   const currentYear = new Date().getFullYear();
 
+  const { contact, socials } = await getSiteSettings();
+
   // Popular packages (falls back to static links if none are tagged "popular")
   const supabase = await createClient();
   const { data: popular } = await supabase
@@ -68,7 +74,15 @@ export default async function Footer() {
           { label: "Lambasingi Getaway", href: "/lambasingi" },
         ];
 
-  const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteInfo.address)}`;
+  const socialList = [
+    { label: "Facebook", href: socials.facebook, Icon: FaFacebookF },
+    { label: "Instagram", href: socials.instagram, Icon: FaInstagram },
+    { label: "YouTube", href: socials.youtube, Icon: FaYoutube },
+    { label: "X (Twitter)", href: socials.x, Icon: FaXTwitter },
+    { label: "LinkedIn", href: socials.linkedin, Icon: FaLinkedinIn },
+  ].filter((x) => x.href);
+
+  const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`;
 
   return (
     <footer className="grain relative overflow-hidden bg-ocean-gradient text-white" aria-labelledby="footer-heading">
@@ -89,7 +103,7 @@ export default async function Footer() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="btn-coral !px-8 !py-4">
+            <a href={waUrl(waMessages.general, contact.whatsapp)} target="_blank" rel="noopener noreferrer" className="btn-coral !px-8 !py-4">
               Chat on WhatsApp
             </a>
             <Link
@@ -113,6 +127,23 @@ export default async function Footer() {
             <p className="mt-5 max-w-sm text-[0.92rem] leading-relaxed text-white/70">
               A trusted local travel company in Visakhapatnam — sightseeing, devotional and hill-station tours, hotels, cabs and custom holidays at fixed, honest prices.
             </p>
+            {socialList.length > 0 && (
+              <ul className="mt-5 flex flex-wrap gap-2.5" aria-label="Follow us">
+                {socialList.map(({ label, href, Icon }) => (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className="grid h-10 w-10 place-items-center rounded-full border border-white/20 text-white/85 transition-[background-color,color,transform,border-color] duration-200 hover:border-transparent hover:bg-sunset hover:text-white active:scale-95"
+                    >
+                      <Icon size={16} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
             <ul className="mt-6 flex flex-wrap gap-2.5 text-xs font-semibold">
               <li className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-white/85">
                 <Star size={13} className="fill-amber text-amber" /> {siteInfo.googleReviews.rating} · {siteInfo.googleReviews.count} Google reviews
@@ -136,15 +167,15 @@ export default async function Footer() {
             <address className="space-y-4 not-italic">
               <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-3 text-[0.92rem] leading-relaxed text-white/70 transition-colors hover:text-white">
                 <MapPin size={17} className="mt-0.5 shrink-0 text-amber" aria-hidden />
-                <span>{siteInfo.address}</span>
+                <span>{contact.address}</span>
               </a>
-              <a href={`tel:${siteInfo.whatsapp}`} className="group flex items-center gap-3 text-[0.92rem] text-white/70 transition-colors hover:text-white">
+              <a href={`tel:${contact.phone}`} className="group flex items-center gap-3 text-[0.92rem] text-white/70 transition-colors hover:text-white">
                 <Phone size={17} className="shrink-0 text-amber" aria-hidden />
-                <span>{siteInfo.whatsapp.replace("+91", "+91 ")}</span>
+                <span>{contact.phone.replace("+91", "+91 ")}</span>
               </a>
-              <a href={`mailto:${siteInfo.email}`} className="group flex items-center gap-3 break-all text-[0.92rem] text-white/70 transition-colors hover:text-white">
+              <a href={`mailto:${contact.email}`} className="group flex items-center gap-3 break-all text-[0.92rem] text-white/70 transition-colors hover:text-white">
                 <Mail size={17} className="shrink-0 text-amber" aria-hidden />
-                <span>{siteInfo.email}</span>
+                <span>{contact.email}</span>
               </a>
             </address>
             <div className="mt-6">

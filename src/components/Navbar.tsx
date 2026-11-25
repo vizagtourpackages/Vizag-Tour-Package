@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ChevronDown, Phone } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
-import { waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
+import { useSite } from "@/components/SiteProvider";
 
 const WaIcon = ({ className = "" }: { className?: string }) => (
   <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -20,6 +21,7 @@ const moreLinks = navLinks.slice(5).filter((l) => l.href) as { label: string; hr
 const desktopLinks = [...primaryLinks, { label: "More", subLinks: moreLinks }];
 
 export default function Navbar() {
+  const { wa, contact } = useSite();
   const pathname = usePathname();
   const [solid, setSolid] = useState(false);
   const { scrollY, scrollYProgress } = useScroll();
@@ -89,11 +91,11 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3 sm:gap-5">
-            <a href={`tel:${siteInfo.whatsapp}`} className="hidden items-center gap-2 text-[0.86rem] font-semibold text-ocean/80 hover:text-coral 2xl:flex">
-              <Phone size={16} /> {siteInfo.whatsapp.replace("+91", "+91 ")}
+            <a href={`tel:${contact.phone}`} className="hidden items-center gap-2 text-[0.86rem] font-semibold text-ocean/80 hover:text-coral 2xl:flex">
+              <Phone size={16} /> {contact.phone.replace("+91", "+91 ")}
             </a>
             <a
-              href={waUrl(waMessages.general)}
+              href={wa(waMessages.general)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Book on WhatsApp"

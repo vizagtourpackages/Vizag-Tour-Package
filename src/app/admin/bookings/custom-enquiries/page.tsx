@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { updateCustomEnquiryStatus } from '@/app/actions/booking'
 import StatusActions from '@/components/admin/StatusActions'
 import StatusBadge from '@/components/admin/StatusBadge'
+import { formatDate } from '@/lib/format'
 
 export const metadata = {
   title: 'Custom Enquiries - Admin',
@@ -35,11 +36,11 @@ export default async function CustomEnquiriesPage() {
                   <div className="font-medium text-gray-900">{enq.name}</div>
                   <div className="text-sm text-gray-500">{enq.phone}</div>
                   <div className="text-xs text-gray-400 mt-1">
-                    {new Date(enq.created_at).toLocaleDateString()}
+                    {formatDate(enq.created_at)}
                   </div>
                 </td>
                 <td className="p-4 text-gray-600 text-sm">
-                  <span className="font-medium">{enq.start_date}</span> to <br/><span className="font-medium">{enq.end_date}</span>
+                  <span className="font-medium">{formatDate(enq.start_date)}</span> to <br/><span className="font-medium">{formatDate(enq.end_date)}</span>
                 </td>
                 <td className="p-4 text-gray-600 text-sm">
                   {enq.adults} Adults<br/>

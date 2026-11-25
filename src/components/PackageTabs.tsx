@@ -17,8 +17,6 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
   // Sort itinerary days and stops
   const itineraryDays = pkg.package_itinerary_days?.sort((a: any, b: any) => a.day_number - b.day_number) || []
   
-  // Sort hotels
-  const hotels = pkg.package_hotels || []
 
   return (
     <div className="mt-12">
@@ -169,6 +167,12 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
         {activeTab === 'itinerary' && (
           <div className="space-y-8 animate-fade-in">
             {itineraryDays.length > 0 ? (
+              <div>
+              {pkg.pickup_location && (
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-teal/10 px-4 py-2 text-sm font-semibold text-teal">
+                  <MapPin size={16} /> Pickup: {pkg.pickup_location}
+                </div>
+              )}
               <div className="relative border-l-2 border-charcoal/10 ml-4 md:ml-6 space-y-12 pb-8">
                 {(showAllItinerary ? itineraryDays : itineraryDays.slice(0, 3)).map((day: any) => {
                   const stops = day.package_itinerary_stops?.sort((a: any, b: any) => a.display_order - b.display_order) || []
@@ -226,6 +230,12 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
                     </button>
                   </div>
                 )}
+              </div>
+              {pkg.drop_location && (
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-coral/10 px-4 py-2 text-sm font-semibold text-coral">
+                  <MapPin size={16} /> Drop: {pkg.drop_location}
+                </div>
+              )}
               </div>
             ) : (
               <p className="text-charcoal/50 text-center py-12">Detailed itinerary is not available for this package.</p>

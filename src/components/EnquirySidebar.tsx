@@ -4,14 +4,16 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { submitCustomEnquiry } from "@/app/actions/booking";
-import { openWhatsApp } from "@/lib/whatsapp";
 import { FormError, FormSuccess, PhoneInput, Stepper, SubmitButton, TextArea, TextInput } from "@/components/forms/Fields";
+import { useSite } from "@/components/SiteProvider";
+import { formatDate } from '@/lib/format'
 
 /**
  * Enquiry form used on destination / hotel / temple / guide pages.
  * Saves the enquiry to the database, then opens WhatsApp with the details pre-filled.
  */
 export function EnquiryForm({ context, compact = false }: { context: string; compact?: boolean }) {
+  const { openWhatsApp } = useSite();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [date, setDate] = useState("");
@@ -46,7 +48,7 @@ export function EnquiryForm({ context, compact = false }: { context: string; com
     const text = `Hi! I'd like to enquire about ${context}.
 Name: ${name.trim()}
 Mobile: +91 ${phone}
-Travel date: ${date}
+Travel date: ${formatDate(date)}
 Guests: ${guests}${message ? `\nMessage: ${message}` : ""}`;
     setDone(text);
     setLoading(false);

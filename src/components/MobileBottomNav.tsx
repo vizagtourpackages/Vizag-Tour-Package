@@ -16,6 +16,7 @@ import {
   ListChecks,
   MapPin,
   Mail,
+  Newspaper,
   Package,
   Phone,
   Route,
@@ -23,10 +24,11 @@ import {
   X,
 } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
-import { waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
 import { allPackages } from "@/data/packages";
 import { topPlaces, vizagPlaces } from "@/data/destinations";
 import { ease } from "./Motion";
+import { useSite } from "@/components/SiteProvider";
 
 const WaIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -46,6 +48,7 @@ const tabHrefs = new Set(tabs.map((t) => t.href));
 const iconFor: Record<string, any> = {
   Destination: MapPin,
   Itineraries: ListChecks,
+  Blog: Newspaper,
   "Travel Guides": BookOpen,
   "How It Works": Route,
   "About Us": Info,
@@ -56,6 +59,7 @@ const iconFor: Record<string, any> = {
 const moreItems = navLinks.filter((l) => (l.subLinks ? true : !!l.href && !tabHrefs.has(l.href) && l.href !== "/"));
 
 export default function MobileBottomNav() {
+  const { wa, contact } = useSite();
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -192,13 +196,13 @@ export default function MobileBottomNav() {
                   {/* contact */}
                   <div className="mt-5 rounded-2xl bg-ocean p-4 text-white">
                     <p className="flex items-start gap-2 text-[0.82rem] text-white/75">
-                      <MapPin size={15} className="mt-0.5 shrink-0" /> {siteInfo.address}
+                      <MapPin size={15} className="mt-0.5 shrink-0" /> {contact.address}
                     </p>
                     <div className="mt-3.5 grid grid-cols-2 gap-2.5">
-                      <a href={`tel:${siteInfo.whatsapp}`} className="flex items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-ocean active:scale-[0.97]">
+                      <a href={`tel:${contact.phone}`} className="flex items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-ocean active:scale-[0.97]">
                         <Phone size={16} /> Call now
                       </a>
-                      <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-3 text-sm font-semibold text-white active:scale-[0.97]">
+                      <a href={wa(waMessages.general)} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-3 text-sm font-semibold text-white active:scale-[0.97]">
                         <WaIcon /> WhatsApp
                       </a>
                     </div>

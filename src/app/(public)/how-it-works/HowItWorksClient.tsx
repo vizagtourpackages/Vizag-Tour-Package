@@ -6,7 +6,8 @@ import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import { BadgeCheck, BedDouble, Car, CheckCircle2, Headset, MessageCircle, Package, Search, ShieldCheck, Sparkles, Wallet } from "lucide-react";
 import { Arrow, Reveal, ease } from "@/components/Motion";
 import { useBooking } from "@/components/booking/BookingContext";
-import { waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
+import { useSite } from "@/components/SiteProvider";
 
 type Step = { icon: any; title: string; text: string; tip?: string };
 type Path = { id: string; label: string; icon: any; intro: string; steps: Step[]; cta: { label: string; href?: string; action?: "cab" | "custom" } };
@@ -64,6 +65,7 @@ const PROMISES = [
 ];
 
 export default function HowItWorksClient() {
+  const { wa } = useSite();
   const [active, setActive] = useState(0);
   const path = PATHS[active];
   const { openBooking } = useBooking();
@@ -205,7 +207,7 @@ export default function HowItWorksClient() {
           Ready to start? <span className="italic text-coral">Say hello.</span>
         </h2>
         <p className="mx-auto mt-3 max-w-md text-charcoal/65">Message us on WhatsApp and we&apos;ll take it from there.</p>
-        <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-7 !px-9 !py-4">
+        <a href={wa(waMessages.general)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-7 !px-9 !py-4">
           Chat on WhatsApp
         </a>
       </section>

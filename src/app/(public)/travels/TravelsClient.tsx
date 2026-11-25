@@ -10,8 +10,9 @@ import { VehicleCard } from "@/components/VehicleCard";
 import { Reveal, Arrow, ease } from "@/components/Motion";
 import { useBooking } from "@/components/booking/BookingContext";
 import DynamicIcon from "@/components/admin/DynamicIcon";
-import { waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
 import type { Vehicle } from "@/data/vehicles";
+import { useSite } from "@/components/SiteProvider";
 
 const CAPACITY = [
   { label: "All vehicles", test: () => true },
@@ -45,6 +46,7 @@ export default function TravelsClient({
   notes?: any[];
 }) {
   const { openBooking } = useBooking();
+  const { wa } = useSite();
   const searchParams = useSearchParams();
   const handledBookId = useRef<string | null>(null);
   const [cap, setCap] = useState(0);
@@ -93,7 +95,7 @@ export default function TravelsClient({
                 <Car size={20} /> Book a cab <Arrow className="transition-transform group-hover:translate-x-1" />
               </button>
               <a
-                href={waUrl(waMessages.travels)}
+                href={wa(waMessages.travels)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-full border border-ocean/15 px-7 py-4 text-[0.95rem] font-semibold text-ocean transition-[background-color,border-color,transform] duration-200 hover:border-ocean/40 hover:bg-ocean/5 active:scale-[0.97]"
@@ -168,7 +170,7 @@ export default function TravelsClient({
           <div className="rounded-[28px] bg-white py-16 text-center shadow-card">
             <p className="font-heading text-xl text-ocean">No vehicles in this range yet</p>
             <p className="mt-1 text-sm text-charcoal/55">Need something specific? Ask us — we arrange larger groups too.</p>
-            <a href={waUrl(waMessages.travels)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-6">Ask on WhatsApp</a>
+            <a href={wa(waMessages.travels)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-6">Ask on WhatsApp</a>
           </div>
         )}
       </section>
@@ -180,7 +182,7 @@ export default function TravelsClient({
           {TRIPS.map(({ icon: Icon, title, text, ask }, i) => (
             <Reveal key={title} delay={i * 0.06}>
               <a
-                href={waUrl(`Hi! I need ${ask}. Could you share the available vehicles and a fixed quote?`)}
+                href={wa(`Hi! I need ${ask}. Could you share the available vehicles and a fixed quote?`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex h-full flex-col rounded-[26px] border border-ocean/8 bg-white p-6 shadow-card transition-[transform,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-card-hover"

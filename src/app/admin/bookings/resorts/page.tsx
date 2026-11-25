@@ -3,6 +3,7 @@ import { updateResortBookingStatus } from '@/app/actions/booking'
 import StatusBadge from '@/components/admin/StatusBadge'
 import StatusActions from '@/components/admin/StatusActions'
 import BookingFilter from '@/components/admin/BookingFilter'
+import { formatDate } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,7 +43,7 @@ export default async function ResortBookingsPage(props: { searchParams?: Promise
               bookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-gray-50">
                   <td className="p-4 text-sm text-gray-500 align-top">
-                    {new Date(booking.created_at).toLocaleDateString()}
+                    {formatDate(booking.created_at)}
                   </td>
                   <td className="p-4 align-top">
                     <p className="font-bold text-gray-900 text-sm">{booking.full_name}</p>
@@ -59,8 +60,8 @@ export default async function ResortBookingsPage(props: { searchParams?: Promise
                     )}
                   </td>
                   <td className="p-4 align-top">
-                    <p className="text-sm font-medium text-gray-900">{booking.check_in}</p>
-                    <p className="text-xs text-gray-500">to {booking.check_out}</p>
+                    <p className="text-sm font-medium text-gray-900">{formatDate(booking.check_in)}</p>
+                    <p className="text-xs text-gray-500">to {formatDate(booking.check_out)}</p>
                   </td>
                   <td className="p-4 align-top">
                     <StatusBadge status={booking.status} />

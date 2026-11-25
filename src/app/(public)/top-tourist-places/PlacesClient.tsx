@@ -5,10 +5,12 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import DestinationCard from "@/components/DestinationCard";
 import { Reveal, Arrow } from "@/components/Motion";
-import { waMessages, waUrl } from "@/lib/whatsapp";
+import { waMessages } from "@/lib/whatsapp";
 import { useBooking } from "@/components/booking/BookingContext";
+import { useSite } from "@/components/SiteProvider";
 
 export default function PlacesClient({ places, firstId }: { places: any[]; firstId?: string }) {
+  const { wa } = useSite();
   const { openBooking } = useBooking();
   const [cat, setCat] = useState("All");
   const [q, setQ] = useState("");
@@ -95,7 +97,7 @@ export default function PlacesClient({ places, firstId }: { places: any[]; first
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link href="/tour-packages" className="btn-coral !px-8 !py-4">View packages <Arrow /></Link>
           <button onClick={() => openBooking("cab", null)} className="btn-secondary !px-8 !py-4">Book a cab</button>
-          <a href={waUrl(waMessages.packages)} target="_blank" rel="noopener noreferrer" className="btn-secondary !px-8 !py-4">Ask on WhatsApp</a>
+          <a href={wa(waMessages.packages)} target="_blank" rel="noopener noreferrer" className="btn-secondary !px-8 !py-4">Ask on WhatsApp</a>
         </div>
       </div>
     </div>

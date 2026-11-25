@@ -4,19 +4,23 @@ import { useState, useMemo } from 'react';
 import HotelCard from '@/components/HotelCard';
 import { SlidersHorizontal, X } from 'lucide-react';
 import FilterSheet, { FilterGroup, OptionPill } from '@/components/FilterSheet';
+import { AREAS, DEFAULT_AREA, normalizeArea, areaLabel, type AreaId } from '@/lib/areas';
 
 export default function ResortListClient({ initialHotels }: { initialHotels: any[] }) {
   const [category, setCategory] = useState<string>('All');
   const [minRating, setMinRating] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(20000);
   const [showFilters, setShowFilters] = useState(false);
+  const [area, setArea] = useState<AreaId>(DEFAULT_AREA); // Vizag is the default switch
   const clearAll = () => { setCategory('All'); setMinRating(0); setMaxPrice(20000); };
 
   // Extract unique categories
-  const categories = ['All', ...Array.from(new Set(initialHotels.map(h => h.type)))];
+  const inArea = useMemo(() => initialHotels.filter(h => normalizeArea(h.area) === area), [initialHotels, area]);
+  const counts = useMemo(() => Object.fromEntries(AREAS.map(a => [a.id, initialHotels.filter(h => normalizeArea(h.area) === a.id).length])), [initialHotels]);
+  const categories = ['All', ...Array.from(new Set(inArea.map(h => h.type)))];
 
   const filteredHotels = useMemo(() => {
-    return initialHotels.filter((hotel) => {
+    return inArea.filter((hotel) => {
       // Category filter
       if (category !== 'All' && hotel.type !== category) return false;
       
@@ -29,11 +33,33 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
 
       return true;
     });
-  }, [initialHotels, category, minRating, maxPrice]);
+  }, [inArea, category, minRating, maxPrice]);
 
   const activeCount = (category !== 'All' ? 1 : 0) + (minRating > 0 ? 1 : 0) + (maxPrice < 20000 ? 1 : 0);
 
   return (
+    <div>
+      {/* Area switch: Vizag (default) · Araku Valley · Lambasingi · Vanjangi */}
+      <div role="tablist" aria-label="Choose a place" className="no-scrollbar -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:justify-center sm:px-0">
+        {AREAS.map((a) => {
+          const on = a.id === area;
+          return (
+            <button
+              key={a.id}
+              role="tab"
+              aria-selected={on}
+              onClick={() => { setArea(a.id); setCategory('All'); }}
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-5 py-3 text-sm font-semibold transition-[background-color,color,border-color,transform] duration-150 active:scale-[0.97] ${
+                on ? 'border-transparent bg-sunset text-white shadow-glow' : 'border-ocean/15 bg-white text-ocean/75 hover:border-ocean/40'
+              }`}
+            >
+              {a.label}
+              <span className={`rounded-full px-2 py-0.5 text-[0.68rem] font-bold ${on ? 'bg-white/25 text-white' : 'bg-ocean/8 text-ocean/55'}`}>{counts[a.id]}</span>
+            </button>
+          );
+        })}
+      </div>
+
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Mobile: button opens a full-screen filter view */}
       <div className="lg:hidden">
@@ -152,7 +178,7 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
       {/* Grid */}
       <div className="lg:w-3/4">
         <div className="mb-4 text-[#6B5744] font-medium text-sm">
-          Showing {filteredHotels.length} {filteredHotels.length === 1 ? 'property' : 'properties'}
+          Showing {filteredHotels.length} {filteredHotels.length === 1 ? 'property' : 'properties'} in {areaLabel(area)}
         </div>
         
         {filteredHotels.length > 0 ? (
@@ -178,6 +204,7 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

@@ -3,12 +3,14 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { normalizeArea } from '@/lib/areas'
 
 export async function deleteHotelResort(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('hotels_resorts').delete().eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/admin/hotels-resorts')
+  revalidatePath('/hotels-and-resorts')
   revalidatePath('/')
 }
 
@@ -51,6 +53,8 @@ export async function saveHotelResort(formData: FormData) {
     console.error("Error parsing JSON arrays from form data", e)
   }
   
+  const area = normalizeArea(formData.get('area') as string)
+
   const data = {
     name: formData.get('name') as string,
     slug: formData.get('slug') as string,
@@ -76,9 +80,11 @@ export async function saveHotelResort(formData: FormData) {
     show_on_home: formData.get('show_on_home') === 'true',
     show_on_resorts_page: formData.get('show_on_resorts_page') === 'true',
     home_order: formData.get('home_order') ? parseInt(formData.get('home_order') as string) : 0,
-    show_in_araku: formData.get('show_in_araku') === 'true',
-    show_in_lambasingi: formData.get('show_in_lambasingi') === 'true',
-    show_in_vanjangi: formData.get('show_in_vanjangi') === 'true',
+    area,
+    // legacy flags mirror the area so older queries keep working
+    show_in_araku: area === 'araku-valley',
+    show_in_lambasingi: area === 'lambasingi',
+    show_in_vanjangi: area === 'vanjangi',
     gallery_images: galleryImages,
     highlights,
     amenities,

@@ -3,6 +3,7 @@ import { Fraunces, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { siteInfo } from "@/data/siteInfo";
 import ScrollToTop from "@/components/ScrollToTop";
+import { SITE_URL } from "@/lib/site";
 
 // Editorial display serif + clean grotesk body
 const display = Fraunces({
@@ -26,6 +27,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     template: `%s | ${siteInfo.name}`,
     default: `${siteInfo.name} - ${siteInfo.tagline}`,
