@@ -49,11 +49,16 @@ export default function StayOptions({ pkg, options }: { pkg: any; options: StayO
               }
               className="group text-left rounded-2xl border-2 border-charcoal/10 hover:border-coral p-5 transition-colors bg-white hover:shadow-card-hover [@media(hover:hover)]:hover:-translate-y-1 transition-[transform,box-shadow,border-color] duration-200"
             >
-              <span className={`w-12 h-12 rounded-xl bg-gradient-to-br ${meta.gradient} text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                <Icon size={22} />
-              </span>
-              <h4 className="font-heading font-bold text-lg text-charcoal">{o.type}</h4>
-              <p className="text-xs text-charcoal/60 mt-1 min-h-[32px]">{meta.blurb}</p>
+              {/* icon sits beside the text on mobile, above it from md up */}
+              <div className="flex items-center gap-4 md:block">
+                <span className={`w-12 h-12 shrink-0 rounded-xl bg-gradient-to-br ${meta.gradient} text-white flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform`}>
+                  <Icon size={22} />
+                </span>
+                <div className="min-w-0">
+                  <h4 className="font-heading font-bold text-lg text-charcoal">{o.type}</h4>
+                  <p className="text-xs text-charcoal/60 mt-1 md:min-h-[32px]">{meta.blurb}</p>
+                </div>
+              </div>
               <div className="mt-4 flex items-end justify-between">
                 <div>
                   <div className="text-[10px] uppercase font-bold tracking-wider text-charcoal/40">From</div>
