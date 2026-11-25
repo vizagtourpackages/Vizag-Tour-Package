@@ -1,16 +1,18 @@
-import { createClient } from "@/lib/supabase/server";
+import { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import { ArrowLeft, Check, Coffee, MapPin, Snowflake, Star, Sun, Utensils } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import RichContent from "@/components/RichContent";
 import { EnquiryForm } from "@/components/EnquirySidebar";
-import Link from "next/link";
-import { MapPin, Star, CheckCircle2, ChevronRight, Home, Info, ArrowLeft, Utensils, Building2, Map } from "lucide-react";
 import ResortGallery from "@/components/ResortGallery";
 import HotelCard from "@/components/HotelCard";
 import ResortBookingButton from "@/components/ResortBookingButton";
+import HotelBookBar from "@/components/HotelBookBar";
 import TermsButton from "@/components/TermsButton";
+import { Reveal } from "@/components/Motion";
 import { siteInfo } from "@/data/siteInfo";
-import { Metadata } from "next";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -19,333 +21,330 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     .from("hotels_resorts")
     .select("name, description, meta_title, meta_description, meta_keywords, og_image_url, cover_image_url")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
-  if (!hotel) {
-    return { title: "Resort Not Found" };
-  }
+  if (!hotel) return { title: "Stay not found" };
 
+  const image = hotel.og_image_url || hotel.cover_image_url;
   return {
     title: hotel.meta_title || `${hotel.name} | ${siteInfo.name}`,
     description: hotel.meta_description || hotel.description || `Book your stay at ${hotel.name} with us today!`,
     keywords: hotel.meta_keywords || "",
-    openGraph: {
-      images: [hotel.og_image_url || hotel.cover_image_url],
-    }
+    openGraph: image ? { images: [image] } : undefined,
   };
 }
+
+const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+
+const unitLabel = (label?: string) => {
+  const base = "per night";
+  if (!label) return base;
+  const clean = label.replace(/^\/?\s*/, "").toLowerCase().trim();
+  if (clean === "per night" || clean === "night" || clean === "") return base;
+  return `${base} / ${label.replace(/^\/?\s*/, "")}`;
+};
 
 export default async function ResortDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = await createClient();
-  
-  // Fetch current resort
-  const { data: hotel } = await supabase
+
+  const { data: hotel } = await supabase.from("hotels_resorts").select("*").eq("slug", slug).maybeSingle();
+  if (!hotel) notFound();
+
+  const { data: roomTypes } = await supabase.from("resort_room_types").select("*").eq("resort_id", hotel.id);
+
+  let { data: similar } = await supabase
     .from("hotels_resorts")
     .select("*")
-    .eq("slug", slug)
-    .single();
-
-  // Fetch room types
-  const { data: roomTypes } = await supabase
-    .from("resort_room_types")
-    .select("*")
-    .eq("resort_id", hotel?.id);
-
-  if (!hotel) {
-    return (
-      <div className="bg-[#FFFBF4] min-h-[60vh] flex flex-col items-center justify-center pt-24 pb-12 px-4">
-        <h1 className="text-4xl font-heading font-black text-[#6B5744] mb-4">Resort Not Found</h1>
-        <p className="text-[#6B5744]/60 mb-8 text-center max-w-md">We couldn't find the hotel or resort you're looking for. It may have been removed or the link is incorrect.</p>
-        <Link href="/tour-packages" className="bg-[#2D6A4F] text-white py-3 px-8 rounded-full font-bold">
-          Browse Options
-        </Link>
-      </div>
-    );
-  }
-
-  // Fetch similar resorts
-  let { data: similarResorts } = await supabase
-    .from("hotels_resorts")
-    .select("*")
+    .eq("is_published", true)
     .eq("type", hotel.type)
     .neq("slug", slug)
     .limit(3);
-
-  if (!similarResorts || similarResorts.length === 0) {
-    const { data: fallbackResorts } = await supabase
-      .from("hotels_resorts")
-      .select("*")
-      .neq("slug", slug)
-      .limit(3);
-    similarResorts = fallbackResorts;
+  if (!similar || similar.length === 0) {
+    const { data: fallback } = await supabase.from("hotels_resorts").select("*").eq("is_published", true).neq("slug", slug).limit(3);
+    similar = fallback;
   }
 
-  const whatsappMessage = encodeURIComponent(
-    `Hi! I'm interested in booking a stay at "${hotel.name}". Could you share availability and details?`
+  const rooms = (roomTypes || []).slice().sort((a: any, b: any) => Number(b.is_available) - Number(a.is_available) || Number(a.price) - Number(b.price));
+  const roomPrices = rooms.filter((r: any) => r.is_available).map((r: any) => Number(r.price)).filter(Boolean);
+  const fromPrice = Number(hotel.price_per_night) || (roomPrices.length ? Math.min(...roomPrices) : 0);
+  const priceText = fromPrice ? inr(fromPrice) : hotel.price || "On request";
+  const unit = unitLabel(hotel.price_label);
+  // minimal data for the booking popup (keeps the client payload small)
+  const bookingHotel = { id: hotel.id, slug: hotel.slug, name: hotel.name, price_label: hotel.price_label };
+
+  const cover = hotel.cover_image_url || hotel.image_url;
+  const photos: string[] = [cover, ...(hotel.gallery_images || [])].filter(Boolean);
+
+  const nearby: any[] = hotel.nearby_places || [];
+  const restaurants = nearby.filter((p) => p.category === "restaurant");
+  const attractions = nearby.filter((p) => p.category !== "restaurant");
+
+  const mapHref =
+    hotel.latitude && hotel.longitude
+      ? `https://www.google.com/maps/search/?api=1&query=${hotel.latitude},${hotel.longitude}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name} ${hotel.location || ""}`)}`;
+
+  const NearbyList = ({ title, icon: Icon, items }: { title: string; icon: any; items: any[] }) => (
+    <div className="rounded-[26px] border border-ocean/8 bg-white p-5 shadow-card sm:p-6">
+      <h3 className="mb-3 flex items-center gap-2.5 font-heading text-[1.2rem] text-ocean">
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-sand text-coral"><Icon size={17} /></span> {title}
+      </h3>
+      <ul className="divide-y divide-dashed divide-ocean/12">
+        {items.slice(0, 4).map((p, i) => (
+          <li key={i} className="flex items-center justify-between gap-3 py-3 text-[0.94rem]">
+            <span className="font-medium text-ocean">{p.name}</span>
+            {p.distance_km != null && <span className="shrink-0 rounded-full bg-sand px-3 py-1 text-xs font-semibold text-charcoal/65">{p.distance_km} km</span>}
+          </li>
+        ))}
+      </ul>
+      {items.length > 4 && (
+        <details className="group">
+          <summary className="mt-2 flex cursor-pointer list-none items-center justify-center rounded-full bg-coral/10 py-3 text-sm font-semibold text-coral transition-colors hover:bg-coral/15">
+            <span className="group-open:hidden">Show all {items.length}</span>
+            <span className="hidden group-open:block">Show less</span>
+          </summary>
+          <ul className="divide-y divide-dashed divide-ocean/12">
+            {items.slice(4).map((p, i) => (
+              <li key={i} className="flex items-center justify-between gap-3 py-3 text-[0.94rem]">
+                <span className="font-medium text-ocean">{p.name}</span>
+                {p.distance_km != null && <span className="shrink-0 rounded-full bg-sand px-3 py-1 text-xs font-semibold text-charcoal/65">{p.distance_km} km</span>}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </div>
   );
 
-  const mainImageUrl = hotel.cover_image_url || hotel.image_url || '/placeholder.jpg';
-  const priceDisplay = hotel.price_per_night ? `₹${hotel.price_per_night}` : hotel.price;
-  
-  const getFormattedPriceLabel = (label?: string) => {
-    const base = "per night";
-    if (!label) return base;
-    const cleanLabel = label.replace(/^\/?\s*/, '').toLowerCase().trim();
-    if (cleanLabel === "per night" || cleanLabel === "night" || cleanLabel === "") return base;
-    return `${base} / ${label.replace(/^\/?\s*/, '')}`;
-  };
-  
-  // Group nearby places by category
-  const nearbyPlaces = hotel.nearby_places || [];
-  const attractions = nearbyPlaces.filter((p: any) => p.category === 'attraction' || p.category !== 'restaurant');
-  const restaurants = nearbyPlaces.filter((p: any) => p.category === 'restaurant');
-
-  const bookingCard = (
-    <div className="bg-white rounded-[24px] border border-[#E8DDD4] p-6 sm:p-8 shadow-sm lg:sticky lg:top-28">
-      <div className="mb-2">
-        <span className="text-[#6B5744]/70 text-[15px] font-medium">Starting from</span>
+  const bookCard = (
+    <div className="overflow-hidden rounded-[28px] border border-ocean/8 bg-white shadow-float">
+      <div className="border-b border-ocean/8 bg-sand/60 px-6 py-5">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-charcoal/50">Starting from</p>
+        <p className="font-heading text-[2.3rem] leading-none text-ocean">
+          {priceText}
+          <span className="ml-1.5 font-sans text-sm font-medium text-charcoal/55">/ {unit}</span>
+        </p>
+        <p className="mt-1.5 text-xs text-charcoal/55">Taxes included · choose a room to book</p>
       </div>
-      <div className="mb-4 flex flex-wrap items-baseline gap-2">
-        <span className="text-[32px] font-bold text-[#332A20] leading-none mb-1">
-          {priceDisplay}
-        </span>
-        <span className="text-sm font-medium text-[#6B5744]/70">
-          / {getFormattedPriceLabel(hotel.price_label)}
-        </span>
-        <span className="text-[#6B5744]/60 text-sm block mt-1 w-full">Taxes included · Select a room to book</span>
-      </div>
-
-      <ResortBookingButton hotel={hotel} />
-
-      <div className="mt-6 pt-6 border-t border-[#E8DDD4]">
-        <h3 className="font-heading font-bold text-lg text-[#332A20] mb-3">Have a question? Enquire</h3>
-        <EnquiryForm context={hotel.name} />
-      </div>
-      
-      <div className="mt-4 text-center">
-        <span className="text-xs text-[#6B5744]/60">
-          By booking you agree to our <TermsButton category="resorts" className="text-[#2D6A4F] hover:underline font-medium cursor-pointer" />
-        </span>
+      <div className="space-y-3 p-5 sm:p-6">
+        <ResortBookingButton hotel={bookingHotel} />
+        <a
+          href={waUrl(waMessages.hotel(hotel.name))}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex min-h-[3rem] items-center justify-center gap-2 rounded-full border border-[#25d366]/40 text-sm font-semibold text-[#128c4a] transition-colors hover:bg-[#25d366]/10"
+        >
+          Ask on WhatsApp
+        </a>
+        <p className="pt-1 text-center text-xs text-charcoal/50">
+          By booking you agree to our <TermsButton category="resorts" className="cursor-pointer font-medium text-coral hover:underline" />
+        </p>
       </div>
     </div>
   );
 
   return (
-    <div className="bg-[#FFFBF4] min-h-screen md:pt-16 pt-0 pb-24 font-sans">
-      {/* Container matching standard max-w */}
-      <div className="container-max px-0 sm:px-6 lg:px-8 mx-auto">
-        
-        <ResortGallery 
-          images={hotel.gallery_images && hotel.gallery_images.length > 0 ? hotel.gallery_images : [mainImageUrl]}
-          hotel={hotel} 
-        />
+    <div className="bg-warm-white pb-44 xl:pb-24">
+      {/* ---------- Header + gallery ---------- */}
+      <section className="mx-auto max-w-[1240px] px-4 pt-6 sm:px-6 lg:px-8">
+        <Link href="/hotels-and-resorts" className="mb-5 inline-flex items-center gap-2 rounded-full border border-ocean/12 bg-white px-4 py-2.5 text-sm font-semibold text-ocean shadow-sm transition-colors hover:bg-sand">
+          <ArrowLeft size={16} /> All stays
+        </Link>
 
-        {/* Content Layout */}
-        <div className="px-4 sm:px-0">
-          <div className="flex items-center gap-4 py-4 border-b border-[#E8DDD4]">
+        <header className="mb-6">
+          <span className="mb-3 inline-block rounded-full bg-sunset px-3.5 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider text-white">
+            {hotel.category || hotel.type || "Resort"}
+          </span>
+          <h1 className="font-heading text-[clamp(2rem,5vw,3.6rem)] leading-[1.05] text-ocean">{hotel.name}</h1>
+          {hotel.tagline && <p className="mt-2 text-[1.05rem] text-charcoal/65">{hotel.tagline}</p>}
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
             {hotel.rating && (
-              <div className="flex items-center gap-1.5 text-[#6B5744] font-bold">
-                <Star size={18} className="text-[#F59E0B] fill-[#F59E0B]" />
-                {hotel.rating} <span className="text-[#6B5744]/60 font-medium text-sm ml-1">({hotel.reviews || 0} reviews)</span>
-              </div>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-ocean">
+                <Star size={16} className="fill-amber text-amber" /> {hotel.rating}
+                <span className="font-normal text-charcoal/55">({hotel.reviews || 0} reviews)</span>
+              </span>
             )}
-            <div className="flex items-center gap-1.5 text-[#6B5744]/70 font-medium text-sm">
-              <MapPin size={16} className="text-[#2D6A4F]" />
-              {hotel.location}
-            </div>
+            {hotel.location && (
+              <a href={mapHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-ocean/80 underline-offset-4 hover:text-coral hover:underline">
+                <MapPin size={16} className="text-teal" /> {hotel.location}
+              </a>
+            )}
           </div>
+        </header>
 
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 mt-8 relative">
-            
-            {/* Left Content */}
-            <div className="w-full lg:w-2/3 space-y-10">
-              
-              {/* About Resort */}
-              {hotel.description && (
-                <section>
-                  <h2 className="text-2xl font-bold text-[#332A20] mb-4">About the Resort</h2>
-                  {hotel.content ? (
-                    <RichContent html={hotel.content} />
-                  ) : (
-                    <p className="text-[#6B5744] leading-relaxed whitespace-pre-line text-[15px] sm:text-[16px]">
-                      {hotel.description}
-                    </p>
-                  )}
-                </section>
-              )}
+        <ResortGallery images={photos} name={hotel.name} />
+      </section>
 
-              {/* Amenities (Pill Style) */}
-              {hotel.amenities && hotel.amenities.length > 0 && (
-                <section>
-                  <h2 className="text-2xl font-bold text-[#332A20] mb-4">Amenities</h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {hotel.amenities.map((amenity: string, i: number) => (
-                      <div key={i} className="flex items-center gap-2.5 bg-[#F0FDF4] text-[#166534] px-4 py-3 rounded-[12px] font-medium text-sm border border-[#DCFCE7]">
-                        <CheckCircle2 size={16} className="text-[#166534]" />
-                        {amenity}
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
+      {/* ---------- Content ---------- */}
+      <div className="mx-auto mt-10 grid max-w-[1240px] gap-10 px-4 sm:px-6 lg:px-8 xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-14">
+        <div className="min-w-0 space-y-14">
+          {/* About */}
+          {(hotel.content || hotel.description) && (
+            <Reveal>
+              <section>
+                <h2 className="mb-4 font-heading text-[1.8rem] text-ocean">About this stay</h2>
+                {hotel.content ? (
+                  <RichContent html={hotel.content} />
+                ) : (
+                  <p className="whitespace-pre-line text-[1.02rem] leading-relaxed text-charcoal/75">{hotel.description}</p>
+                )}
+              </section>
+            </Reveal>
+          )}
 
-              {/* Room Types */}
-              {roomTypes && roomTypes.length > 0 && (
-                <section>
-                  <h2 className="text-2xl font-bold text-[#332A20] mb-4">Room Options</h2>
-                  <div className="space-y-3">
-                    {roomTypes.map((rt: any) => (
-                      <div key={rt.id} className={`flex flex-wrap justify-between items-center gap-3 p-4 sm:p-5 rounded-[16px] border ${rt.is_available ? 'border-[#E8DDD4] bg-white' : 'border-gray-200 bg-gray-50 opacity-75'}`}>
-                        {Array.isArray(rt.images) && rt.images.length > 0 && (
-                          <div className="w-full flex gap-2 overflow-x-auto hide-scrollbar">
-                            {rt.images.map((u: string, i: number) => (
-                              <img key={i} src={u} alt={`${rt.room_type} ${i + 1}`} loading="lazy" className="h-24 w-36 rounded-xl object-cover shrink-0" />
-                            ))}
+          {/* Highlights */}
+          {hotel.highlights?.length > 0 && (
+            <Reveal>
+              <section>
+                <h2 className="mb-4 font-heading text-[1.8rem] text-ocean">Highlights</h2>
+                <ul className="flex flex-wrap gap-2.5">
+                  {hotel.highlights.map((h: string, i: number) => (
+                    <li key={i} className="rounded-full border border-coral/25 bg-coral/8 px-4 py-2 text-sm font-semibold text-ocean">{h}</li>
+                  ))}
+                </ul>
+              </section>
+            </Reveal>
+          )}
+
+          {/* Amenities */}
+          {hotel.amenities?.length > 0 && (
+            <Reveal>
+              <section>
+                <h2 className="mb-4 font-heading text-[1.8rem] text-ocean">Amenities</h2>
+                <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {hotel.amenities.map((a: string, i: number) => (
+                    <li key={i} className="flex items-center gap-2.5 rounded-2xl border border-ocean/8 bg-white px-4 py-3.5 text-sm font-medium text-ocean shadow-sm">
+                      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-teal/12 text-teal"><Check size={14} strokeWidth={3} /></span> {a}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </Reveal>
+          )}
+
+          {/* Rooms */}
+          {rooms.length > 0 && (
+            <section id="rooms" className="scroll-mt-28">
+              <h2 className="mb-1 font-heading text-[1.8rem] text-ocean">Choose a room</h2>
+              <p className="mb-5 text-sm text-charcoal/55">Prices are {unit}.</p>
+              <div className="space-y-4">
+                {rooms.map((r: any, i: number) => {
+                  const img = Array.isArray(r.images) && r.images[0];
+                  return (
+                    <Reveal key={r.id} delay={i * 0.04}>
+                      <div className={`overflow-hidden rounded-[26px] border bg-white shadow-card sm:flex ${r.is_available ? "border-ocean/8" : "border-ocean/8 opacity-70"}`}>
+                        {img && (
+                          <div className="relative aspect-[16/9] shrink-0 bg-sand sm:aspect-auto sm:w-[38%]">
+                            <img src={img} alt={r.room_type} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                           </div>
                         )}
-                        <div>
-                          <h4 className="font-bold text-lg text-[#332A20] mb-1">{rt.room_type}</h4>
-                          <div className="flex items-center gap-2 text-sm text-[#6B5744]/70">
-                            {rt.has_ac && <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11px] font-bold border border-blue-100 tracking-wide">AC</span>}
-                            {!rt.is_available && <span className="text-red-500 font-bold text-[11px] tracking-wide">UNAVAILABLE</span>}
+                        <div className="flex flex-1 flex-col justify-between gap-4 p-5 sm:p-6">
+                          <div>
+                            <span className={`mb-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.66rem] font-bold uppercase tracking-wider ${r.has_ac ? "bg-sky/12 text-sky" : "bg-amber/20 text-ocean/70"}`}>
+                              {r.has_ac ? <Snowflake size={12} /> : <Sun size={12} />} {r.has_ac ? "AC room" : "Non-AC room"}
+                            </span>
+                            <h3 className="font-heading text-[1.35rem] leading-tight text-ocean">{r.room_type}</h3>
+                            {Array.isArray(r.images) && r.images.length > 1 && <p className="mt-1 text-xs text-charcoal/50">{r.images.length} photos</p>}
                           </div>
-                        </div>
-                        <div className="text-right shrink-0 ml-4">
-                          <div className="font-bold text-xl sm:text-2xl text-[#332A20]">₹{rt.price}</div>
-                          <div className="text-[11px] text-[#6B5744]/60">
-                            / {getFormattedPriceLabel(hotel.price_label)}
+                          <div className="flex items-end justify-between gap-3">
+                            <p className="font-heading text-[1.7rem] leading-none text-ocean">
+                              {inr(Number(r.price) || 0)}
+                              <span className="ml-1 font-sans text-xs font-medium text-charcoal/50">/ night</span>
+                            </p>
+                            {r.is_available ? (
+                              <ResortBookingButton hotel={bookingHotel} room={r} className="btn-coral shrink-0 !px-6 !py-3 text-sm">
+                                Select room
+                              </ResortBookingButton>
+                            ) : (
+                              <span className="rounded-full bg-red-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-600">Unavailable</span>
+                            )}
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Mobile Booking Card (Before Around the Property) */}
-              <div className="block lg:hidden">
-                {bookingCard}
+                    </Reveal>
+                  );
+                })}
               </div>
+            </section>
+          )}
 
-              {/* Around the Property */}
-              {(attractions.length > 0 || restaurants.length > 0) && (
-                <section>
-                  <h2 className="text-2xl font-bold text-[#332A20] mb-4">Around the Property</h2>
-                  <div className="space-y-4">
-                    
-                    {attractions.length > 0 && (
-                      <div className="bg-white rounded-[16px] border border-[#E8DDD4] p-5 shadow-sm">
-                        <div className="flex items-center gap-2 text-[#2D6A4F] font-bold mb-4">
-                          <MapPin size={18} />
-                          <h3>Attractions</h3>
-                        </div>
-                        <div className="space-y-0">
-                          {attractions.slice(0, 4).map((place: any, i: number) => (
-                            <div key={i} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
-                              <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
-                              <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
-                            </div>
-                          ))}
-                          
-                          {attractions.length > 4 && (
-                            <details className="group">
-                              <summary className="mt-3 flex cursor-pointer list-none items-center justify-center rounded-full bg-coral/10 py-3 text-sm font-semibold text-coral transition-colors hover:bg-coral/15">
-                                <span className="group-open:hidden">View All Attractions ({attractions.length})</span>
-                                <span className="hidden group-open:block">Show Less</span>
-                              </summary>
-                              <div className="space-y-0 border-t border-[#E8DDD4]/50">
-                                {attractions.slice(4).map((place: any, i: number) => (
-                                  <div key={i + 4} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
-                                    <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
-                                    <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </details>
-                          )}
-                        </div>
-                      </div>
-                    )}
+          {/* Around the property */}
+          {(attractions.length > 0 || restaurants.length > 0) && (
+            <Reveal>
+              <section>
+                <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+                  <h2 className="font-heading text-[1.8rem] text-ocean">Around the property</h2>
+                  <a href={mapHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-ocean/15 bg-white px-4 py-2.5 text-sm font-semibold text-ocean transition-colors hover:bg-sand">
+                    <MapPin size={15} className="text-coral" /> View on map
+                  </a>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {attractions.length > 0 && <NearbyList title="Attractions" icon={MapPin} items={attractions} />}
+                  {restaurants.length > 0 && <NearbyList title="Restaurants" icon={Utensils} items={restaurants} />}
+                </div>
+              </section>
+            </Reveal>
+          )}
 
-                    {restaurants.length > 0 && (
-                      <div className="bg-white rounded-[16px] border border-[#E8DDD4] p-5 shadow-sm">
-                        <div className="flex items-center gap-2 text-[#2D6A4F] font-bold mb-4">
-                          <Utensils size={18} />
-                          <h3>Restaurants</h3>
-                        </div>
-                        <div className="space-y-0">
-                          {restaurants.slice(0, 4).map((place: any, i: number) => (
-                            <div key={i} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
-                              <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
-                              <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
-                            </div>
-                          ))}
-
-                          {restaurants.length > 4 && (
-                            <details className="group">
-                              <summary className="mt-3 flex cursor-pointer list-none items-center justify-center rounded-full bg-coral/10 py-3 text-sm font-semibold text-coral transition-colors hover:bg-coral/15">
-                                <span className="group-open:hidden">View All Restaurants ({restaurants.length})</span>
-                                <span className="hidden group-open:block">Show Less</span>
-                              </summary>
-                              <div className="space-y-0 border-t border-[#E8DDD4]/50">
-                                {restaurants.slice(4).map((place: any, i: number) => (
-                                  <div key={i + 4} className="flex justify-between items-center py-3 border-b border-[#E8DDD4]/50 last:border-0 last:pb-0">
-                                    <span className="text-[#332A20] font-medium text-[15px]">{place.name}</span>
-                                    <span className="text-[#6B5744]/60 text-sm font-medium bg-[#FFFBF4] px-2 py-1 rounded-md">{place.distance_km} km</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </details>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                  </div>
-                </section>
-              )}
+          {/* Questions (below xl; on wide screens the form sits in the sidebar) */}
+          <section className="xl:hidden">
+            <div className="overflow-hidden rounded-[28px] border border-ocean/8 bg-white shadow-card">
+              <div className="bg-sunset px-6 py-5 text-white">
+                <h2 className="font-heading text-[1.35rem] leading-tight">Questions about {hotel.name}?</h2>
+              </div>
+              <div className="p-5 sm:p-6">
+                <EnquiryForm context={hotel.name} />
+              </div>
             </div>
-
-            {/* Right Column / Sticky Booking Card */}
-            <div className="hidden lg:block w-full lg:w-1/3 mt-8 lg:mt-0 pb-12 lg:pb-0">
-              {bookingCard}
-            </div>
-
-          </div>
+          </section>
         </div>
+
+        {/* Sticky sidebar (wide screens) */}
+        <aside className="hidden xl:block">
+          <div className="sticky top-24 space-y-5">
+            {bookCard}
+            <div className="overflow-hidden rounded-[28px] border border-ocean/8 bg-white shadow-card">
+              <div className="px-6 pt-5">
+                <h3 className="font-heading text-[1.2rem] text-ocean">Have a question?</h3>
+              </div>
+              <div className="thin-scroll max-h-[50vh] overflow-y-auto p-5 pt-4">
+                <EnquiryForm context={hotel.name} compact />
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
-      
-      {/* More Places to Stay */}
-      {similarResorts && similarResorts.length > 0 && (
-        <div className="bg-[#FFFBF4] mt-16 pt-16 border-t border-[#E8DDD4]">
-          <div className="container-max px-4 sm:px-6 lg:px-8 mx-auto">
-            <h2 className="text-2xl font-bold text-[#332A20] mb-8">More Places to Stay</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {similarResorts.map((r: any) => (
-                <HotelCard 
-                  key={r.id} 
-                  hotel={{
-                    id: r.slug,
-                    slug: r.slug,
-                    name: r.name,
-                    type: r.category || r.type,
-                    rating: r.rating || 0,
-                    reviews: r.reviews || 0,
-                    location: r.location,
-                    price: r.price_per_night ? `₹${r.price_per_night}` : r.price,
-                    price_label: r.price_label,
-                    no_of_persons: r.no_of_persons,
-                    image: r.cover_image_url || r.image_url,
-                    amenities: r.amenities || []
-                  }} 
-                />
-              ))}
-            </div>
+
+      {/* ---------- More stays ---------- */}
+      {similar && similar.length > 0 && (
+        <section className="mx-auto mt-20 max-w-[1240px] border-t border-ocean/10 px-4 pt-14 sm:px-6 lg:px-8">
+          <h2 className="mb-8 font-heading text-[clamp(1.7rem,3.5vw,2.4rem)] text-ocean">More places to stay</h2>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {similar.map((r: any) => (
+              <HotelCard
+                key={r.id}
+                hotel={{
+                  id: r.slug,
+                  slug: r.slug,
+                  name: r.name,
+                  type: r.category || r.type,
+                  rating: r.rating || 0,
+                  reviews: r.reviews || 0,
+                  location: r.location,
+                  price: r.price_per_night ? `₹${r.price_per_night}` : r.price,
+                  price_label: r.price_label,
+                  no_of_persons: r.no_of_persons,
+                  image: r.cover_image_url || r.image_url,
+                  amenities: r.amenities || [],
+                }}
+              />
+            ))}
           </div>
-        </div>
+        </section>
       )}
 
+      <HotelBookBar hotel={bookingHotel} price={priceText} unit={unit} />
     </div>
   );
 }

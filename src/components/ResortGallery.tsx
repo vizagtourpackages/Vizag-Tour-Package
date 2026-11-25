@@ -1,107 +1,133 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowLeft } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
 
-export default function ResortGallery({
-  images,
-  hotel
-}: {
-  images: string[];
-  hotel: any;
-}) {
-  const [activeImage, setActiveImage] = useState(images[0] || '/placeholder.jpg');
+/**
+ * Hotel photo gallery: large main image + thumbnails, with a full-screen viewer.
+ * Titles live in the page header so photos stay clean.
+ */
+export default function ResortGallery({ images, name }: { images: string[]; name: string }) {
+  const list = images.filter(Boolean);
+  const [i, setI] = useState(0);
+  const [open, setOpen] = useState(false);
 
-  // Only use the images provided by the admin
-  const displayImages = images && images.length > 0 ? images : ['/placeholder.jpg'];
+  const step = useCallback((d: number) => setI((p) => (p + d + list.length) % list.length), [list.length]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'ArrowRight') step(1);
+      if (e.key === 'ArrowLeft') step(-1);
+    };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open, step]);
+
+  if (list.length === 0) {
+    return <div className="aspect-[16/9] w-full rounded-[28px] bg-sand sm:rounded-[36px]" />;
+  }
 
   return (
-    <div className="w-full px-4 md:px-0">
-      {/* Mobile Hero (Padded) */}
-      <div className="md:hidden relative w-full h-[40vh] min-h-[280px] max-h-[320px] rounded-[24px] overflow-hidden mt-4 shadow-sm">
-        <Image fill src={activeImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1E]/90 via-[#1C1C1E]/30 to-transparent pointer-events-none"></div>
+    <>
+      <div className="grid gap-3 lg:grid-cols-[1fr_120px]">
+        {/* main image */}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Open photo viewer"
+          className="group relative aspect-[4/3] w-full overflow-hidden rounded-[28px] bg-sand sm:aspect-[16/9] sm:rounded-[36px] lg:max-h-[540px]"
+        >
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={list[i]}
+              src={list[i]}
+              alt={`${name} photo ${i + 1}`}
+              fetchPriority={i === 0 ? 'high' : 'auto'}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </AnimatePresence>
+          <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-2 text-xs font-semibold text-ocean shadow backdrop-blur">
+            <Expand size={14} /> {i + 1} / {list.length}
+          </span>
+        </button>
 
-        {/* Top floating buttons */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
-          <Link href="/hotels-and-resorts" className="flex items-center gap-2 bg-black/40 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium border border-white/10 shadow-sm transition-colors hover:bg-black/60">
-            <ArrowLeft size={16} />
-            Back to Resorts
-          </Link>
-        </div>
-
-        {/* Bottom left info overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end p-6 z-10 pointer-events-none">
-          <div>
-            <span className="bg-emerald-700 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block shadow-sm">
-              {hotel.category || hotel.type || 'Resorts'}
-            </span>
-            <h1 className="text-3xl font-bold text-white leading-tight mb-1">{hotel.name}</h1>
-            {hotel.tagline && <p className="text-white text-sm font-medium opacity-90">{hotel.tagline}</p>}
-          </div>
-        </div>
-      </div>
-
-      {/* Thumbnail Gallery (Mobile Only) */}
-      {displayImages.length > 1 && (
-        <div className="md:hidden flex overflow-x-auto gap-4 py-4 hide-scrollbar mb-4 snap-x snap-mandatory px-1">
-          {displayImages.map((img, i) => (
-            <div
-              key={i}
-              onClick={() => setActiveImage(img)}
-              style={{ width: '80px', height: '80px' }}
-              className={`relative shrink-0 snap-center rounded-[16px] overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-y-1 ${activeImage === img ? 'border-emerald-600' : 'border-[#E8DDD4] hover:border-emerald-300'}`}
-            >
-              <Image fill src={img} alt="" className="w-full h-full object-cover" />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Desktop Hero & Vertical Gallery */}
-      <div className="hidden md:flex gap-4 h-[500px] mt-8 mb-8 relative">
-        {/* Back Button */}
-        <Link href="/hotels-and-resorts" className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 bg-black/40 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium border border-white/10 shadow-sm transition-colors hover:bg-black/60">
-          <ArrowLeft size={16} /> Back to Resorts
-        </Link>
-
-        {/* Main Cover Image */}
-        <div className="relative rounded-[24px] overflow-hidden group h-full flex-1">
-          <Image fill src={activeImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1E]/90 via-[#1C1C1E]/30 to-transparent pointer-events-none"></div>
-
-          <div className="absolute inset-0 flex flex-col justify-end p-8 z-10 pointer-events-none">
-            <div>
-              <span className="bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-full mb-3 inline-block shadow-sm">
-                {hotel.category || hotel.type || 'Resorts'}
-              </span>
-              <h1 className="text-4xl font-bold text-white leading-tight mb-2 tracking-tight">{hotel.name}</h1>
-              {hotel.tagline && <p className="text-white text-lg font-medium opacity-90">{hotel.tagline}</p>}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side Vertical Scrollable Gallery (only if multiple images) */}
-        {displayImages.length > 1 && (
-          <div
-            style={{ width: '80px', minWidth: '80px' }}
-            className="shrink-0 flex flex-col gap-3 h-full overflow-y-auto hide-scrollbar pr-1 pb-1"
-          >
-            {displayImages.map((img, i) => (
-              <div
-                key={i}
-                onClick={() => setActiveImage(img)}
-                style={{ height: '85px', minHeight: '85px' }}
-                className={`relative w-full shrink-0 rounded-[16px] overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-x-1 ${activeImage === img ? 'border-emerald-600' : 'border-[#E8DDD4] hover:border-emerald-300'}`}
+        {/* thumbnails: row on mobile, column on desktop */}
+        {list.length > 1 && (
+          <div className="no-scrollbar flex gap-2.5 overflow-x-auto lg:max-h-[540px] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden">
+            {list.map((src, k) => (
+              <button
+                key={src + k}
+                type="button"
+                onClick={() => setI(k)}
+                aria-label={`Show photo ${k + 1}`}
+                aria-current={k === i}
+                className={`relative h-[72px] w-[96px] shrink-0 overflow-hidden rounded-2xl border-2 transition-[border-color,opacity,transform] duration-150 active:scale-95 lg:h-[84px] lg:w-full ${
+                  k === i ? 'border-coral' : 'border-transparent opacity-70 hover:opacity-100'
+                }`}
               >
-                <Image fill src={img} alt="" className="w-full h-full object-cover" />
-              </div>
+                <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+              </button>
             ))}
           </div>
         )}
       </div>
-    </div>
+
+      {/* full-screen viewer */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${name} photos`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[320] flex items-center justify-center bg-black/92 p-3 sm:p-8"
+            onClick={() => setOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close"
+              className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] z-10 grid h-12 w-12 place-items-center rounded-full bg-white/15 text-white backdrop-blur transition-colors hover:bg-white/25"
+            >
+              <X size={22} />
+            </button>
+            <img
+              src={list[i]}
+              alt={`${name} photo ${i + 1}`}
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[86vh] max-h-[86dvh] max-w-full rounded-2xl object-contain"
+            />
+            {list.length > 1 && (
+              <>
+                <button type="button" onClick={(e) => { e.stopPropagation(); step(-1); }} aria-label="Previous photo" className="absolute left-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/15 text-white backdrop-blur hover:bg-white/25 sm:left-6">
+                  <ChevronLeft size={24} />
+                </button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); step(1); }} aria-label="Next photo" className="absolute right-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/15 text-white backdrop-blur hover:bg-white/25 sm:right-6">
+                  <ChevronRight size={24} />
+                </button>
+                <span className="absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur">
+                  {i + 1} / {list.length}
+                </span>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

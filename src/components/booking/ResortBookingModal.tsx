@@ -51,6 +51,12 @@ export default function ResortBookingModal({ data, onClose }: { data: any; onClo
       if (!rows || rows.length === 0) {
         setRoom({ room_type: 'Standard Room' })
         setStep(2)
+      } else if (data?.roomId) {
+        const chosen = rows.find((r: any) => r.id === data.roomId)
+        if (chosen) {
+          setRoom(chosen)
+          setStep(2)
+        }
       }
     }
     load()

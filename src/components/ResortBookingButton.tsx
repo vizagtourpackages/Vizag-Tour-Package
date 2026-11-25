@@ -1,31 +1,32 @@
 'use client';
 
-import { Building2 } from 'lucide-react';
 import { useBooking } from './booking/BookingContext';
 
-export default function ResortBookingButton({ hotel }: { hotel: any }) {
+/** Opens the resort booking popup. Pass `room` to start with that room already chosen. */
+export default function ResortBookingButton({
+  hotel,
+  room,
+  className = 'btn-coral w-full !py-4 text-base',
+  children = 'Book now',
+}: {
+  hotel: any;
+  room?: any;
+  className?: string;
+  children?: React.ReactNode;
+}) {
   const { openBooking } = useBooking();
 
-  const formattedHotel = {
-    id: hotel.slug || hotel.id,
+  const data = {
+    id: hotel.id, // database id (used to load room types)
     slug: hotel.slug,
     name: hotel.name,
-    type: hotel.category || hotel.type || 'Resorts',
-    rating: hotel.rating || 0,
-    reviews: hotel.reviews || 0,
-    location: hotel.location || '',
-    price: hotel.price_per_night ? `₹${hotel.price_per_night}` : hotel.price || 'Contact for price',
-    image: hotel.cover_image_url || hotel.image_url || '/placeholder.jpg',
-    amenities: hotel.amenities || []
+    price_label: hotel.price_label,
+    roomId: room?.id,
   };
 
   return (
-    <button
-      onClick={() => openBooking('resort', formattedHotel)}
-      className="w-full flex items-center justify-center gap-2 btn-coral text-white py-3.5 rounded-[12px] font-bold text-lg mt-6 shadow-sm"
-    >
-      <Building2 size={20} />
-      Book Now
+    <button type="button" onClick={() => openBooking('resort', data)} className={className}>
+      {children}
     </button>
   );
 }
