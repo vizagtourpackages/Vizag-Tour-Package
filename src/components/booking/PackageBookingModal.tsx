@@ -261,7 +261,6 @@ Special Requests: ${booking.special_requests || 'None'}`
   return (
     <ModalShell
       title={isCustom ? 'Plan your custom trip' : 'Book your trip'}
-      subtitle="Fill in the details. We save your request and open WhatsApp to confirm."
       onClose={onClose}
     >
       <form onSubmit={submit} className="space-y-4">

@@ -156,7 +156,7 @@ export default async function Home() {
       category: place.category || 'Place',
       imageGradient: 'from-blue-400 to-ocean', // fallback
       imageUrl: place.image_url,
-      customLink: place.custom_link || `/top-tourist-places?first=${place.id}`
+      customLink: place.custom_link || `/top-tourist-places/${place.id}`
     }))
     : [];
 

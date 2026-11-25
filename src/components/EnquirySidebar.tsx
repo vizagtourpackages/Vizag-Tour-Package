@@ -70,7 +70,6 @@ Guests: ${guests}${message ? `\nMessage: ${message}` : ""}`;
       <Stepper label="Guests" required min={1} max={40} value={guests} onChange={setGuests} />
       {!compact && <TextArea label="Message" hint="optional" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Anything we should know?" />}
       <SubmitButton loading={loading}>Get free quote</SubmitButton>
-      <p className="text-center text-[0.7rem] font-medium text-charcoal/45">We save your enquiry and open WhatsApp so we can reply fast.</p>
     </form>
   );
 }

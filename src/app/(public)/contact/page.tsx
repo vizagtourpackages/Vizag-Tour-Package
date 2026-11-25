@@ -133,8 +133,7 @@ Message: ${message}`;
                 <FormSuccess title="Message received" whatsappMessage={done} />
               ) : (
                 <>
-                  <h3 className="font-heading text-[1.6rem] text-ocean">Send us a message</h3>
-                  <p className="mb-5 mt-1 text-sm text-charcoal/60">We save your message and open WhatsApp so we can reply quickly.</p>
+                  <h3 className="mb-5 font-heading text-[1.6rem] text-ocean">Send us a message</h3>
                   <form onSubmit={submit} className="space-y-4">
                     <FormError message={error} />
                     <TextInput label="Your name" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />

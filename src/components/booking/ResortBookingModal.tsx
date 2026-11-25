@@ -141,7 +141,6 @@ Special Requests: ${booking.special_requests || 'None'}`
   return (
     <ModalShell
       title="Book your stay"
-      subtitle="Fill in the details. We save your request and open WhatsApp to confirm."
       onClose={onClose}
       onBack={rooms.length > 0 ? () => setStep(1) : undefined}
       backLabel="Back to rooms"

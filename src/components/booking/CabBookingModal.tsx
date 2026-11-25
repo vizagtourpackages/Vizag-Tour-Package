@@ -115,7 +115,6 @@ Passengers: ${booking.adults} Adults, ${booking.kids} Kids`
   return (
     <ModalShell
       title="Book a cab"
-      subtitle="Fill in the details. We save your request and open WhatsApp to confirm."
       onClose={onClose}
       onBack={!data ? () => setStep(1) : undefined}
       backLabel="Back to vehicles"

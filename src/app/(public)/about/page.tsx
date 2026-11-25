@@ -1,179 +1,190 @@
 import { Metadata } from "next";
-import ScrollReveal from "@/components/ScrollReveal";
-import PlaceholderImage from "@/components/PlaceholderImage";
-import TrustedPartners from "@/components/TrustedPartners";
+import Link from "next/link";
+import { Award, CreditCard, Clock, Headset, MapPin, ShieldCheck, Star, Users, Car, Phone } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { Reveal, Arrow } from "@/components/Motion";
+import SectionHeading from "@/components/SectionHeading";
+import CountUp from "@/components/CountUp";
 import { siteInfo, stats } from "@/data/siteInfo";
-import { Award, Users, Car, Headset, MapPin, ShieldCheck, CreditCard, Clock } from "lucide-react";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: "Learn more about Vizag Tour Packages, your trusted travel partner in Visakhapatnam.",
+  description: "Vizag Tour Packages is run by Araku Eco Stays & Travels — a local team offering Vizag sightseeing, Araku Valley tours, hotels, cabs and custom holidays at fixed prices.",
 };
 
-export default function AboutPage() {
-  return (
-    <div className="bg-white min-h-screen">
-      {/* Hero */}
-      <section className="relative -mt-[72px] pt-[104px] pb-16 lg:pb-24 overflow-hidden rounded-b-[40px] shadow-sm">
-        <div className="absolute inset-0 bg-charcoal">
-          <PlaceholderImage
-            gradient="from-ocean-dark to-charcoal"
-            alt="Vizag Landscape"
-            className="w-full h-full opacity-40 mix-blend-overlay"
-          />
-        </div>
-        <div className="container-max relative z-10 text-center px-4 mt-8">
-          <ScrollReveal>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-black text-white mb-4 leading-[1.1] tracking-tight drop-shadow-sm">
-              About Us
-            </h1>
-            <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed font-medium drop-shadow-sm">
-              Your trusted travel partner for exploring the City of Destiny and beyond.
-            </p>
-          </ScrollReveal>
-        </div>
-      </section>
+const values = [
+  { icon: MapPin, title: "Local expertise", text: "Years of dedicated service in Visakhapatnam, with deep knowledge of local routes, timings and hidden gems." },
+  { icon: ShieldCheck, title: "Safety first", text: "Verified drivers with clean records and regularly maintained, sanitised vehicles for every journey." },
+  { icon: CreditCard, title: "Transparent pricing", text: "Clear, upfront prices with no hidden charges and no surge. What you see is what you pay." },
+  { icon: Clock, title: "Always available", text: "Round-the-clock support for your travel needs — we're a call or WhatsApp message away." },
+];
 
-      {/* Story */}
-      <section className="section-padding">
-        <div className="container-max">
-          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
-            <div className="lg:w-1/2 w-full">
-              <ScrollReveal direction="right">
-                <h2 className="text-3xl lg:text-4xl font-heading font-black text-charcoal mb-6 tracking-tight">Our Story</h2>
-                <div className="space-y-4 text-charcoal/70 font-medium text-base leading-relaxed">
-                  <p>
-                    <strong className="text-charcoal block mb-2 text-lg">Welcome to Vizag Tour Packages – Your Trusted Travel Partner</strong>
-                    Welcome to Vizag Tour Packages, your trusted travel partner for exploring the beautiful city of Vizag and its surrounding destinations!
-                  </p>
-                  <p>
-                    <a href="https://vizagtourpackages.com/" className="text-teal hover:underline font-bold">https://vizagtourpackages.com/</a> is operated by <strong className="text-charcoal">Araku Eco Stays and Travels</strong>, a trusted travel agency offering memorable trips from Vizag City to the Araku Valley agency area. We are dedicated to providing travelers with unforgettable experiences by offering a wide range of customized tour packages and exceptional travel services.
-                  </p>
-                  <p>
-                    At Vizag Tour Packages, we understand that every traveler is unique. That's why we offer tailor-made packages to suit all types of travelers—whether you're looking for a peaceful beach holiday, an adventurous exploration of nature, or a cultural journey through Vizag's rich history.
-                  </p>
-                  <p>
-                    From Vizag local sightseeing and Araku Valley tours to devotional trips and customized travel experiences, our goal is to make your journey comfortable, affordable, and memorable.
-                  </p>
-                  <p>
-                    Our mission is to make your trip seamless, enjoyable, and filled with memories that last a lifetime.
-                  </p>
-                </div>
-              </ScrollReveal>
+const statIcons = [Award, MapPin, Car, Users];
+
+export default async function AboutPage() {
+  // Real package photos for the collage (falls back to the brand image)
+  const supabase = await createClient();
+  const { data: pkgs } = await supabase
+    .from("tour_packages")
+    .select("title, cover_image_url, image_url")
+    .eq("is_published", true)
+    .limit(6);
+  const imgs = (pkgs || []).map((p) => p.cover_image_url || p.image_url).filter(Boolean) as string[];
+  const a = imgs[0] || "/hero-bg.png";
+  const b = imgs[1] || "/hero-bg.png";
+  const c = imgs[2] || "/hero-bg.png";
+
+  return (
+    <div className="bg-warm-white pb-24">
+      {/* ---------- Hero ---------- */}
+      <section className="relative overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-28 -top-20 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(255,179,71,.45),rgba(255,106,61,.14)_55%,transparent_70%)]" />
+          <div className="absolute -left-28 bottom-0 h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(20,166,115,.15),transparent_65%)]" />
+        </div>
+        <div className="relative mx-auto grid max-w-[1240px] items-center gap-10 px-5 pb-14 pt-10 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:pb-20 lg:pt-16">
+          <div>
+            <p className="kicker mb-5">About us</p>
+            <h1 className="font-heading text-[clamp(2.4rem,6vw,4.6rem)] leading-[1.04] text-ocean">
+              A local team that <span className="italic text-coral">loves</span> Vizag.
+            </h1>
+            <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-charcoal/70">
+              We help travellers explore the City of Destiny and beyond — from beach days and temple trails to misty Araku mornings — with honest prices and people you can rely on.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/tour-packages" className="btn-coral group !px-8 !py-4">
+                Explore packages <Arrow className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/contact" className="btn-secondary !px-8 !py-4">Contact us</Link>
             </div>
-            <div className="lg:w-1/2 w-full relative">
-              <ScrollReveal direction="left">
-                <div className="absolute -inset-4 bg-teal/10 rounded-[40px] transform rotate-3 transition-transform duration-500 hover:rotate-6"></div>
-                <PlaceholderImage
-                  gradient="from-teal-400 to-ocean-600"
-                  alt="Our Team"
-                  className="w-full aspect-square sm:aspect-video lg:aspect-[4/3] rounded-[40px] shadow-card relative z-10 border border-charcoal/5"
-                />
-              </ScrollReveal>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-[520px]">
+            <div className="grid grid-cols-[1.1fr_0.9fr] gap-4">
+              <div className="row-span-2 min-h-[300px] overflow-hidden rounded-[999px_999px_28px_28px] bg-sand shadow-[0_40px_80px_-30px_rgba(10,42,77,.5)]">
+                <img src={a} alt="" className="h-full w-full object-cover" />
+              </div>
+              <div className="aspect-square overflow-hidden rounded-[28px] bg-sand shadow-[0_30px_60px_-28px_rgba(10,42,77,.45)]">
+                <img src={b} alt="" className="h-full w-full object-cover" />
+              </div>
+              <div className="aspect-[4/5] overflow-hidden rounded-[28px] bg-sand shadow-[0_30px_60px_-28px_rgba(10,42,77,.45)]">
+                <img src={c} alt="" className="h-full w-full object-cover object-right" />
+              </div>
+            </div>
+            <div className="absolute -bottom-4 left-4 flex items-center gap-3 rounded-2xl border border-ocean/10 bg-white px-4 py-3 shadow-[0_18px_36px_-18px_rgba(10,42,77,.45)]">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-amber/25 text-ocean"><Star size={19} className="fill-amber text-amber" /></span>
+              <span className="leading-tight">
+                <span className="block font-heading text-lg text-ocean">{siteInfo.googleReviews.rating} on Google</span>
+                <span className="block text-xs text-charcoal/55">{siteInfo.googleReviews.count} reviews</span>
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="section-padding bg-warm-white relative overflow-hidden rounded-[40px] mx-4 sm:mx-6 lg:mx-8 mb-12 shadow-sm border border-charcoal/5">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-coral/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal/5 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
-        <div className="container-max relative z-10">
-          {/* Badge + Heading */}
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <span className="inline-flex badge bg-white/50 text-teal backdrop-blur-md border border-teal/20 mb-6 px-5 py-2.5 font-bold tracking-widest text-[10px] uppercase shadow-sm">
-                Why Choose Us
-              </span>
-              <h2 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-charcoal mb-6 tracking-tight">Your Trusted Travel Partner</h2>
-              <p className="text-charcoal/60 text-lg font-medium max-w-2xl mx-auto leading-relaxed">
-                With years of experience serving Visakhapatnam, we&apos;ve built our reputation on reliability, safety, and customer satisfaction.
+      {/* ---------- Story ---------- */}
+      <section className="container-max px-4 pt-10 sm:px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+          <Reveal>
+            <p className="kicker mb-4">Our story</p>
+            <h2 className="font-heading text-[clamp(1.9rem,4vw,3rem)] leading-[1.1] text-ocean">
+              Trips planned like we&apos;d plan <span className="italic text-coral">our own.</span>
+            </h2>
+            <div className="mt-6 space-y-4 text-[1.02rem] leading-relaxed text-charcoal/70">
+              <p>
+                Vizag Tour Packages is operated by <strong className="text-ocean">Araku Eco Stays &amp; Travels</strong>, a trusted travel agency offering memorable trips from Vizag city to the Araku Valley and beyond.
+              </p>
+              <p>
+                Every traveller is different. Some want a quiet beach holiday, some an adventurous escape into nature, and some a journey through Vizag&apos;s temples and history — so we build tailor-made plans instead of one-size-fits-all tours.
+              </p>
+              <p>
+                From local sightseeing and Araku Valley tours to devotional trips and fully customised holidays, our goal is simple: make your journey comfortable, affordable and unforgettable.
               </p>
             </div>
-          </ScrollReveal>
+          </Reveal>
 
-          {/* Stats Row */}
-          <ScrollReveal delay={0.2}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12">
-              {[
-                { value: "5+", label: "Years Experience", icon: <Award size={24} className="text-teal" /> },
-                { value: "10,000+", label: "Happy Customers", icon: <Users size={24} className="text-coral" /> },
-                { value: "50+", label: "Professional Drivers", icon: <Car size={24} className="text-teal" /> },
-                { value: "24/7", label: "Customer Support", icon: <Headset size={24} className="text-coral" /> },
-              ].map((stat, idx) => (
-                <div key={idx} className="bg-white rounded-[24px] p-6 text-center border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center mx-auto mb-3 shadow-sm border border-charcoal/5">
-                    {stat.icon}
+          <Reveal delay={0.1}>
+            <div className="rounded-[28px] border border-ocean/8 bg-white p-6 shadow-card sm:p-8">
+              <h3 className="font-heading text-[1.35rem] text-ocean">At a glance</h3>
+              <dl className="mt-5 space-y-4 text-[0.95rem]">
+                {[
+                  ["Operated by", "Araku Eco Stays & Travels"],
+                  ["Based in", "Pendurthi, Visakhapatnam"],
+                  ["We offer", "Tours · Hotels · Cabs · Custom trips"],
+                  ["Support", "24/7 on call and WhatsApp"],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex items-start justify-between gap-4 border-b border-dashed border-ocean/12 pb-3 last:border-0 last:pb-0">
+                    <dt className="text-charcoal/55">{k}</dt>
+                    <dd className="text-right font-semibold text-ocean">{v}</dd>
                   </div>
-                  <div className="text-2xl sm:text-3xl font-black text-charcoal mb-1 tracking-tight">{stat.value}</div>
-                  <div className="text-[10px] font-bold text-charcoal/50 uppercase tracking-widest">{stat.label}</div>
-                </div>
-              ))}
+                ))}
+              </dl>
             </div>
-          </ScrollReveal>
-
-          {/* Feature Cards 2x2 */}
-          <ScrollReveal delay={0.4}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-12">
-              {[
-                {
-                  title: "Local Expertise",
-                  description: "5+ years of dedicated service in Visakhapatnam with deep knowledge of local routes and hidden gems.",
-                  icon: <MapPin size={24} />,
-                },
-                {
-                  title: "Safety First",
-                  description: "All drivers are thoroughly verified with clean driving records. Regular vehicle maintenance ensures your safety.",
-                  icon: <ShieldCheck size={24} />,
-                },
-                {
-                  title: "Transparent Pricing",
-                  description: "Clear, upfront pricing with no hidden charges. What you see is what you pay — always.",
-                  icon: <CreditCard size={24} />,
-                },
-                {
-                  title: "24/7 Availability",
-                  description: "Round-the-clock service for all your transportation needs. We're here whenever you need us.",
-                  icon: <Clock size={24} />,
-                },
-              ].map((feature, idx) => (
-                <div key={idx} className="flex items-start gap-4 bg-white rounded-[24px] p-6 border border-charcoal/5 shadow-card hover:shadow-card-hover transition-all duration-500 group hover:-translate-y-1">
-                  <div className="w-14 h-14 rounded-full bg-sand flex items-center justify-center shrink-0 shadow-sm border border-charcoal/5 group-hover:bg-coral text-teal group-hover:text-white transition-colors duration-500">
-                    <span className="group-hover:scale-110 transition-transform duration-500">{feature.icon}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-charcoal mb-1 tracking-tight">{feature.title}</h3>
-                    <p className="text-sm text-charcoal/60 font-medium leading-relaxed">{feature.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
-
-          {/* CTA Banner */}
-          <ScrollReveal delay={0.6}>
-            <div className="bg-charcoal rounded-[40px] p-10 sm:p-16 text-center border border-charcoal/5 shadow-card relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-teal/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-coral/20 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-              
-              <div className="relative z-10 max-w-2xl mx-auto">
-                <h3 className="font-heading font-black text-3xl sm:text-5xl text-white mb-6 tracking-tight leading-[1.1]">Ready to Experience the Difference?</h3>
-                <p className="text-white/70 text-lg sm:text-xl font-medium mb-10 leading-relaxed">
-                  Join thousands of satisfied customers who trust us for their transportation needs.
-                </p>
-                <div className="flex items-center justify-center gap-6 flex-wrap">
-                  <a href="/contact" className="btn-primary bg-coral hover:bg-[#e86644] text-white shadow-[0_8px_20px_rgba(255,107,107,0.3)] hover:-translate-y-1 transition-all duration-300">Book Online</a>
-                  <span className="text-white/60 font-medium">or call <a href={`tel:${siteInfo.whatsapp}`} className="font-bold text-white hover:text-teal transition-colors underline underline-offset-4">{siteInfo.whatsapp}</a></span>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
+          </Reveal>
         </div>
       </section>
 
-      {/* Trusted Partners */}
-      <TrustedPartners />
+      {/* ---------- Numbers ---------- */}
+      <section className="container-max px-4 pt-16 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {stats.map((s, i) => {
+            const Icon = statIcons[i] || Award;
+            return (
+              <Reveal key={s.label} delay={i * 0.05}>
+                <div className="rounded-[26px] border border-ocean/8 bg-white p-5 text-center shadow-card sm:p-6">
+                  <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-sand text-coral"><Icon size={21} /></span>
+                  <p className="font-heading text-[2.2rem] leading-none text-ocean">
+                    <CountUp end={s.value} suffix={s.suffix} />
+                  </p>
+                  <p className="mt-2 text-[0.7rem] font-bold uppercase tracking-wider text-charcoal/50">{s.label}</p>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ---------- Values ---------- */}
+      <section className="container-max px-4 pt-24 sm:px-6 lg:px-8">
+        <SectionHeading kicker="Why choose us" title="Built on four simple promises" subtitle="Reliability, safety and honest pricing — the things that make a trip feel easy." />
+        <div className="grid gap-5 sm:grid-cols-2">
+          {values.map(({ icon: Icon, title, text }, i) => (
+            <Reveal key={title} delay={(i % 2) * 0.06}>
+              <div className="group flex h-full items-start gap-4 rounded-[26px] border border-ocean/8 bg-white p-6 shadow-card transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-card-hover">
+                <span className="grid h-13 w-13 min-h-[3.25rem] min-w-[3.25rem] place-items-center rounded-2xl bg-sunset text-white shadow-glow">
+                  <Icon size={22} />
+                </span>
+                <div>
+                  <h3 className="font-heading text-[1.25rem] text-ocean">{title}</h3>
+                  <p className="mt-1.5 text-[0.93rem] leading-relaxed text-charcoal/65">{text}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------- CTA ---------- */}
+      <section className="container-max px-4 pt-20 sm:px-6 lg:px-8">
+        <div className="grain relative overflow-hidden rounded-[32px] bg-ocean-gradient px-6 py-14 text-center text-white sm:px-12">
+          <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-coral/30 blur-[80px]" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-teal/30 blur-[80px]" />
+          <div className="relative mx-auto max-w-2xl">
+            <p className="kicker !text-amber mb-4 justify-center">Let&apos;s talk</p>
+            <h2 className="font-heading text-[clamp(1.9rem,4.5vw,3.2rem)] leading-[1.08]">
+              Ready to experience <span className="italic text-sunset">the difference?</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-lg text-white/70">Tell us about your trip and we&apos;ll plan it with you.</p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="btn-coral !px-8 !py-4">Chat on WhatsApp</a>
+              <a href={`tel:${siteInfo.whatsapp}`} className="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-4 text-[0.95rem] font-semibold text-white transition-[background-color,color,transform] duration-200 hover:bg-white hover:text-ocean active:scale-[0.97]">
+                <Phone size={17} /> Call {siteInfo.whatsapp.replace("+91", "+91 ")}
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

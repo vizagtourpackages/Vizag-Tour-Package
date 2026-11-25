@@ -1,72 +1,51 @@
 import { createClient } from "@/lib/supabase/server";
-import DestinationCard from "@/components/DestinationCard";
+import PlacesClient from "./PlacesClient";
 
 export const metadata = {
   title: "Vizag Sightseeing | Top Tourist Places in Visakhapatnam",
-  description: "Explore the best sightseeing locations and top tourist places in Visakhapatnam.",
+  description: "Explore the best sightseeing locations and top tourist places in Visakhapatnam — beaches, viewpoints, museums, temples and more.",
 };
 
 export default async function VizagSightseeingPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
-  const resolvedSearchParams = await searchParams;
-  const firstId = resolvedSearchParams.first as string;
+  const resolved = await searchParams;
+  const firstId = typeof resolved.first === "string" ? resolved.first : undefined;
 
   const supabase = await createClient();
-
   const { data: dbPlaces } = await supabase
-    .from('places_to_visit')
-    .select('*')
-    .eq('is_published', true)
-    .order('created_at', { ascending: false });
+    .from("places_to_visit")
+    .select("*")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false });
 
-  let displayPlaces = dbPlaces && dbPlaces.length > 0
-    ? dbPlaces.map(place => ({
-      id: place.id,
-      name: place.name,
-      description: place.description,
-      category: place.category || 'Place',
-      imageGradient: 'from-blue-400 to-ocean',
-      imageUrl: place.image_url,
-      customLink: place.custom_link
-    }))
-    : [];
-
-  // Reorder if "first" query parameter is provided
-  if (firstId) {
-    const selectedIndex = displayPlaces.findIndex(p => p.id === firstId);
-    if (selectedIndex > -1) {
-      const selected = displayPlaces[selectedIndex];
-      displayPlaces.splice(selectedIndex, 1);
-      displayPlaces.unshift(selected);
-    }
-  }
+  const places = (dbPlaces || []).map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    category: p.category || "Place",
+    imageGradient: "from-blue-400 to-ocean",
+    imageUrl: p.image_url,
+    customLink: p.custom_link || `/top-tourist-places/${p.id}`,
+  }));
 
   return (
-    <div className="bg-warm-white min-h-screen pb-24">
-      <div className="bg-charcoal pt-[104px] pb-12 px-4 sm:px-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/2 pointer-events-none" />
-        <div className="container-max relative z-10 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-black text-white mb-4 tracking-tight">
-            Vizag Sightseeing
+    <div className="bg-warm-white pb-24">
+      <section className="relative overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-24 -top-24 h-[440px] w-[440px] rounded-full bg-[radial-gradient(circle,rgba(255,179,71,.42),rgba(255,106,61,.12)_55%,transparent_70%)]" />
+          <div className="absolute -left-24 bottom-0 h-[300px] w-[300px] rounded-full bg-[radial-gradient(circle,rgba(45,156,219,.15),transparent_65%)]" />
+        </div>
+        <div className="relative mx-auto max-w-3xl px-5 pb-10 pt-12 text-center sm:px-8 lg:pt-16">
+          <p className="kicker mb-5">Vizag sightseeing</p>
+          <h1 className="font-heading text-[clamp(2.3rem,6vw,4.3rem)] leading-[1.05] text-ocean">
+            Top tourist places in <span className="italic text-coral">Visakhapatnam</span>
           </h1>
-          <p className="text-white/70 text-base sm:text-lg max-w-2xl mx-auto font-medium leading-relaxed">
-            Top Tourist Places in Visakhapatnam
+          <p className="mx-auto mt-5 max-w-xl text-[1.05rem] leading-relaxed text-charcoal/70">
+            Beaches, viewpoints, museums, temples and hidden corners — everything worth seeing in and around the City of Destiny.
           </p>
         </div>
-      </div>
+      </section>
 
-      <div className="container-max px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 pt-4">
-          {displayPlaces.map((place: any) => (
-            <div 
-              key={place.id} 
-              id={place.id}
-              className={`h-full ${firstId === place.id ? '-translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.2)] scale-[1.02] relative z-20 transition-all duration-500 rounded-[24px]' : ''}`}
-            >
-              <DestinationCard destination={place} />
-            </div>
-          ))}
-        </div>
-      </div>
+      <PlacesClient places={places} firstId={firstId} />
     </div>
   );
 }
