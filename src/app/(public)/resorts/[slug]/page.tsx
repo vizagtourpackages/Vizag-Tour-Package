@@ -250,7 +250,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                           
                           {attractions.length > 4 && (
                             <details className="group">
-                              <summary className="list-none cursor-pointer flex justify-center py-3 text-[#2D6A4F] font-bold text-sm hover:underline border-t border-[#E8DDD4]/50 mt-1">
+                              <summary className="mt-3 flex cursor-pointer list-none items-center justify-center rounded-full bg-coral/10 py-3 text-sm font-semibold text-coral transition-colors hover:bg-coral/15">
                                 <span className="group-open:hidden">View All Attractions ({attractions.length})</span>
                                 <span className="hidden group-open:block">Show Less</span>
                               </summary>
@@ -284,7 +284,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
 
                           {restaurants.length > 4 && (
                             <details className="group">
-                              <summary className="list-none cursor-pointer flex justify-center py-3 text-[#2D6A4F] font-bold text-sm hover:underline border-t border-[#E8DDD4]/50 mt-1">
+                              <summary className="mt-3 flex cursor-pointer list-none items-center justify-center rounded-full bg-coral/10 py-3 text-sm font-semibold text-coral transition-colors hover:bg-coral/15">
                                 <span className="group-open:hidden">View All Restaurants ({restaurants.length})</span>
                                 <span className="hidden group-open:block">Show Less</span>
                               </summary>

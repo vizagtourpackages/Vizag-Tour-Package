@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ChevronDown, Phone } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 
 const WaIcon = ({ className = "" }: { className?: string }) => (
   <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -35,20 +36,14 @@ export default function Navbar() {
         style={{ scaleX: scrollYProgress }}
       />
       <header
-        className={`fixed inset-x-0 top-0 z-[100] border-b bg-white transition-[box-shadow,border-color] duration-300 ${
+        className={`safe-top fixed inset-x-0 top-0 z-[100] border-b bg-white transition-[box-shadow,border-color] duration-300 ${
           solid ? "border-ocean/10 shadow-[0_8px_24px_-16px_rgba(10,42,77,.4)]" : "border-ocean/5"
         }`}
       >
         <div className="mx-auto flex h-[72px] max-w-[1480px] items-center justify-between gap-6 px-5 lg:px-10">
           {/* Logo */}
-          <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label={siteInfo.name}>
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-sunset shadow-glow transition-transform duration-500 group-hover:rotate-6 group-hover:scale-105">
-              <span className="font-heading text-xl font-medium text-white">V</span>
-            </span>
-            <span className="hidden leading-tight sm:block">
-              <span className="block font-heading text-[1.15rem] text-ocean">Vizag Tour Packages</span>
-              <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-coral">Araku Eco Stays</span>
-            </span>
+          <Link href="/" className="flex shrink-0 items-center" aria-label={siteInfo.name}>
+            <img src="/logo.png" alt={siteInfo.name} width={560} height={299} className="h-[60px] w-auto" />
           </Link>
 
           {/* Desktop nav */}
@@ -98,7 +93,7 @@ export default function Navbar() {
               <Phone size={16} /> {siteInfo.whatsapp.replace("+91", "+91 ")}
             </a>
             <a
-              href={siteInfo.whatsappLink}
+              href={waUrl(waMessages.general)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Book on WhatsApp"

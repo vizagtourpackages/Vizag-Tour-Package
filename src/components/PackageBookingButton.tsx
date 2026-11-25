@@ -2,7 +2,7 @@
 
 import { useBooking } from './booking/BookingContext';
 
-export default function PackageBookingButton({ pkg, plan }: { pkg: any, plan?: any }) {
+export default function PackageBookingButton({ pkg, plan }: { pkg: any; plan?: any }) {
   const { openBooking } = useBooking();
 
   const formattedPkg = {
@@ -12,18 +12,15 @@ export default function PackageBookingButton({ pkg, plan }: { pkg: any, plan?: a
     stay_options: pkg.stay_options,
     pickup_location: pkg.pickup_location,
     drop_location: pkg.drop_location,
-    selected_plan: plan ? plan.title : null
+    selected_plan: plan ? plan.title : null,
   };
 
   return (
     <button
       onClick={() => openBooking('package', formattedPkg)}
-      className={plan 
-        ? "inline-block w-full sm:w-auto px-8 py-3 text-sm font-bold text-center text-teal border-2 border-teal rounded-lg hover:bg-teal hover:text-white transition-colors"
-        : "w-full flex items-center justify-center gap-2 text-white bg-teal py-3.5 sm:py-4 rounded-full font-bold text-base sm:text-lg shadow-sm lg:shadow-md hover:bg-teal-dark hover:shadow-lg transition-all"
-      }
+      className={plan ? 'btn-secondary w-full sm:w-auto' : 'btn-coral w-full !py-4 text-base'}
     >
-      {plan ? 'SELECT' : 'Book Now'}
+      {plan ? 'Select' : 'Book now'}
     </button>
   );
 }

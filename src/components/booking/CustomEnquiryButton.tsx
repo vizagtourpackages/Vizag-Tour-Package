@@ -8,9 +8,9 @@ export default function CustomEnquiryButton() {
   return (
     <button 
       onClick={() => openBooking('package', { title: 'Custom Package', isCustomEnquiry: true })}
-      className="w-full py-2.5 lg:py-4 rounded-full border-2 border-amber-500 text-amber-600 font-bold text-xs lg:text-base hover:bg-amber-50 transition-colors flex items-center justify-center gap-2"
+      className="flex min-h-[3rem] w-full items-center justify-center gap-2 rounded-full border-2 border-coral/40 px-5 py-3 text-[0.95rem] font-semibold text-coral transition-[background-color,transform] duration-150 hover:bg-coral/5 active:scale-[0.98]"
     >
-      <MessageCircle size={16} className="lg:w-[18px] lg:h-[18px]" />
+      <MessageCircle size={18} />
       Enquire Custom Package
     </button>
   )

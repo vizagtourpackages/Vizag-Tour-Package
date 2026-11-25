@@ -4,6 +4,7 @@ import { Clock, Users, Star } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Package } from "@/data/packages";
 import { siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 import { Arrow } from "./Motion";
 
 interface PackageCardProps {
@@ -24,7 +25,6 @@ export default function PackageCard({ pkg }: PackageCardProps) {
       : 0;
   const route = (pkg.highlights || []).slice(0, 3);
   const showBadge = pkg.badge && !pkg.badge.match(/\d+\s*[DN]/i);
-  const waText = encodeURIComponent(`Hi! I'm interested in the "${pkg.title}" package. Could you share details?`);
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_2px_0_rgba(10,42,77,.04)] transition-shadow duration-500 hover:shadow-[0_40px_70px_-30px_rgba(10,42,77,.4)]">
@@ -94,7 +94,7 @@ export default function PackageCard({ pkg }: PackageCardProps) {
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <a
-              href={`${siteInfo.whatsappLink}?text=${waText}`}
+              href={waUrl(waMessages.package(pkg.title))}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp enquiry"

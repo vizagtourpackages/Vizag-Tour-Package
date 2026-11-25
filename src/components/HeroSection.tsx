@@ -129,7 +129,7 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
                   <select
                     value={dest}
                     onChange={(e) => setDest(e.target.value)}
-                    className="w-full cursor-pointer bg-transparent text-[0.95rem] font-semibold text-ocean outline-none"
+                    className="w-full cursor-pointer bg-transparent text-base font-semibold text-ocean outline-none"
                   >
                     {destinations.map((d) => (
                       <option key={d}>{d}</option>
@@ -146,7 +146,7 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
                     min={today}
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-transparent text-[0.95rem] font-semibold text-ocean outline-none"
+                    className="!min-h-0 !bg-transparent w-full bg-transparent text-base font-semibold text-ocean outline-none"
                   />
                 </span>
               </label>
@@ -160,7 +160,7 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
                     max={40}
                     value={guests}
                     onChange={(e) => setGuests(Math.max(1, Number(e.target.value) || 1))}
-                    className="w-full bg-transparent text-[0.95rem] font-semibold text-ocean outline-none"
+                    className="w-full bg-transparent text-base font-semibold text-ocean outline-none"
                   />
                 </span>
               </label>
@@ -237,8 +237,11 @@ export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
                             from <span className="font-heading text-[1.3rem] text-white">₹{tiles[0].price.toLocaleString("en-IN")}</span>
                           </span>
                         ) : <span />}
-                        <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.8rem] font-semibold text-ocean transition-colors group-hover:bg-amber">
-                          View package <Arrow className="h-4 w-4" />
+                        <span
+                          aria-hidden
+                          className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/45 bg-[radial-gradient(circle_at_30%_22%,rgba(255,255,255,.7),rgba(255,255,255,.18)_46%,rgba(255,255,255,.06)_100%)] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,.75),inset_0_-10px_16px_rgba(255,255,255,.14),0_12px_26px_-8px_rgba(0,0,0,.55)] backdrop-blur-md transition-[transform,background-color] duration-300 group-hover:scale-110 group-hover:bg-white/30"
+                        >
+                          <Arrow className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-0.5" />
                         </span>
                       </div>
                     </div>

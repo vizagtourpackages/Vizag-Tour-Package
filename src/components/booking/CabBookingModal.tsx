@@ -1,234 +1,161 @@
 'use client'
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
-import { siteInfo } from '@/data/siteInfo'
+import { useEffect, useState } from 'react'
+import { Users } from 'lucide-react'
 import { submitCabBooking } from '@/app/actions/booking'
 import { createClient } from '@/lib/supabase/client'
-import { Users, Briefcase } from 'lucide-react'
-import TermsButton from "@/components/TermsButton"
+import { openWhatsApp } from '@/lib/whatsapp'
+import TermsButton from '@/components/TermsButton'
+import ModalShell from './ModalShell'
+import { FormError, FormSuccess, PhoneInput, SelectInput, Stepper, SubmitButton, TextInput, Field, controlClass } from '../forms/Fields'
 
-export default function CabBookingModal({ data, onClose }: { data: any, onClose: () => void }) {
+export default function CabBookingModal({ data, onClose }: { data: any; onClose: () => void }) {
   const [step, setStep] = useState<1 | 2>(data ? 2 : 1)
-  const [selectedVehicle, setSelectedVehicle] = useState<any>(data)
+  const [vehicle, setVehicle] = useState<any>(data)
   const [vehicles, setVehicles] = useState<any[]>([])
 
   useEffect(() => {
-    async function fetchVehicles() {
-      const supabase = createClient()
-      const { data: travelsData } = await supabase
-        .from('travels')
-        .select('*')
-        .eq('is_published', true)
-        .order('display_order', { ascending: true })
-
-      if (travelsData) {
-        setVehicles(travelsData)
-      }
-    }
-    fetchVehicles()
+    const supabase = createClient()
+    supabase
+      .from('travels')
+      .select('*')
+      .eq('is_published', true)
+      .order('display_order', { ascending: true })
+      .then(({ data: rows }) => rows && setVehicles(rows))
   }, [])
 
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     fullName: '',
-    phoneNumber: '',
-    pickupLocation: '',
-    dropLocation: '',
+    phone: '',
+    pickup: '',
+    drop: '',
+    places: '',
     startDate: '',
     endDate: '',
     adults: 2,
     kids: 0,
-    placesToVisit: '',
   })
+  const set = (patch: Partial<typeof form>) => setForm((p) => ({ ...p, ...patch }))
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [done, setDone] = useState<string | null>(null)
+  const today = new Date().toISOString().split('T')[0]
 
-  const handleVehicleSelect = (vehicle: any) => {
-    setSelectedVehicle(vehicle)
-    setStep(2)
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    const bookingData = {
-      full_name: formData.fullName,
-      phone_number: formData.phoneNumber,
-      pickup_location: formData.pickupLocation,
-      drop_location: formData.placesToVisit ? `${formData.dropLocation} (Places to visit: ${formData.placesToVisit})` : formData.dropLocation,
-      start_date: formData.startDate,
-      end_date: formData.endDate,
-      adults: formData.adults,
-      kids: formData.kids,
-      vehicle_type: selectedVehicle?.model || 'Unknown Vehicle',
+    const booking = {
+      full_name: form.fullName.trim(),
+      phone_number: form.phone,
+      pickup_location: form.pickup,
+      drop_location: form.places ? `${form.drop} (Places to visit: ${form.places})` : form.drop,
+      start_date: form.startDate,
+      end_date: form.endDate || form.startDate,
+      adults: form.adults,
+      kids: form.kids,
+      vehicle_type: vehicle?.model || 'Unknown Vehicle',
     }
-
-    const res = await submitCabBooking(bookingData)
-
+    const res = await submitCabBooking(booking)
     if (!res.success) {
-      setError(res.error || 'Failed to save booking')
+      setError(res.error || 'Could not save your request. Please try again.')
       setLoading(false)
       return
     }
 
-    // Format WhatsApp message
-    const waText = `New Cab Booking Request
-Vehicle: ${bookingData.vehicle_type}
-Name: ${bookingData.full_name}
-Contact: ${bookingData.phone_number}
-Pickup: ${bookingData.pickup_location}
-Drop: ${bookingData.drop_location}
-Dates: ${bookingData.start_date} to ${bookingData.end_date}
-Passengers: ${bookingData.adults} Adults, ${bookingData.kids} Kids`
+    const text = `New Cab Booking Request
+Vehicle: ${booking.vehicle_type}
+Name: ${booking.full_name}
+Contact: +91 ${booking.phone_number}
+Pickup: ${booking.pickup_location}
+Drop: ${booking.drop_location}
+Dates: ${booking.start_date} to ${booking.end_date}
+Passengers: ${booking.adults} Adults, ${booking.kids} Kids`
+    setDone(text)
+    setLoading(false)
+    openWhatsApp(text)
+  }
 
-    const encodedMessage = encodeURIComponent(waText)
+  if (done) {
+    return (
+      <ModalShell title="Cab request" onClose={onClose}>
+        <FormSuccess whatsappMessage={done} onClose={onClose} />
+      </ModalShell>
+    )
+  }
 
-    // Attempt to open WhatsApp directly (bypasses browser prompt on mobile)
-    window.location.href = `whatsapp://send?phone=917780739851&text=${encodedMessage}`
-
-    // Fallback for desktop/if app is not installed
-    setTimeout(() => {
-      window.location.href = `https://wa.me/917780739851?text=${encodedMessage}`
-    }, 500)
+  if (step === 1) {
+    return (
+      <ModalShell title="Choose your vehicle" subtitle="Select a vehicle for your journey." onClose={onClose}>
+        <div className="space-y-3">
+          {vehicles.map((v, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => { setVehicle(v); setStep(2) }}
+              className="group flex w-full items-center gap-4 rounded-2xl border-2 border-ocean/10 p-3 text-left transition-colors hover:border-coral hover:bg-coral/5"
+            >
+              <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-sand">
+                {v.image && <img src={v.image} alt="" loading="lazy" className="h-full w-full object-contain mix-blend-multiply" />}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-heading text-lg leading-tight text-ocean">{v.model}</span>
+                <span className="mt-1 flex items-center gap-1 text-xs font-medium text-charcoal/55"><Users size={13} /> {v.pax} seats</span>
+              </span>
+              <span className="shrink-0 text-sm font-semibold text-coral">Select</span>
+            </button>
+          ))}
+          {vehicles.length === 0 && <p className="py-10 text-center text-sm text-charcoal/55">Loading vehicles…</p>}
+        </div>
+      </ModalShell>
+    )
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[300] flex items-end justify-center bg-ocean/55 backdrop-blur-sm sm:items-center sm:p-6"
-      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
+    <ModalShell
+      title="Book a cab"
+      subtitle="Fill in the details. We save your request and open WhatsApp to confirm."
+      onClose={onClose}
+      onBack={!data ? () => setStep(1) : undefined}
+      backLabel="Back to vehicles"
     >
-      <div data-lenis-prevent className="thin-scroll relative max-h-[94dvh] w-full overflow-y-auto overscroll-contain rounded-t-[24px] bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl sm:max-h-[90vh] sm:max-w-xl sm:rounded-[24px] sm:p-6">
-        <div aria-hidden className="mx-auto mb-3 h-1 w-10 rounded-full bg-ocean/15 sm:hidden" />
-        <button type="button" onClick={onClose} className="absolute top-4 right-4 z-10 text-gray-400 hover:text-charcoal bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
+      <form onSubmit={submit} className="space-y-4">
+        <FormError message={error} />
 
-        {step === 1 ? (
-          <div className="mt-1">
-            <div className="mb-5 pr-10">
-              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-0.5">Choose Your Vehicle</h2>
-              <p className="text-charcoal/60 text-xs sm:text-sm">Select a vehicle for your journey</p>
-            </div>
-
-            <div className="space-y-3">
-              {vehicles.map((v, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleVehicleSelect(v)}
-                  className="w-full text-left p-3 border border-gray-200 rounded-xl hover:border-coral hover:shadow-md transition-all flex gap-4 items-center group"
-                >
-                  <div className="relative w-20 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-                    {v.image && <Image fill src={v.image} alt={v.model} className="w-full h-full object-cover mix-blend-multiply" />}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-charcoal leading-tight">{v.model}</h4>
-                    <div className="flex gap-3 text-xs text-gray-500 mt-2 font-medium">
-                      <span className="flex items-center gap-1"><Users size={12} /> {v.pax} Pax</span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <span className="text-xs text-gray-400 group-hover:text-coral/80 font-bold px-2">Select →</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+        {data ? (
+          <Field label="Vehicle">{(id) => <input id={id} readOnly value={vehicle?.model || ''} className={controlClass} />}</Field>
         ) : (
-          <div className="mt-1">
-            <div className="mb-5 pr-10">
-              {/* Only show back button if they weren't forced into step 2 by pre-selection */}
-              {!data && (
-                <button type="button" onClick={() => setStep(1)} className="text-xs text-charcoal/60 hover:text-coral flex items-center gap-1 mb-2">
-                  ← Back to vehicles
-                </button>
-              )}
-              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-0.5">Book a Cab</h2>
-              <p className="text-charcoal/60 text-xs sm:text-sm">Fill in details and we'll confirm shortly</p>
-            </div>
-
-            {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">{error}</div>}
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">Vehicle Type *</label>
-                {data ? (
-                  <input type="text" readOnly value={selectedVehicle?.model || ''} className="w-full p-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 font-medium" />
-                ) : (
-                  <select required value={selectedVehicle?.model || ''} onChange={e => setSelectedVehicle(vehicles.find(v => v.model === e.target.value))} className="w-full p-2 border rounded-lg text-sm bg-white">
-                    {vehicles.map((v, i) => <option key={i} value={v.model}>{v.model}</option>)}
-                  </select>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Your Name *</label>
-                  <input type="text" required value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} className="w-full p-2 border rounded-lg text-sm" placeholder="Sraya" />
-                </div>
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Phone Number *</label>
-                  <input type="tel" required pattern="[0-9]{10}" title="10 digit phone number" value={formData.phoneNumber} onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })} className="w-full p-2 border rounded-lg text-sm" placeholder="+917780739851" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Pickup Location *</label>
-                  <input type="text" required value={formData.pickupLocation} onChange={e => setFormData({ ...formData, pickupLocation: e.target.value })} className="w-full p-2 border rounded-lg text-sm" placeholder="e.g. Vizag Airport" />
-                </div>
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Drop Location *</label>
-                  <input type="text" required value={formData.dropLocation} onChange={e => setFormData({ ...formData, dropLocation: e.target.value })} className="w-full p-2 border rounded-lg text-sm" placeholder="e.g. Hotel in Vizag" />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Places to Visit (Optional)</label>
-                <input type="text" value={formData.placesToVisit} onChange={e => setFormData({ ...formData, placesToVisit: e.target.value })} className="w-full p-2 border rounded-lg text-sm" placeholder="e.g. RK Beach, Araku Valley, Kailasagiri" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Start Date *</label>
-                  <input type="date" required value={formData.startDate} min={new Date().toISOString().split('T')[0]} onChange={e => setFormData({ ...formData, startDate: e.target.value })} className="w-full p-2 border rounded-lg text-sm" />
-                </div>
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">End Date *</label>
-                  <input type="date" required value={formData.endDate} min={formData.startDate || new Date().toISOString().split('T')[0]} onChange={e => setFormData({ ...formData, endDate: e.target.value })} className="w-full p-2 border rounded-lg text-sm" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">No of Adults *</label>
-                  <div className="flex border rounded-lg overflow-hidden">
-                    <button type="button" onClick={() => setFormData(p => ({ ...p, adults: Math.max(1, p.adults - 1) }))} className="px-3 bg-gray-50 hover:bg-gray-100 border-r">-</button>
-                    <input type="number" required min="1" value={formData.adults} onChange={e => setFormData({ ...formData, adults: parseInt(e.target.value) || 1 })} className="w-full p-2 text-center text-sm outline-none" />
-                    <button type="button" onClick={() => setFormData(p => ({ ...p, adults: p.adults + 1 }))} className="px-3 bg-gray-50 hover:bg-gray-100 border-l">+</button>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">No of Kids</label>
-                  <div className="flex border rounded-lg overflow-hidden">
-                    <button type="button" onClick={() => setFormData(p => ({ ...p, kids: Math.max(0, p.kids - 1) }))} className="px-3 bg-gray-50 hover:bg-gray-100 border-r">-</button>
-                    <input type="number" min="0" value={formData.kids} onChange={e => setFormData({ ...formData, kids: parseInt(e.target.value) || 0 })} className="w-full p-2 text-center text-sm outline-none" />
-                    <button type="button" onClick={() => setFormData(p => ({ ...p, kids: p.kids + 1 }))} className="px-3 bg-gray-50 hover:bg-gray-100 border-l">+</button>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <button type="submit" disabled={loading} className="w-full btn-primary !py-2.5 !rounded-lg disabled:opacity-70 disabled:cursor-not-allowed mb-2 mt-2">
-                  {loading ? 'Processing...' : 'Book Now'}
-                </button>
-                <div className="text-center">
-                  <TermsButton category="travels" label="View Terms & Conditions" className="text-[10px] sm:text-xs text-coral hover:underline font-medium cursor-pointer" />
-                </div>
-              </div>
-            </form>
-          </div>
+          <SelectInput label="Vehicle" required value={vehicle?.model || ''} onChange={(e) => setVehicle(vehicles.find((v) => v.model === e.target.value))}>
+            {vehicles.map((v, i) => <option key={i} value={v.model}>{v.model}</option>)}
+          </SelectInput>
         )}
-      </div>
-    </div>
+
+        <TextInput label="Full name" required autoComplete="name" value={form.fullName} onChange={(e) => set({ fullName: e.target.value })} placeholder="Your full name" />
+        <PhoneInput required label="Mobile number" value={form.phone} onChange={(v) => set({ phone: v })} />
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextInput label="Pickup" required value={form.pickup} onChange={(e) => set({ pickup: e.target.value })} placeholder="e.g. Vizag Airport" />
+          <TextInput label="Drop" required value={form.drop} onChange={(e) => set({ drop: e.target.value })} placeholder="e.g. Hotel in Vizag" />
+        </div>
+
+        <TextInput label="Places to visit" hint="optional" value={form.places} onChange={(e) => set({ places: e.target.value })} placeholder="RK Beach, Araku Valley, Kailasagiri…" />
+
+        <div className="grid grid-cols-2 gap-3">
+          <TextInput label="Start date" required type="date" min={today} value={form.startDate} onChange={(e) => set({ startDate: e.target.value })} />
+          <TextInput label="End date" required type="date" min={form.startDate || today} value={form.endDate} onChange={(e) => set({ endDate: e.target.value })} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Stepper label="Adults" required min={1} value={form.adults} onChange={(n) => set({ adults: n })} />
+          <Stepper label="Kids" min={0} value={form.kids} onChange={(n) => set({ kids: n })} />
+        </div>
+
+        <SubmitButton loading={loading}>Send booking request</SubmitButton>
+        <div className="text-center">
+          <TermsButton category="travels" label="View Terms & Conditions" className="cursor-pointer text-xs font-medium text-coral hover:underline" />
+        </div>
+      </form>
+    </ModalShell>
   )
 }

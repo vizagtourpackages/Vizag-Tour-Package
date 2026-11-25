@@ -1,7 +1,7 @@
 import { Check, X } from "lucide-react";
 import SectionHeading from "./SectionHeading";
 import { Reveal } from "./Motion";
-import { siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 
 const comparisonData = [
   { feature: "Driver cancellations", us: "0% — your ride is guaranteed", others: "High cancellation risk" },
@@ -54,7 +54,7 @@ export default function ComparisonTable() {
                     </div>
                   ))}
                 </div>
-                <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-coral mt-8 w-full sm:w-auto">
+                <a href={waUrl(waMessages.fixedPrices)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-8 w-full sm:w-auto">
                   Book with confidence
                 </a>
               </div>

@@ -2,77 +2,81 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, Loader2, MessageCircle, Send, X } from "lucide-react";
+import { MessageCircle, X } from "lucide-react";
 import { submitCustomEnquiry } from "@/app/actions/booking";
+import { openWhatsApp } from "@/lib/whatsapp";
+import { FormError, FormSuccess, PhoneInput, Stepper, SubmitButton, TextArea, TextInput } from "@/components/forms/Fields";
 
-export function EnquiryForm({ context, onDone }: { context: string; onDone?: () => void }) {
+/**
+ * Enquiry form used on destination / hotel / temple / guide pages.
+ * Saves the enquiry to the database, then opens WhatsApp with the details pre-filled.
+ */
+export function EnquiryForm({ context, compact = false }: { context: string; compact?: boolean }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [date, setDate] = useState("");
+  const [guests, setGuests] = useState(2);
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [done, setDone] = useState<string | null>(null);
   const today = new Date().toISOString().split("T")[0];
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
     setLoading(true);
     setError("");
+
     const res = await submitCustomEnquiry({
-      name: fd.get("name"),
-      phone: fd.get("phone"),
-      start_date: fd.get("start_date"),
-      end_date: fd.get("start_date"),
-      adults: Number(fd.get("adults")) || 2,
+      name: name.trim(),
+      phone,
+      start_date: date,
+      end_date: date,
+      adults: guests,
       children: 0,
       destinations: [context],
-      special_requirements: `[${context}] ${fd.get("message") || ""}`.trim(),
+      special_requirements: `[${context}] ${message}`.trim(),
     });
-    setLoading(false);
-    if (res.success) {
-      setSent(true);
-      onDone?.();
-    } else {
+    if (!res.success) {
+      setLoading(false);
       setError("Could not send your enquiry. Please try again.");
+      return;
     }
+
+    const text = `Hi! I'd like to enquire about ${context}.
+Name: ${name.trim()}
+Mobile: +91 ${phone}
+Travel date: ${date}
+Guests: ${guests}${message ? `\nMessage: ${message}` : ""}`;
+    setDone(text);
+    setLoading(false);
+    openWhatsApp(text);
   }
 
-  if (sent) {
+  if (done) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="py-10 text-center"
-      >
-        <CheckCircle2 className="mx-auto text-teal mb-3" size={44} />
-        <h4 className="font-heading font-bold text-lg text-charcoal">Thank you!</h4>
-        <p className="text-sm text-charcoal/60 mt-1">Our travel expert will call you shortly.</p>
+      <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.25 }}>
+        <FormSuccess whatsappMessage={done} />
       </motion.div>
     );
   }
 
-  const input =
-    "w-full rounded-xl border border-charcoal/10 bg-white px-3.5 py-2.5 text-sm font-medium text-charcoal placeholder:text-charcoal/30 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all";
-
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <input name="name" required placeholder="Your name" className={input} />
-      <input name="phone" required type="tel" pattern="[0-9]{10}" title="10 digit mobile number" placeholder="Mobile number" className={input} />
-      <div className="grid grid-cols-2 gap-3">
-        <input name="start_date" required type="date" min={today} className={input} />
-        <input name="adults" type="number" min={1} defaultValue={2} className={input} aria-label="Guests" />
-      </div>
-      <textarea name="message" rows={2} placeholder="Anything we should know?" className={`${input} resize-none`} />
-      {error && <p className="text-xs text-red-600">{error}</p>}
-      <button type="submit" disabled={loading} className="btn-coral w-full !py-3 text-sm disabled:opacity-60">
-        {loading ? <Loader2 size={16} className="animate-spin" /> : (<>Get Free Quote <Send size={15} /></>)}
-      </button>
-      <p className="text-[10px] text-center text-charcoal/40 font-medium">No spam. We reply within a few hours.</p>
+    <form onSubmit={onSubmit} className="space-y-3.5">
+      <FormError message={error} />
+      <TextInput label="Your name" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
+      <PhoneInput required label="Mobile number" value={phone} onChange={setPhone} />
+      <TextInput label="Travel date" required type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} />
+      <Stepper label="Guests" required min={1} max={40} value={guests} onChange={setGuests} />
+      {!compact && <TextArea label="Message" hint="optional" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Anything we should know?" />}
+      <SubmitButton loading={loading}>Get free quote</SubmitButton>
+      <p className="text-center text-[0.7rem] font-medium text-charcoal/45">We save your enquiry and open WhatsApp so we can reply fast.</p>
     </form>
   );
 }
 
 /**
  * Page layout with a sticky enquiry sidebar on desktop and a floating button + bottom sheet on mobile.
- * Place around the main content of a destination / hotel / package page.
  */
 export default function EnquirySidebar({
   context,
@@ -85,22 +89,22 @@ export default function EnquirySidebar({
 
   return (
     <div className="container-max px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-8 items-start">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_350px]">
         <div className="min-w-0">{children}</div>
 
         {/* Desktop sidebar */}
-        <aside className="hidden lg:block sticky top-24 mt-12">
+        <aside className="sticky top-24 mt-12 hidden lg:block">
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-[28px] border border-coral/15 bg-white shadow-float overflow-hidden"
+            className="overflow-hidden rounded-[28px] border border-coral/15 bg-white shadow-float"
           >
             <div className="bg-sunset px-6 py-5 text-white">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">Plan your trip</p>
-              <h3 className="font-heading font-black text-xl leading-tight">Enquire about {context}</h3>
+              <p className="text-[0.66rem] font-bold uppercase tracking-widest text-white/80">Plan your trip</p>
+              <h3 className="font-heading text-xl leading-tight">Enquire about {context}</h3>
             </div>
-            <div className="p-5">
+            <div className="thin-scroll max-h-[calc(100vh-14rem)] [max-height:calc(100dvh-14rem)] overflow-y-auto p-5">
               <EnquiryForm context={context} />
             </div>
           </motion.div>
@@ -108,7 +112,7 @@ export default function EnquirySidebar({
       </div>
 
       {/* Mobile floating trigger */}
-      <div className="lg:hidden fixed right-4 bottom-24 z-[150]">
+      <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-[150] lg:hidden">
         <button onClick={() => setOpen(true)} className="btn-coral !px-5 !py-3 text-sm shadow-float">
           <MessageCircle size={18} /> Enquire
         </button>
@@ -122,19 +126,24 @@ export default function EnquirySidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              className="lg:hidden fixed inset-0 z-[250] bg-ocean/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[250] bg-ocean/60 backdrop-blur-sm lg:hidden"
             />
             <motion.div
+              data-lenis-prevent
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Enquire about ${context}`}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              data-lenis-prevent className="lg:hidden fixed bottom-0 inset-x-0 z-[260] rounded-t-[28px] bg-white p-5 pb-8 max-h-[90vh] overflow-y-auto"
+              transition={{ type: "spring", damping: 30, stiffness: 280 }}
+              className="thin-scroll fixed inset-x-0 bottom-0 z-[260] max-h-[92vh] overflow-y-auto rounded-t-[26px] bg-white px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-3 [max-height:92dvh] lg:hidden"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-heading font-black text-lg text-charcoal">Enquire about {context}</h3>
-                <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-full bg-sand flex items-center justify-center" aria-label="Close">
-                  <X size={16} />
+              <div aria-hidden className="mx-auto mb-3 h-1 w-10 rounded-full bg-ocean/15" />
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <h3 className="font-heading text-[1.35rem] leading-tight text-ocean">Enquire about {context}</h3>
+                <button onClick={() => setOpen(false)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ocean/6 text-ocean" aria-label="Close">
+                  <X size={19} />
                 </button>
               </div>
               <EnquiryForm context={context} />

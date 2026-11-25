@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone, ShieldCheck, Star } from "lucide-react";
 import { siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 import TermsButton from "@/components/TermsButton";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,7 +19,6 @@ const destinations = [
   { label: "Lambasingi Hills", href: "/lambasingi" },
   { label: "Vanjangi Hills", href: "/vanjangi" },
   { label: "Top Tourist Places", href: "/top-tourist-places" },
-  { label: "Route Map", href: "/route-map" },
 ];
 
 const company = [
@@ -89,7 +89,7 @@ export default async function Footer() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-coral !px-8 !py-4">
+            <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="btn-coral !px-8 !py-4">
               Chat on WhatsApp
             </a>
             <Link
@@ -107,14 +107,8 @@ export default async function Footer() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 lg:grid-cols-[1.5fr_1fr_1fr_1.2fr_1.3fr]">
           {/* Brand */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
-            <Link href="/" className="group inline-flex items-center gap-3" aria-label={`${siteInfo.name} home`}>
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-sunset shadow-glow transition-transform duration-500 group-hover:rotate-6">
-                <span className="font-heading text-xl text-white">V</span>
-              </span>
-              <span className="leading-tight">
-                <span className="block font-heading text-xl">Vizag Tour Packages</span>
-                <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-amber">Araku Eco Stays &amp; Travels</span>
-              </span>
+            <Link href="/" className="inline-block rounded-2xl bg-white p-2 shadow-lg" aria-label={`${siteInfo.name} home`}>
+              <img src="/logo-card.jpg" alt={siteInfo.name} width={640} height={360} className="h-[76px] w-auto rounded-xl" loading="lazy" />
             </Link>
             <p className="mt-5 max-w-sm text-[0.92rem] leading-relaxed text-white/70">
               A trusted local travel company in Visakhapatnam — sightseeing, devotional and hill-station tours, hotels, cabs and custom holidays at fixed, honest prices.

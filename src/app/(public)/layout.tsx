@@ -31,7 +31,7 @@ export default function PublicLayout({
         <div className="site-theme flex flex-1 flex-col">
           <Navbar />
           {/* overflow-x-clip (not hidden) so sticky sidebars inside still stick */}
-          <main className="flex-1 pt-[72px] overflow-x-clip">{children}</main>
+          <main className="flex-1 pt-[calc(72px+env(safe-area-inset-top))] overflow-x-clip">{children}</main>
           <LatestUpdatesWrapper>
             <LatestUpdatesSection />
           </LatestUpdatesWrapper>

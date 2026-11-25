@@ -14,7 +14,6 @@ import {
   Info,
   LayoutList,
   ListChecks,
-  Map as MapIcon,
   MapPin,
   Mail,
   Package,
@@ -24,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { navLinks, siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 import { allPackages } from "@/data/packages";
 import { topPlaces, vizagPlaces } from "@/data/destinations";
 import { ease } from "./Motion";
@@ -45,7 +45,6 @@ const tabHrefs = new Set(tabs.map((t) => t.href));
 
 const iconFor: Record<string, any> = {
   Destination: MapPin,
-  "Route Map": MapIcon,
   Itineraries: ListChecks,
   "Travel Guides": BookOpen,
   "How It Works": Route,
@@ -99,7 +98,7 @@ export default function MobileBottomNav() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.4, ease }}
-              className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-[28px] bg-warm-white p-5 pb-28"
+              className="absolute inset-x-0 bottom-0 max-h-[88vh] [max-height:88dvh] overflow-y-auto rounded-t-[28px] bg-warm-white p-5 pb-28"
             >
               <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-ocean/15" />
               <div className="mb-4 flex items-center justify-between">
@@ -116,7 +115,7 @@ export default function MobileBottomNav() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search packages, places, pages…"
-                  className="w-full rounded-2xl border border-ocean/10 bg-white py-3.5 pl-11 pr-4 text-[0.95rem] text-ocean outline-none placeholder:text-ocean/35 focus:border-coral focus:ring-4 focus:ring-coral/15"
+                  className="w-full rounded-2xl border border-ocean/10 bg-white py-3.5 pl-11 pr-4 text-base text-ocean outline-none placeholder:text-ocean/35 focus:border-coral focus:ring-4 focus:ring-coral/15"
                 />
               </div>
 
@@ -199,7 +198,7 @@ export default function MobileBottomNav() {
                       <a href={`tel:${siteInfo.whatsapp}`} className="flex items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-ocean active:scale-[0.97]">
                         <Phone size={16} /> Call now
                       </a>
-                      <a href={siteInfo.whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-3 text-sm font-semibold text-white active:scale-[0.97]">
+                      <a href={waUrl(waMessages.general)} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-3 text-sm font-semibold text-white active:scale-[0.97]">
                         <WaIcon /> WhatsApp
                       </a>
                     </div>

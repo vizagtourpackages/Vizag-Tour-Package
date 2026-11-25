@@ -4,6 +4,7 @@ import PackageBookingButton from "@/components/PackageBookingButton";
 import CustomEnquiryButton from "@/components/booking/CustomEnquiryButton";
 import TermsButton from "@/components/TermsButton";
 import { siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 
 export default function PackageBookingSidebar({ 
   pkg, 
@@ -96,6 +97,14 @@ export default function PackageBookingSidebar({
 
       {/* Enquire Button */}
       <CustomEnquiryButton />
+      <a
+        href={waUrl(waMessages.package(pkg.title))}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 rounded-full border border-[#25d366]/40 py-3 text-sm font-semibold text-[#128c4a] transition-colors hover:bg-[#25d366]/10"
+      >
+        Ask on WhatsApp
+      </a>
     </div>
   );
 }

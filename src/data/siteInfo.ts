@@ -37,7 +37,6 @@ export const navLinks: NavLink[] = [
       { label: "Vanjangi Hills", href: "/vanjangi" },
     ]
   },
-  { label: "Route Map", href: "/route-map" },
   { label: "Itineraries", href: "/itinerary" },
   { label: "Travel Guides", href: "/travel-guides" },
   { label: "How It Works", href: "/how-it-works" },

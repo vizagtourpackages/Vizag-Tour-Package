@@ -205,7 +205,7 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
                           {stops.length > 3 && !isExpanded && (
                             <button
                               onClick={() => setExpandedDays(prev => ({ ...prev, [day.id]: true }))}
-                              className="text-sm font-bold text-coral hover:text-coral/80 transition-colors mt-2 underline underline-offset-4"
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-coral/10 px-4 py-2.5 text-sm font-semibold text-coral transition-colors hover:bg-coral/15 active:scale-[0.97]"
                             >
                               View More Places (+{stops.length - 3} more)
                             </button>
@@ -220,7 +220,7 @@ export default function PackageTabs({ pkg }: { pkg: any }) {
                   <div className="relative pl-8 md:pl-12 pt-4">
                     <button
                       onClick={() => setShowAllItinerary(true)}
-                      className="w-full py-4 bg-gray-50 border border-gray-200 rounded-xl text-charcoal font-bold hover:bg-gray-100 transition-colors"
+                      className="w-full rounded-full border border-ocean/15 bg-white py-3.5 text-[0.95rem] font-semibold text-ocean transition-colors hover:bg-sand active:scale-[0.99]"
                     >
                       View All {itineraryDays.length} Days
                     </button>

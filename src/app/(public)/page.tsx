@@ -300,7 +300,7 @@ export default async function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="mt-16 text-center">
-              <Link href="/tour-packages" className="btn-secondary !px-6 !py-2.5 !text-sm">
+              <Link href="/tour-packages" className="btn-secondary">
                 View All Packages <ArrowRight size={18} />
               </Link>
             </div>
@@ -363,7 +363,7 @@ export default async function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="mt-16 text-center">
-              <Link href="/hotels-and-resorts" className="btn-secondary !px-6 !py-2.5 !text-sm">
+              <Link href="/hotels-and-resorts" className="btn-secondary">
                 View All Hotels <ArrowRight size={18} />
               </Link>
             </div>
@@ -393,7 +393,7 @@ export default async function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="mt-16 text-center">
-              <Link href="/tour-packages/araku-valley" className="btn-secondary !px-6 !py-2.5 !text-sm">
+              <Link href="/araku-valley" className="btn-secondary">
                 View Hill Station Packages <ArrowRight size={18} />
               </Link>
             </div>
@@ -420,7 +420,7 @@ export default async function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="mt-16 text-center">
-              <Link href="/top-tourist-places" className="btn-secondary !px-6 !py-2.5 !text-sm">
+              <Link href="/top-tourist-places" className="btn-secondary">
                 View All Places <ArrowRight size={18} />
               </Link>
             </div>

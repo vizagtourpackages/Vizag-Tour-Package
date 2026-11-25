@@ -1,5 +1,5 @@
 import { Users, Mail, BellRing } from "lucide-react";
-import { siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 import ScrollReveal from "@/components/ScrollReveal";
 import { FaWhatsapp, FaFacebookF, FaInstagram } from "react-icons/fa";
 
@@ -45,7 +45,7 @@ export default function CommunityCTA() {
             </div>
             
             <div className="mt-8 text-white/40 text-sm font-medium">
-              Prefer WhatsApp? <a href={siteInfo.whatsappLink} className="text-white/60 hover:text-teal underline underline-offset-4 transition-colors">Join our broadcast list here</a>
+              Prefer WhatsApp? <a href={waUrl(waMessages.general)} className="text-white/60 hover:text-teal underline underline-offset-4 transition-colors">Join our broadcast list here</a>
             </div>
           </div>
         </ScrollReveal>

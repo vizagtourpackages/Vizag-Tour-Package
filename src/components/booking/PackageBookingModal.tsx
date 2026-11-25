@@ -1,451 +1,358 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { siteInfo } from '@/data/siteInfo'
+import { useEffect, useState } from 'react'
 import { submitPackageBooking } from '@/app/actions/booking'
 import { createClient } from '@/lib/supabase/client'
+import { openWhatsApp } from '@/lib/whatsapp'
 import StayPicker, { StayOption } from './StayPicker'
+import ModalShell from './ModalShell'
+import { FormError, FormSuccess, PhoneInput, SelectInput, Stepper, SubmitButton, TextArea, TextInput, Field, controlClass } from '../forms/Fields'
 
-export default function PackageBookingModal({ data, onClose }: { data: any, onClose: () => void }) {
-  const [formData, setFormData] = useState({
-    packageName: data?.title || '',
+export default function PackageBookingModal({ data, onClose }: { data: any; onClose: () => void }) {
+  const isCustom = !!data?.isCustomEnquiry
+  const stayOptions: StayOption[] = data?.stay_options || []
+  const hasStay = stayOptions.length > 0 && !isCustom
+  const hasRatePlans = !hasStay && !isCustom && data?.rate_plans && data.rate_plans.length > 0
+  const isOneDay = data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D'
+
+  const [form, setForm] = useState({
     fullName: '',
-    contactNumber: '',
-    whatsappNumber: '',
+    contact: '',
+    whatsapp: '',
     sameAsContact: false,
     email: '',
     startDate: data?.prefill?.date || '',
     endDate: '',
-    vehiclePreference: 'Sedan/Hatchback 4+1',
-    accommodationType: data?.isCustomEnquiry ? 'Standard (2/3 Star)' : (data?.stay_options?.length > 0 ? '' : (data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D') 
-      ? 'Not Required' 
-      : (data?.selected_plan || ((data?.rate_plans && data.rate_plans.length > 0) ? '' : 'Not Required'))),
+    vehicle: 'Sedan/Hatchback 4+1',
+    accommodation: isCustom
+      ? 'Standard (2/3 Star)'
+      : hasStay
+        ? ''
+        : isOneDay
+          ? 'Not Required'
+          : data?.selected_plan || (hasRatePlans ? '' : 'Not Required'),
     guests: data?.prefill?.guests || 2,
     rooms: 1,
-    specialRequests: ''
+    notes: '',
+    customName: data?.title && isCustom ? data.title : '',
   })
-  const [loading, setLoading] = useState(false)
+  const set = (patch: Partial<typeof form>) => setForm((p) => ({ ...p, ...patch }))
+
   const [vehicles, setVehicles] = useState<any[]>([])
-
-  useEffect(() => {
-    async function fetchVehicles() {
-      const supabase = createClient()
-      const { data: travelsData } = await supabase
-        .from('travels')
-        .select('*')
-        .eq('is_published', true)
-        .order('display_order', { ascending: true })
-      
-      if (travelsData && travelsData.length > 0) {
-        setVehicles(travelsData)
-        // If current preference is not in the list, set to first available
-        const hasPref = travelsData.some(v => v.model === formData.vehiclePreference);
-        if (!hasPref) {
-          setFormData(prev => ({ ...prev, vehiclePreference: travelsData[0].model }))
-        }
-      }
-    }
-    fetchVehicles()
-  }, [])
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  
-  const stayOptions: StayOption[] = data?.stay_options || [];
-  const hasStay = stayOptions.length > 0 && !data?.isCustomEnquiry;
-  const [stayStep, setStayStep] = useState(hasStay);
-  const [stayHotel, setStayHotel] = useState('');
-  const hasRatePlans = !hasStay && data?.rate_plans && data.rate_plans.length > 0;
-  const isOneDayPackage = data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D';
-  
-  // State for Rate Plan Selector step
-  const [showPlanSelector, setShowPlanSelector] = useState(
-    hasRatePlans && !data?.selected_plan
-  );
-  const [selectedPlan, setSelectedPlan] = useState(data?.selected_plan || '');
+  const [done, setDone] = useState<string | null>(null) // WhatsApp message once saved
 
-  // State for Resort Selector step
-  const [showResortSelector, setShowResortSelector] = useState(false);
-  const [ratePlanResorts, setRatePlanResorts] = useState<any[]>([]);
-  const [loadingResorts, setLoadingResorts] = useState(false);
+  // steps
+  const [stayStep, setStayStep] = useState(hasStay)
+  const [planStep, setPlanStep] = useState(!!hasRatePlans && !data?.selected_plan)
+  const [resortStep, setResortStep] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<string>(data?.selected_plan || '')
+  const [planResorts, setPlanResorts] = useState<any[]>([])
+  const [loadingResorts, setLoadingResorts] = useState(false)
 
-  // If a plan is pre-selected on mount, check if it has resorts and fetch them
   useEffect(() => {
-    if (data?.selected_plan && data?.rate_plans) {
-      const plan = data.rate_plans.find((p: any) => p.title === data.selected_plan);
-      if (plan && plan.resort_ids && plan.resort_ids.length > 0) {
-        setShowResortSelector(true);
-        setLoadingResorts(true);
-        const supabase = createClient();
-        supabase
-          .from('hotels_resorts')
-          .select('id, name, location, cover_image_url, category')
-          .in('id', plan.resort_ids)
-          .eq('is_published', true)
-          .then(({ data: resorts }) => {
-            setRatePlanResorts(resorts || []);
-            setLoadingResorts(false);
-          });
-      }
-    }
-  }, [data?.selected_plan, data?.rate_plans]);
+    const supabase = createClient()
+    supabase
+      .from('travels')
+      .select('*')
+      .eq('is_published', true)
+      .order('display_order', { ascending: true })
+      .then(({ data: rows }) => {
+        if (rows && rows.length > 0) {
+          setVehicles(rows)
+          setForm((p) => (rows.some((v: any) => v.model === p.vehicle) ? p : { ...p, vehicle: rows[0].model }))
+        }
+      })
+  }, [])
 
-  const handleStayConfirm = (type: string, hotel: { name: string }) => {
-    setStayHotel(hotel.name);
-    setFormData(prev => ({ ...prev, accommodationType: `${type} - ${hotel.name}` }));
-    setStayStep(false);
-  };
-
-  const handlePlanSelect = async (plan: any) => {
-    setSelectedPlan(plan.title);
-    setFormData(prev => ({ ...prev, accommodationType: plan.title || 'Selected Plan' }));
-    
-    if (plan.resort_ids && plan.resort_ids.length > 0) {
-      setShowPlanSelector(false);
-      setShowResortSelector(true);
-      setLoadingResorts(true);
-      const supabase = createClient();
-      const { data: resorts } = await supabase
-        .from('hotels_resorts')
-        .select('id, name, location, cover_image_url, category')
-        .in('id', plan.resort_ids)
-        .eq('is_published', true);
-      
-      setRatePlanResorts(resorts || []);
-      setLoadingResorts(false);
-    } else {
-      setShowPlanSelector(false);
-    }
-  };
-
-  const handleResortSelect = (resort: any) => {
-    setFormData(prev => ({ ...prev, accommodationType: `${selectedPlan || 'Selected Plan'} - ${resort.name}` }));
-    setShowResortSelector(false);
-  };
-
-  // Auto-calculate end date
-  useEffect(() => {
-    if (!formData.startDate || !data?.duration || data?.isCustomEnquiry) return
-
-    const startDateObj = new Date(formData.startDate)
-    if (isNaN(startDateObj.getTime())) return
-
-    // Extract days from duration string (e.g., "3 Days", "1 Day", "3D/2N")
-    const durationStr = (data.duration || '').toLowerCase()
-    let daysToAdd = 0
-    const dayMatch = durationStr.match(/(\d+)\s*(day|d)/)
-    if (dayMatch) {
-      // If 3 days, we add 2 days to start date to get end date
-      const days = parseInt(dayMatch[1])
-      daysToAdd = Math.max(0, days - 1)
-    }
-
-    const endDateObj = new Date(startDateObj)
-    endDateObj.setDate(endDateObj.getDate() + daysToAdd)
-    
-    setFormData(prev => ({
-      ...prev,
-      endDate: endDateObj.toISOString().split('T')[0]
-    }))
-  }, [formData.startDate, data?.duration])
-
-  const handleSameAsContact = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked
-    setFormData(prev => ({
-      ...prev,
-      sameAsContact: checked,
-      whatsappNumber: checked ? prev.contactNumber : prev.whatsappNumber
-    }))
+  const loadResorts = async (ids: string[]) => {
+    setLoadingResorts(true)
+    const supabase = createClient()
+    const { data: rows } = await supabase
+      .from('hotels_resorts')
+      .select('id, name, location, cover_image_url, category')
+      .in('id', ids)
+      .eq('is_published', true)
+    setPlanResorts(rows || [])
+    setLoadingResorts(false)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Pre-selected legacy plan that lists resorts
+  useEffect(() => {
+    if (data?.selected_plan && data?.rate_plans && !hasStay) {
+      const plan = data.rate_plans.find((p: any) => p.title === data.selected_plan)
+      if (plan?.resort_ids?.length) {
+        setResortStep(true)
+        loadResorts(plan.resort_ids)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const choosePlan = (plan: any) => {
+    setSelectedPlan(plan.title)
+    set({ accommodation: plan.title || 'Selected Plan' })
+    setPlanStep(false)
+    if (plan.resort_ids?.length) {
+      setResortStep(true)
+      loadResorts(plan.resort_ids)
+    }
+  }
+
+  // End date follows the package length
+  useEffect(() => {
+    if (!form.startDate || !data?.duration || isCustom) return
+    const start = new Date(form.startDate)
+    if (isNaN(start.getTime())) return
+    const m = (data.duration || '').toLowerCase().match(/(\d+)\s*(day|d)/)
+    const add = m ? Math.max(0, parseInt(m[1]) - 1) : 0
+    const end = new Date(start)
+    end.setDate(end.getDate() + add)
+    setForm((p) => ({ ...p, endDate: end.toISOString().split('T')[0] }))
+  }, [form.startDate, data?.duration, isCustom])
+
+  const today = new Date().toISOString().split('T')[0]
+  const packageName = isCustom
+    ? form.customName || 'Custom Package'
+    : selectedPlan && !hasStay
+      ? `${data?.title} - ${selectedPlan}`
+      : data?.title || 'Unknown Package'
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!form.accommodation && (hasStay || hasRatePlans)) {
+      setError('Please choose your stay before sending the request.')
+      return
+    }
     setLoading(true)
     setError('')
 
-    const bookingData = {
-      package_name: formData.packageName || 'Unknown Package',
-      full_name: formData.fullName,
-      contact_number: formData.contactNumber,
-      whatsapp_number: formData.whatsappNumber,
-      email: formData.email,
-      start_date: formData.startDate,
-      end_date: formData.endDate,
-      vehicle_preference: formData.vehiclePreference,
-      accommodation_type: formData.accommodationType,
-      guests: formData.guests,
-      rooms: formData.rooms,
-      special_requests: formData.specialRequests,
+    const booking = {
+      package_name: packageName,
+      full_name: form.fullName.trim(),
+      contact_number: form.contact,
+      whatsapp_number: form.whatsapp,
+      email: form.email,
+      start_date: form.startDate,
+      end_date: form.endDate || form.startDate,
+      vehicle_preference: form.vehicle,
+      accommodation_type: form.accommodation,
+      guests: form.guests,
+      rooms: form.rooms,
+      special_requests: form.notes,
       pickup_location: data?.pickup_location || 'Visakhapatnam (Vizag)',
-      drop_location: data?.drop_location || 'Visakhapatnam (Vizag)'
+      drop_location: data?.drop_location || 'Visakhapatnam (Vizag)',
     }
 
-    const res = await submitPackageBooking(bookingData)
-    
+    const res = await submitPackageBooking(booking)
     if (!res.success) {
-      setError(res.error || 'Failed to save booking')
+      setError(res.error || 'Could not save your request. Please try again.')
       setLoading(false)
       return
     }
 
-    // Format WhatsApp message
-    const waText = `New Booking Request
-Package: ${bookingData.package_name}
-Name: ${bookingData.full_name}
-Contact: ${bookingData.contact_number}${bookingData.whatsapp_number ? ` (WA: ${bookingData.whatsapp_number})` : ''}
-Dates: ${bookingData.start_date} to ${bookingData.end_date}
-Guests: ${bookingData.guests} | Rooms: ${bookingData.rooms}
-Vehicle: ${bookingData.vehicle_preference}
-Accommodation: ${bookingData.accommodation_type}
-Pickup: ${bookingData.pickup_location}
-Drop: ${bookingData.drop_location}
-Special Requests: ${bookingData.special_requests || 'None'}`
+    const text = `New Booking Request
+Package: ${booking.package_name}
+Name: ${booking.full_name}
+Contact: +91 ${booking.contact_number}${booking.whatsapp_number ? ` (WA: +91 ${booking.whatsapp_number})` : ''}
+Dates: ${booking.start_date} to ${booking.end_date}
+Guests: ${booking.guests} | Rooms: ${booking.rooms}
+Vehicle: ${booking.vehicle_preference}
+Accommodation: ${booking.accommodation_type}
+Pickup: ${booking.pickup_location}
+Drop: ${booking.drop_location}
+Special Requests: ${booking.special_requests || 'None'}`
 
-    const encodedMessage = encodeURIComponent(waText)
-    
-    // Attempt to open WhatsApp directly (bypasses browser prompt on mobile)
-    window.location.href = `whatsapp://send?phone=917780739851&text=${encodedMessage}`
-    
-    // Fallback for desktop/if app is not installed
-    setTimeout(() => {
-      window.location.href = `https://wa.me/917780739851?text=${encodedMessage}`
-    }, 500)
-    
-    // We don't close the modal or set loading false because we are redirecting away
+    setDone(text)
+    setLoading(false)
+    openWhatsApp(text)
   }
 
-  return (
-    <div
-      className="fixed inset-0 z-[300] flex items-end justify-center bg-ocean/55 backdrop-blur-sm sm:items-center sm:p-6"
-      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
-    >
-      <div data-lenis-prevent className="thin-scroll relative max-h-[94dvh] w-full overflow-y-auto overscroll-contain rounded-t-[24px] bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl sm:max-h-[90vh] sm:max-w-xl sm:rounded-[24px] sm:p-6">
-        <div aria-hidden className="mx-auto mb-3 h-1 w-10 rounded-full bg-ocean/15 sm:hidden" />
-        <button type="button" onClick={onClose} className="absolute top-4 right-4 z-10 text-gray-400 hover:text-charcoal bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
-        
-        {stayStep ? (
-          <StayPicker options={stayOptions} initialType={data?.initial_stay_type} onConfirm={handleStayConfirm} />
-        ) : showPlanSelector ? (
-          <div className="animate-fade-in">
-            <div className="mb-6 mt-2 pr-10">
-              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-1">Select Rate Plan</h2>
-              <p className="text-charcoal/60 text-sm">Choose your preferred accommodation option for this package.</p>
-            </div>
-            
-            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-              {data.rate_plans.map((plan: any, i: number) => (
-                <div key={i} className="border border-charcoal/10 rounded-xl p-4 hover:border-teal/50 hover:bg-teal/5 cursor-pointer transition-all flex flex-col sm:flex-row gap-4 justify-between"
-                     onClick={() => handlePlanSelect(plan)}>
-                  <div>
-                    {plan.badge && (
-                      <span className="inline-block px-2 py-0.5 bg-teal/10 text-teal text-[10px] font-bold rounded-full mb-2">
-                        {plan.badge}
-                      </span>
-                    )}
-                    <h3 className="font-bold text-charcoal text-base mb-1">{plan.title}</h3>
-                    {plan.features && plan.features.length > 0 && (
-                      <div className="text-xs text-charcoal/60 line-clamp-2">
-                        {plan.features.join(' • ')}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0">
-                    <div className="text-right">
-                      {plan.mrp && <div className="text-[10px] text-charcoal/40 line-through">₹{plan.mrp.toLocaleString('en-IN')}</div>}
-                      <div className="font-black text-charcoal text-lg">₹{plan.price?.toLocaleString('en-IN') || 0}</div>
-                    </div>
-                    <button className="sm:mt-2 px-4 py-1.5 bg-charcoal text-white text-xs font-bold rounded-lg group-hover:bg-teal transition-colors">
-                      Select
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : showResortSelector ? (
-          <div className="animate-fade-in">
-            <div className="mb-6 mt-2 pr-10">
-              <button 
-                onClick={() => { setShowResortSelector(false); setShowPlanSelector(true); }}
-                className="text-teal text-xs font-bold mb-2 flex items-center gap-1 hover:underline"
-              >
-                ← Back to Plans
-              </button>
-              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-1">Select Resort</h2>
-              <p className="text-charcoal/60 text-sm">Choose your preferred resort for {selectedPlan || 'this plan'}.</p>
-            </div>
+  // ---------- which screen ----------
+  if (done) {
+    return (
+      <ModalShell title="Booking request" onClose={onClose}>
+        <FormSuccess whatsappMessage={done} onClose={onClose} />
+      </ModalShell>
+    )
+  }
 
-            {loadingResorts ? (
-              <div className="py-8 text-center text-charcoal/60">Loading resorts...</div>
-            ) : ratePlanResorts.length === 0 ? (
-              <div className="py-8 text-center text-charcoal/60">No resorts found. <button onClick={() => setShowResortSelector(false)} className="text-teal underline">Continue booking</button></div>
-            ) : (
-              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                {ratePlanResorts.map((resort: any) => (
-                  <div key={resort.id} className="border border-charcoal/10 rounded-xl p-3 hover:border-teal/50 hover:bg-teal/5 cursor-pointer transition-all flex gap-4 items-center"
-                    onClick={() => handleResortSelect(resort)}>
-                    {resort.cover_image_url && (
-                      <img src={resort.cover_image_url} alt={resort.name} className="w-20 h-20 object-cover rounded-lg shrink-0" />
-                    )}
-                    <div className="flex-1">
-                      <span className="inline-block px-2 py-0.5 bg-gray-100 text-charcoal text-[10px] font-bold rounded-full mb-1">
-                        {resort.category || 'Resort'}
-                      </span>
-                      <h3 className="font-bold text-charcoal text-base leading-tight">{resort.name}</h3>
-                      <p className="text-xs text-charcoal/60 mt-1">{resort.location}</p>
-                    </div>
-                    <button className="px-4 py-1.5 bg-charcoal text-white text-xs font-bold rounded-lg group-hover:bg-teal transition-colors shrink-0">
-                      Select
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+  if (stayStep) {
+    return (
+      <ModalShell title="Choose your stay" subtitle="Pick a room type, then the hotel you prefer." onClose={onClose}>
+        <StayPicker
+          options={stayOptions}
+          initialType={data?.initial_stay_type}
+          onConfirm={(type, hotel) => {
+            set({ accommodation: `${type} - ${hotel.name}` })
+            setStayStep(false)
+          }}
+        />
+      </ModalShell>
+    )
+  }
+
+  if (planStep) {
+    return (
+      <ModalShell title="Select a plan" subtitle="Choose your preferred accommodation option." onClose={onClose}>
+        <div className="space-y-3">
+          {data.rate_plans.map((plan: any, i: number) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => choosePlan(plan)}
+              className="flex w-full items-center justify-between gap-4 rounded-2xl border-2 border-ocean/10 p-4 text-left transition-colors hover:border-coral hover:bg-coral/5"
+            >
+              <span className="min-w-0">
+                {plan.badge && <span className="mb-1.5 inline-block rounded-full bg-teal/10 px-2.5 py-0.5 text-[0.65rem] font-bold text-teal">{plan.badge}</span>}
+                <span className="block font-heading text-lg text-ocean">{plan.title}</span>
+                {plan.features?.length > 0 && <span className="mt-0.5 block text-xs text-charcoal/55">{plan.features.join(' • ')}</span>}
+              </span>
+              <span className="shrink-0 text-right">
+                {plan.mrp && <span className="block text-[0.68rem] text-charcoal/40 line-through">₹{Number(plan.mrp).toLocaleString('en-IN')}</span>}
+                <span className="font-heading text-xl text-ocean">₹{Number(plan.price || 0).toLocaleString('en-IN')}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </ModalShell>
+    )
+  }
+
+  if (resortStep) {
+    return (
+      <ModalShell
+        title="Select a resort"
+        subtitle={`Choose your preferred resort for ${selectedPlan || 'this plan'}.`}
+        onClose={onClose}
+        onBack={hasRatePlans ? () => { setResortStep(false); setPlanStep(true) } : undefined}
+        backLabel="Back to plans"
+      >
+        {loadingResorts ? (
+          <p className="py-10 text-center text-sm text-charcoal/55">Loading resorts…</p>
+        ) : planResorts.length === 0 ? (
+          <p className="py-10 text-center text-sm text-charcoal/55">
+            No resorts found. <button type="button" className="font-semibold text-coral underline" onClick={() => setResortStep(false)}>Continue booking</button>
+          </p>
         ) : (
-          <div className="animate-fade-in">
-            <div className="mb-5 mt-1 pr-10">
-              <h2 className="text-xl sm:text-2xl font-bold font-heading text-charcoal mb-0.5">Book Your Trip</h2>
-              <p className="text-charcoal/60 text-xs sm:text-sm">Fill in details and we'll confirm shortly</p>
-            </div>
-
-            {error && <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">{error}</div>}
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">Package Name</label>
-                <input 
-                  type="text" 
-                  readOnly={!data?.isCustomEnquiry} 
-                  value={data?.isCustomEnquiry ? formData.packageName : (selectedPlan ? `${data?.title} - ${selectedPlan}` : (data?.title || ''))} 
-                  onChange={e => setFormData({...formData, packageName: e.target.value})}
-                  className={`w-full p-2 border rounded-lg text-sm font-medium ${!data?.isCustomEnquiry ? 'bg-gray-100 border-gray-200 text-gray-600' : 'bg-white border-gray-300 text-charcoal'}`} 
-                />
-              </div>
-
-          <div>
-            <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Full Name *</label>
-            <input type="text" required value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} className="w-full p-2 border rounded-lg text-sm" placeholder="Enter your full name" />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Contact Number *</label>
-              <input type="tel" required pattern="[0-9]{10}" title="10 digit phone number" value={formData.contactNumber} onChange={e => {
-                const val = e.target.value
-                setFormData(prev => ({...prev, contactNumber: val, whatsappNumber: prev.sameAsContact ? val : prev.whatsappNumber}))
-              }} className="w-full p-2 border rounded-lg text-sm" placeholder="10-digit mobile" />
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-bold text-gray-700 uppercase">WhatsApp</label>
-                <label className="flex items-center gap-1.5 text-[10px] text-gray-500 cursor-pointer">
-                  <input type="checkbox" checked={formData.sameAsContact} onChange={handleSameAsContact} className="rounded-sm border-gray-300" />
-                  Same as contact
-                </label>
-              </div>
-              <input type="tel" value={formData.whatsappNumber} onChange={e => setFormData({...formData, whatsappNumber: e.target.value, sameAsContact: false})} className="w-full p-2 border rounded-lg text-sm" placeholder="Optional" />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Email ID</label>
-            <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full p-2 border rounded-lg text-sm" placeholder="Optional" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Start Date *</label>
-              <input type="date" required value={formData.startDate} min={new Date().toISOString().split('T')[0]} onChange={e => setFormData({...formData, startDate: e.target.value})} className="w-full p-2 border rounded-lg text-sm" />
-            </div>
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-500 uppercase mb-1">End Date {data?.isCustomEnquiry && '*'}</label>
-              <input 
-                type="date" 
-                readOnly={!data?.isCustomEnquiry}
-                required={data?.isCustomEnquiry}
-                min={data?.isCustomEnquiry && formData.startDate ? formData.startDate : undefined}
-                value={formData.endDate} 
-                onChange={e => setFormData({...formData, endDate: e.target.value})}
-                className={`w-full p-2 border rounded-lg text-sm ${!data?.isCustomEnquiry ? 'bg-gray-50 border-gray-200 text-gray-500' : 'bg-white border-gray-300'}`} 
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Guests *</label>
-              <div className="flex border rounded-lg overflow-hidden">
-                <button type="button" onClick={() => setFormData(p => ({...p, guests: Math.max(1, p.guests - 1)}))} className="px-3 bg-gray-50 hover:bg-gray-100 border-r">-</button>
-                <input type="number" required min="1" value={formData.guests} onChange={e => setFormData({...formData, guests: parseInt(e.target.value) || 1})} className="w-full p-2 text-center text-sm outline-none" />
-                <button type="button" onClick={() => setFormData(p => ({...p, guests: p.guests + 1}))} className="px-3 bg-gray-50 hover:bg-gray-100 border-l">+</button>
-              </div>
-            </div>
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Rooms *</label>
-              <div className="flex border rounded-lg overflow-hidden">
-                <button type="button" onClick={() => setFormData(p => ({...p, rooms: Math.max(1, p.rooms - 1)}))} className="px-3 bg-gray-50 hover:bg-gray-100 border-r">-</button>
-                <input type="number" required min="1" value={formData.rooms} onChange={e => setFormData({...formData, rooms: parseInt(e.target.value) || 1})} className="w-full p-2 text-center text-sm outline-none" />
-                <button type="button" onClick={() => setFormData(p => ({...p, rooms: p.rooms + 1}))} className="px-3 bg-gray-50 hover:bg-gray-100 border-l">+</button>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Vehicle *</label>
-              <select required value={formData.vehiclePreference} onChange={e => setFormData({...formData, vehiclePreference: e.target.value})} className="w-full p-2 border rounded-lg text-sm bg-white">
-                {vehicles.length > 0 ? (
-                  vehicles.map((v, i) => (
-                    <option key={i} value={v.model}>{v.model} ({v.pax} Pax)</option>
-                  ))
-                ) : (
-                  <option value="Sedan/Hatchback 4+1">Sedan/Hatchback 4+1</option>
-                )}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Accommodation *</label>
-              {hasStay ? (
-                <div className="flex gap-2">
-                  <input type="text" readOnly value={formData.accommodationType} className="w-full p-2 border rounded-lg text-sm bg-gray-100 border-gray-200 text-gray-700 font-medium" />
-                  <button type="button" onClick={() => setStayStep(true)} className="shrink-0 px-3 text-xs font-bold text-coral border border-coral/30 rounded-lg hover:bg-coral/5">Change</button>
-                </div>
-              ) : selectedPlan || hasRatePlans ? (
-                <input 
-                  type="text" 
-                  readOnly 
-                  value={formData.accommodationType} 
-                  className="w-full p-2 border rounded-lg text-sm bg-gray-100 border-gray-200 text-gray-600 font-medium cursor-not-allowed" 
-                />
-              ) : (
-                <select 
-                  required 
-                  value={formData.accommodationType} 
-                  disabled={!data?.isCustomEnquiry && isOneDayPackage} 
-                  onChange={e => setFormData({...formData, accommodationType: e.target.value})} 
-                  className="w-full p-2 border rounded-lg text-sm bg-white disabled:bg-gray-100 disabled:text-gray-500"
-                >
-                  {!data?.isCustomEnquiry && <option value="Not Required">Not Required</option>}
-                  <option value="Standard (2/3 Star)">Standard (2/3 Star)</option>
-                  <option value="Premium (4 Star)">Premium (4 Star)</option>
-                  <option value="Luxury (5 Star / Resort)">Luxury (5 Star / Resort)</option>
-                  {data?.isCustomEnquiry && <option value="Not Required">Not Required</option>}
-                </select>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-[10px] sm:text-xs font-bold text-gray-700 uppercase mb-1">Special Requests</label>
-            <textarea value={formData.specialRequests} onChange={e => setFormData({...formData, specialRequests: e.target.value})} className="w-full p-2 border rounded-lg text-sm h-16 resize-none" placeholder="Any specific requirements..."></textarea>
-          </div>
-
-              <button type="submit" disabled={loading} className="w-full btn-primary !py-2.5 !rounded-lg disabled:opacity-70 disabled:cursor-not-allowed mt-2">
-                {loading ? 'Processing...' : 'Submit Booking Request'}
+          <div className="space-y-3">
+            {planResorts.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => { set({ accommodation: `${selectedPlan || 'Selected Plan'} - ${r.name}` }); setResortStep(false) }}
+                className="flex w-full items-center gap-4 rounded-2xl border-2 border-ocean/10 p-3 text-left transition-colors hover:border-coral hover:bg-coral/5"
+              >
+                {r.cover_image_url && <img src={r.cover_image_url} alt="" className="h-20 w-20 shrink-0 rounded-xl object-cover" />}
+                <span className="min-w-0">
+                  <span className="text-[0.65rem] font-bold uppercase tracking-wider text-teal">{r.category || 'Resort'}</span>
+                  <span className="block font-heading text-lg leading-tight text-ocean">{r.name}</span>
+                  <span className="text-xs text-charcoal/55">{r.location}</span>
+                </span>
               </button>
-            </form>
+            ))}
           </div>
         )}
-      </div>
-    </div>
+      </ModalShell>
+    )
+  }
+
+  // ---------- booking form ----------
+  return (
+    <ModalShell
+      title={isCustom ? 'Plan your custom trip' : 'Book your trip'}
+      subtitle="Fill in the details. We save your request and open WhatsApp to confirm."
+      onClose={onClose}
+    >
+      <form onSubmit={submit} className="space-y-4">
+        <FormError message={error} />
+
+        {isCustom ? (
+          <TextInput label="Trip / package name" value={form.customName} onChange={(e) => set({ customName: e.target.value })} placeholder="e.g. Araku weekend for 4" />
+        ) : (
+          <Field label="Package">{(id) => <input id={id} readOnly value={packageName} className={controlClass} />}</Field>
+        )}
+
+        <TextInput label="Full name" required autoComplete="name" value={form.fullName} onChange={(e) => set({ fullName: e.target.value })} placeholder="Your full name" />
+
+        <PhoneInput
+          required
+          label="Mobile number"
+          value={form.contact}
+          onChange={(v) => set({ contact: v, whatsapp: form.sameAsContact ? v : form.whatsapp })}
+        />
+
+        <div>
+          <PhoneInput label="WhatsApp number" value={form.whatsapp} onChange={(v) => set({ whatsapp: v, sameAsContact: false })} />
+          <label className="mt-2 inline-flex cursor-pointer items-center gap-2 text-sm text-ocean/70">
+            <input
+              type="checkbox"
+              checked={form.sameAsContact}
+              onChange={(e) => set({ sameAsContact: e.target.checked, whatsapp: e.target.checked ? form.contact : form.whatsapp })}
+              className="h-4 w-4 rounded border-ocean/30 accent-coral"
+            />
+            Same as mobile number
+          </label>
+        </div>
+
+        <TextInput label="Email" hint="optional" type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => set({ email: e.target.value })} placeholder="you@example.com" />
+
+        <div className="grid grid-cols-2 gap-3">
+          <TextInput label="Start date" required type="date" min={today} value={form.startDate} onChange={(e) => set({ startDate: e.target.value })} />
+          <TextInput
+            label="End date"
+            required={isCustom}
+            type="date"
+            min={form.startDate || today}
+            value={form.endDate}
+            readOnly={!isCustom}
+            onChange={(e) => set({ endDate: e.target.value })}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Stepper label="Guests" required min={1} value={form.guests} onChange={(n) => set({ guests: n })} />
+          <Stepper label="Rooms" required min={1} value={form.rooms} onChange={(n) => set({ rooms: n })} />
+        </div>
+
+        <SelectInput label="Vehicle" required value={form.vehicle} onChange={(e) => set({ vehicle: e.target.value })}>
+          {vehicles.length > 0 ? (
+            vehicles.map((v, i) => <option key={i} value={v.model}>{v.model} ({v.pax} pax)</option>)
+          ) : (
+            <option value="Sedan/Hatchback 4+1">Sedan/Hatchback 4+1</option>
+          )}
+        </SelectInput>
+
+        {hasStay || hasRatePlans ? (
+          <Field label="Your stay" required>
+            {(id) => (
+              <div className="flex items-center gap-2">
+                <input id={id} readOnly required value={form.accommodation} placeholder="Not chosen yet" className={controlClass} />
+                <button
+                  type="button"
+                  onClick={() => (hasStay ? setStayStep(true) : setPlanStep(true))}
+                  className="shrink-0 rounded-full border border-coral/40 px-4 py-3 text-sm font-semibold text-coral transition-[background-color,transform] duration-150 hover:bg-coral/5 active:scale-95"
+                >
+                  {form.accommodation ? 'Change' : 'Choose'}
+                </button>
+              </div>
+            )}
+          </Field>
+        ) : (
+          <SelectInput label="Accommodation" required disabled={!isCustom && isOneDay} value={form.accommodation} onChange={(e) => set({ accommodation: e.target.value })}>
+            {!isCustom && <option value="Not Required">Not required</option>}
+            <option value="Standard (2/3 Star)">Standard (2/3 Star)</option>
+            <option value="Premium (4 Star)">Premium (4 Star)</option>
+            <option value="Luxury (5 Star / Resort)">Luxury (5 Star / Resort)</option>
+            {isCustom && <option value="Not Required">Not required</option>}
+          </SelectInput>
+        )}
+
+        <TextArea label="Special requests" hint="optional" value={form.notes} onChange={(e) => set({ notes: e.target.value })} placeholder="Anything specific — dietary needs, pickup time, celebrations…" />
+
+        <SubmitButton loading={loading}>Send booking request</SubmitButton>
+        <p className="text-center text-xs text-charcoal/45">Your details are saved securely and used only to arrange your trip.</p>
+      </form>
+    </ModalShell>
   )
 }

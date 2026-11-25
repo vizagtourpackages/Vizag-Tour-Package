@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { siteInfo } from "@/data/siteInfo";
+import { waMessages, waUrl } from "@/lib/whatsapp";
 import { ease } from "./Motion";
 
 export default function WhatsAppFAB() {
@@ -14,7 +14,7 @@ export default function WhatsAppFAB() {
     >
       <span className="ping-soft absolute inset-0 rounded-full bg-[#25d366]" />
       <a
-        href={siteInfo.whatsappLink}
+        href={waUrl(waMessages.general)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"

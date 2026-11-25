@@ -16,8 +16,8 @@ export default function DestinationCard({ destination, basePath }: DestinationCa
   const hasDedicatedPage = ["araku-valley", "lambasingi", "vanjangi"].includes(slug);
 
   // If basePath is provided, we assume it supports dynamic routes (like /devotional/[id])
-  // Otherwise, default fallback is just "/route-map" (without ID)
-  const fallbackHref = basePath ? `${basePath}/${destination.id}` : "/route-map";
+  // Otherwise, default fallback is the tourist places page
+  const fallbackHref = basePath ? `${basePath}/${destination.id}` : "/top-tourist-places";
 
   const href = destination.customLink || (hasDedicatedPage ? `/${slug}` : fallbackHref);
 

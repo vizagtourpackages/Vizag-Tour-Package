@@ -75,9 +75,6 @@ export default async function DevotionalDetailPage({ params }: { params: Promise
   }
 
   const mainImageUrl = destination.image_url || '/placeholder.jpg';
-  const whatsappMessage = encodeURIComponent(
-    `Hi! I'm interested in booking a devotional tour to "${destination.name}". Could you share details?`
-  );
 
   return (
     <div className="bg-warm-white min-h-screen pb-24 font-sans">
@@ -152,44 +149,21 @@ export default async function DevotionalDetailPage({ params }: { params: Promise
             </div>
           </div>
 
-          {/* Sticky Sidebar */}
-          <div className="w-full lg:w-1/3 sticky top-28">
-            <div className="bg-white rounded-[32px] p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-charcoal/5 relative overflow-hidden group">
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal/5 rounded-full blur-[30px] group-hover:bg-coral/5 transition-colors duration-700 pointer-events-none" />
-
+          {/* Sticky sidebar: starting price + enquiry form only */}
+          <aside className="w-full self-start lg:sticky lg:top-28 lg:w-1/3">
+            <div className="overflow-hidden rounded-[28px] border border-ocean/8 bg-white shadow-float">
               {destination.price && (
-                <div className="mb-8 pb-8 border-b border-charcoal/5 text-center relative z-10">
-                  <div className="text-xs font-bold text-charcoal/40 uppercase tracking-[0.2em] mb-2">Starting Price</div>
-                  <div className="text-5xl font-heading font-black text-charcoal tracking-tight">{destination.price}</div>
+                <div className="border-b border-ocean/8 bg-sand/60 px-6 py-5">
+                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-charcoal/50">Starting from</p>
+                  <p className="font-heading text-[2.2rem] leading-none text-ocean">{destination.price}</p>
                 </div>
               )}
-
-              <h3 className="font-heading font-bold text-xl text-charcoal mb-4 text-center">Ready for Darshan?</h3>
-              <p className="text-charcoal/60 text-sm mb-6 text-center">
-                Contact us to customize your devotional itinerary, arrange comfortable transport, and book your trip.
-              </p>
-
-              <Link
-                href={`https://wa.me/917780739851?text=${whatsappMessage}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"
-              >
-                Book on WhatsApp
-              </Link>
-
-              <div className="mt-4 text-center">
-                <span className="text-xs text-charcoal/50">
-                  Or call us directly at <strong>+917780739851</strong>
-                </span>
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-charcoal/5">
-                <h3 className="font-heading font-bold text-lg text-charcoal mb-3">Send an enquiry</h3>
+              <div className="p-5 sm:p-6">
+                <h3 className="mb-4 font-heading text-[1.3rem] text-ocean">Enquire about {destination.name}</h3>
                 <EnquiryForm context={destination.name} />
               </div>
             </div>
-          </div>
+          </aside>
         </div>
 
         {/* Similar Devotionals */}

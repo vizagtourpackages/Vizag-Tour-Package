@@ -19,9 +19,13 @@ export default function BackToTopFab() {
     check();
     window.addEventListener("scroll", check, { passive: true });
     window.addEventListener("resize", check);
+    // page height changes as content loads without any scroll event
+    const ro = new ResizeObserver(check);
+    ro.observe(document.body);
     return () => {
       window.removeEventListener("scroll", check);
       window.removeEventListener("resize", check);
+      ro.disconnect();
     };
   }, []);
 

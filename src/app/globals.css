@@ -353,15 +353,15 @@ html.lenis, html.lenis body { height: auto; }
 
 /* --- Button styles --- */
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-ocean text-white font-semibold rounded-full transition-all duration-300 hover:bg-ocean-light hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97];
+  @apply inline-flex items-center justify-center gap-2 min-h-[3rem] px-6 py-3 sm:px-8 text-[0.95rem] font-semibold leading-tight text-center max-w-full rounded-full bg-ocean text-white transition-all duration-300 hover:bg-ocean-light hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97];
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-ocean/10 text-ocean font-semibold rounded-full transition-all duration-300 hover:border-ocean/30 hover:bg-ocean/5 active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 min-h-[3rem] px-6 py-3 sm:px-8 text-[0.95rem] font-semibold leading-tight text-center max-w-full rounded-full border-2 border-ocean/15 text-ocean transition-all duration-300 hover:border-ocean/30 hover:bg-ocean/5 active:scale-[0.98];
 }
 
 .btn-coral {
-  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 text-white font-semibold rounded-full transition-[transform,box-shadow,background-position] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97];
+  @apply inline-flex items-center justify-center gap-2 min-h-[3rem] px-6 py-3 sm:px-8 text-[0.95rem] font-semibold leading-tight text-center max-w-full rounded-full text-white transition-[transform,box-shadow,background-position] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97];
   background-image: linear-gradient(120deg, #ff6a3d 0%, #ff8f4a 55%, #f0527a 120%);
   background-size: 160% 100%;
   background-position: 0% 50%;
@@ -370,7 +370,7 @@ html.lenis, html.lenis body { height: auto; }
 .btn-coral:hover { background-position: 100% 50%; box-shadow: var(--shadow-glow); }
 
 .btn-whatsapp {
-  @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-teal text-white font-semibold rounded-full transition-all duration-300 hover:bg-teal-dark hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97];
+  @apply inline-flex items-center justify-center gap-2 min-h-[3rem] px-6 py-3 sm:px-8 text-[0.95rem] font-semibold leading-tight text-center max-w-full rounded-full bg-teal text-white transition-all duration-300 hover:bg-teal-dark hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97];
 }
 
 /* --- Hide Scrollbar Utility --- */
@@ -458,3 +458,31 @@ html.lenis, html.lenis body { height: auto; }
   box-shadow: 0 2px 8px rgba(10, 42, 77, 0.35);
   cursor: pointer;
 }
+
+/* ---------- iPhone / iOS Safari hardening ---------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+a, button, summary, label, select { touch-action: manipulation; }
+/* 16px minimum on form controls stops Safari zooming the page when a field is focused */
+@media (max-width: 1023px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea { font-size: 16px !important; }
+}
+/* iOS renders date inputs with odd intrinsic widths; make them behave like text fields */
+input[type="date"], input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 3rem;
+  text-align: left;
+  background-color: #fff;
+}
+input[type="date"]::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
+/* Keep fixed bars out from under the notch / home indicator */
+.safe-top { padding-top: env(safe-area-inset-top); }

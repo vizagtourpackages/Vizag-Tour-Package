@@ -1,12 +1,19 @@
 "use client";
 
-import { useState, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, ChevronLeft, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { User } from "lucide-react";
 import type { Vehicle } from "@/data/vehicles";
 import { useBooking } from "./booking/BookingContext";
-import { useRouter } from "next/navigation";
+import ScrollCarousel from "./ScrollCarousel";
+import { Arrow } from "./Motion";
+import { waMessages, waUrl } from "@/lib/whatsapp";
+
+const WaIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.95L2 22l5.2-1.36A9.9 9.9 0 1 0 12.04 2Zm0 18.1c-1.5 0-2.95-.4-4.2-1.15l-.3-.18-3.1.8.83-3.02-.2-.31A8.2 8.2 0 1 1 12.04 20.1Zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.09-.39-.12-.56.12-.17.25-.64.8-.78.97-.15.16-.29.18-.54.06a6.7 6.7 0 0 1-3.3-2.88c-.25-.43.25-.4.72-1.34.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42h-.47a.9.9 0 0 0-.65.31 2.75 2.75 0 0 0-.86 2.05c0 1.2.88 2.38 1 2.55.12.16 1.72 2.62 4.17 3.68 1.55.67 2.16.72 2.94.6.47-.07 1.46-.6 1.66-1.18.2-.58.2-1.07.14-1.18-.06-.1-.23-.16-.47-.28Z" />
+  </svg>
+);
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -17,74 +24,64 @@ export function VehicleCard({ vehicle, isHomepage }: VehicleCardProps) {
   const { openBooking } = useBooking();
   const router = useRouter();
 
-  const handleClick = () => {
-    if (isHomepage) {
-      router.push(`/travels?book=${vehicle.id}`);
-    } else {
-      openBooking('cab', vehicle);
-    }
+  const book = () => {
+    if (isHomepage) router.push(`/travels?book=${vehicle.id}`);
+    else openBooking("cab", vehicle);
   };
 
   return (
-    <div
-      onClick={handleClick}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden cursor-pointer group"
-    >
-      {/* Model name pill */}
-      <div className="p-5 pb-0">
-        <span className="inline-block text-xs font-bold text-ocean bg-ocean/10 px-3 py-1.5 rounded-full uppercase tracking-wide">
-          {vehicle.model}
+    <article className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_2px_0_rgba(10,42,77,.04)] transition-shadow duration-500 hover:shadow-[0_40px_70px_-30px_rgba(10,42,77,.4)]">
+      {/* vehicle on a soft sunset backdrop */}
+      <div className="relative aspect-[5/3] overflow-hidden bg-[radial-gradient(ellipse_at_50%_100%,#fde6d2,#fff7ef_65%)]">
+        <img
+          src={vehicle.image}
+          alt={vehicle.model}
+          loading="lazy"
+          onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
+          className="absolute inset-0 h-full w-full object-contain p-4 mix-blend-multiply transition-transform duration-[1200ms] ease-[var(--ease-out)] group-hover:scale-105"
+        />
+        <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-ocean shadow-sm backdrop-blur">
+          <User size={13} className="text-coral" /> {vehicle.pax} seats
         </span>
       </div>
 
-      {/* Price + Pax row */}
-      <div className="px-5 pt-4 flex items-center justify-between">
-        <div className="text-2xl font-extrabold text-charcoal">
-          {vehicle.pricePerKm} <span className="text-sm font-medium text-charcoal/60">per km</span>
-        </div>
-        <span className="flex items-center gap-1.5 text-xs font-semibold text-charcoal/70 bg-gray-100 px-3 py-1.5 rounded-full">
-          <User size={14} />
-          {vehicle.pax} Pax
-        </span>
-      </div>
+      <div className="flex min-w-0 flex-1 flex-col p-5">
+        <h3 className="font-heading text-[1.35rem] leading-tight text-ocean">{vehicle.model}</h3>
 
-      {/* Min km note */}
-      <div className="px-5 pt-2">
-        <p className="text-[11px] text-charcoal/40 leading-snug">{vehicle.minKmNote}</p>
-      </div>
+        <p className="mt-2 font-heading text-[1.9rem] leading-none text-ocean">
+          {vehicle.pricePerKm}
+          <span className="ml-1.5 font-sans text-sm font-medium text-charcoal/55">per km</span>
+        </p>
+        {vehicle.minKmNote && <p className="mt-1.5 text-[0.74rem] leading-snug text-charcoal/50">{vehicle.minKmNote}</p>}
 
-      {/* Car image */}
-      <div className="px-4 py-3">
-        <div className="w-full aspect-[5/3] relative bg-gray-50 rounded-xl overflow-hidden">
-          <Image
-            src={vehicle.image}
-            alt={vehicle.model}
-            fill
-            sizes="(max-width: 768px) 90vw, 25vw"
-            className="object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-              if (target.parentElement) {
-                target.parentElement.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 text-sm font-medium">${vehicle.model}</div>`;
-              }
-            }}
-          />
-        </div>
-      </div>
+        {vehicle.amenities?.length > 0 && (
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {vehicle.amenities.map((a, i) => (
+              <li key={i} className="rounded-full bg-teal/10 px-3 py-1 text-[0.72rem] font-semibold text-teal">{a}</li>
+            ))}
+          </ul>
+        )}
 
-      {/* Amenity tags */}
-      <div className="px-5 pb-5 flex gap-2 flex-wrap">
-        {vehicle.amenities.map((amenity, idx) => (
-          <span
-            key={idx}
-            className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full"
+        <div className="mt-auto flex items-center gap-2 pt-5">
+          <button
+            type="button"
+            onClick={book}
+            className="group/b inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ocean px-5 text-sm font-semibold text-white transition-[background-color,transform] duration-200 hover:bg-coral active:scale-[0.97]"
           >
-            {amenity}
-          </span>
-        ))}
+            Book this vehicle <Arrow className="transition-transform group-hover/b:translate-x-1" />
+          </button>
+          <a
+            href={waUrl(waMessages.vehicle(vehicle.model))}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Ask about ${vehicle.model} on WhatsApp`}
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#25d366]/15 text-[#128c4a] transition-colors duration-200 hover:bg-[#25d366] hover:text-white"
+          >
+            <WaIcon />
+          </a>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -93,87 +90,22 @@ interface FleetSectionProps {
   isHomepage?: boolean;
 }
 
+/** Home page fleet carousel. (The Travels page has its own filterable grid.) */
 export default function FleetSection({ vehicles, isHomepage }: FleetSectionProps) {
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: "left" | "right") => {
-    if (!containerRef.current) return;
-    const cardWidth = containerRef.current.scrollWidth / vehicles.length;
-    const scrollAmount = direction === "right" ? cardWidth : -cardWidth;
-    containerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-  };
-
-  const handleScroll = () => {
-    if (!containerRef.current) return;
-    setScrollPosition(containerRef.current.scrollLeft);
-  };
-
-  const canScrollLeft = scrollPosition > 10;
-  const canScrollRight = containerRef.current
-    ? scrollPosition < containerRef.current.scrollWidth - containerRef.current.clientWidth - 10
-    : true;
-
   return (
-    <div className="relative">
-      {/* Navigation arrows */}
-      {canScrollLeft && (
-        <button
-          onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors hidden md:flex"
-          aria-label="Scroll left"
-        >
-          <ChevronLeft size={20} className="text-charcoal" />
-        </button>
-      )}
-      {canScrollRight && (
-        <button
-          onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors hidden md:flex"
-          aria-label="Scroll right"
-        >
-          <ChevronRight size={20} className="text-charcoal" />
-        </button>
-      )}
-
-      {/* Cards container */}
-      <div
-        ref={containerRef}
-        onScroll={handleScroll}
-        className="flex gap-5 overflow-x-auto scroll-smooth pb-2 snap-x snap-mandatory scrollbar-hide"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
+    <div>
+      <ScrollCarousel gap="gap-4">
         {vehicles.map((vehicle) => (
-          <div
-            key={vehicle.id}
-            className="min-w-[260px] w-[calc(25%-15px)] flex-shrink-0 snap-start"
-          >
+          <div key={vehicle.id} className="w-[290px] flex-shrink-0 snap-start sm:w-[300px] md:w-[calc(33.333%-0.75rem)] lg:w-[calc(25%-0.75rem)]">
             <VehicleCard vehicle={vehicle} isHomepage={isHomepage} />
           </div>
         ))}
-      </div>
+      </ScrollCarousel>
 
-      {/* Safety Guaranteed Banner */}
-      <div className="mt-10 bg-emerald-50 border border-emerald-200 rounded-2xl px-6 py-5 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            <path d="m9 12 2 2 4-4" />
-          </svg>
-        </div>
-        <div>
-          <h4 className="font-bold text-emerald-900 text-base">Safety Guaranteed</h4>
-          <p className="text-emerald-700/80 text-sm mt-0.5">
-            All vehicles are regularly sanitized and maintained for your safety and comfort.
-          </p>
-        </div>
-      </div>
-
-      {/* View All Travels Button */}
       {isHomepage && (
-        <div className="mt-8 flex justify-center">
-          <Link href="/travels" className="btn-secondary !px-6 !py-2.5 !text-sm">
-            View All Travels <ArrowRight size={18} />
+        <div className="mt-10 flex justify-center">
+          <Link href="/travels" className="btn-secondary">
+            View all travels <Arrow />
           </Link>
         </div>
       )}
