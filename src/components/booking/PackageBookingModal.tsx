@@ -15,7 +15,8 @@ export default function PackageBookingModal({ data, onClose }: { data: any; onCl
   const stayOptions: StayOption[] = data?.stay_options || []
   const stayLegs: StayLeg[] = data?.stay_legs || []
   const hasStay = stayOptions.length > 0 && !isCustom
-  const hasRatePlans = !hasStay && !isCustom && data?.rate_plans && data.rate_plans.length > 0
+  const ratePlans: any[] = (data?.rate_plans || []).filter((p: any) => p?.title && Number(p.price) > 0)
+  const hasRatePlans = !hasStay && !isCustom && ratePlans.length > 0
   const isOneDay = data?.duration?.toLowerCase().includes('1 day') || data?.duration === '1D'
 
   const [form, setForm] = useState({
@@ -186,14 +187,17 @@ Special Requests: ${booking.special_requests || 'None'}`
       <StayPicker
         options={stayOptions}
         legs={stayLegs}
-        initialType={data?.initial_stay_type}
+        initialType={stayType || data?.initial_stay_type}
+        initialPicks={stayPicks.map(p => p.hotel.id)}
         onClose={onClose}
         onConfirm={(type, picks) => {
           const nightsLabel = (l: StayLeg) => (l.nights === 1 ? `night ${l.from}` : `nights ${l.from}-${l.from + l.nights - 1}`)
+          const opt = stayOptions.find(o => o.type === type)
+          const price = opt ? ` (package price ₹${opt.price.toLocaleString('en-IN')} per ${opt.unit})` : ''
           const text =
             picks.length > 1
-              ? `${type} | ` + picks.map(p => `${p.leg ? areaLabel(p.leg.area) + ' (' + nightsLabel(p.leg) + ')' : 'Stay'}: ${p.hotel.name}`).join(' | ')
-              : `${type} - ${picks[0].hotel.name}`
+              ? `${type}${price} | ` + picks.map(p => `${p.leg ? areaLabel(p.leg.area) + ' (' + nightsLabel(p.leg) + ')' : 'Stay'}: ${p.hotel.name}`).join(' | ')
+              : `${type}${price} - ${picks[0].hotel.name}`
           setStayType(type)
           setStayPicks(picks)
           set({ accommodation: text })
@@ -207,7 +211,7 @@ Special Requests: ${booking.special_requests || 'None'}`
     return (
       <ModalShell title="Select a plan" subtitle="Choose your preferred accommodation option." onClose={onClose}>
         <div className="space-y-3">
-          {data.rate_plans.map((plan: any, i: number) => (
+          {ratePlans.map((plan: any, i: number) => (
             <button
               key={i}
               type="button"
@@ -336,11 +340,14 @@ Special Requests: ${booking.special_requests || 'None'}`
         {hasStay || hasRatePlans ? (
           <Field label="Your stay" required>
             {(id) =>
-              hasStay && stayPicks.length > 1 ? (
+              hasStay && stayPicks.length > 0 ? (
                 <div className="rounded-2xl border border-ocean/12 bg-sand/50 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-heading text-[1.05rem] text-ocean">{stayType}</p>
+                      {stayOptions.filter(o => o.type === stayType).map(o => (
+                        <p key={o.type} className="text-[0.82rem] font-semibold text-coral">Package price ₹{o.price.toLocaleString('en-IN')} / {o.unit}</p>
+                      ))}
                       <ul className="mt-2 space-y-1.5 text-[0.86rem] text-charcoal/75">
                         {stayPicks.map((p, i) => (
                           <li key={i}>

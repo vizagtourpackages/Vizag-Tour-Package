@@ -23,8 +23,8 @@ export default function StayOptions({ pkg, options, legs = [] }: { pkg: any; opt
         <h3 className="font-heading text-xl font-black text-charcoal">Choose Your Stay</h3>
         <p className="text-sm text-charcoal/60 mt-0.5">
           {legs.length > 0
-            ? 'Pick a room type, then a hotel for each place on your trip. Prices shown per night unless noted.'
-            : 'Pick a room type, then your favourite hotel. Prices shown per night unless noted.'}
+            ? 'Your package price depends on the room type. Then pick a hotel for each place on your trip.'
+            : 'Your package price depends on the room type. Then pick your favourite hotel.'}
         </p>
         {legs.length > 0 && (
           <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.82rem] font-semibold text-ocean">
@@ -41,7 +41,6 @@ export default function StayOptions({ pkg, options, legs = [] }: { pkg: any; opt
         {options.map((o, i) => {
           const meta = META[o.type] || META['Non AC']
           const Icon = meta.icon
-          const from = Math.min(...o.hotels.map(h => h.price))
           return (
             <motion.button
               key={o.type}
@@ -77,8 +76,9 @@ export default function StayOptions({ pkg, options, legs = [] }: { pkg: any; opt
               </div>
               <div className="mt-4 flex items-end justify-between">
                 <div>
-                  <div className="text-[10px] uppercase font-bold tracking-wider text-charcoal/40">Starting from</div>
-                  <div className="font-heading font-black text-xl text-charcoal">₹{from.toLocaleString('en-IN')}<span className="text-[10px] text-charcoal/50 font-bold"> /{o.hotels[0]?.unit || 'night'}</span></div>
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-charcoal/40">Package price</div>
+                  {!!o.mrp && o.mrp > o.price && <div className="text-xs text-charcoal/40 line-through">₹{o.mrp.toLocaleString('en-IN')}</div>}
+                  <div className="font-heading font-black text-xl text-charcoal">₹{o.price.toLocaleString('en-IN')}<span className="text-[10px] text-charcoal/50 font-bold"> /{o.unit}</span></div>
                 </div>
                 <span className="text-xs font-bold text-coral flex items-center gap-0.5">
                   {o.hotels.length} hotel{o.hotels.length > 1 ? 's' : ''} <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />

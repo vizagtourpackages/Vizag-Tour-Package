@@ -5,6 +5,8 @@ import { saveTourPackage } from '@/app/admin/tour-packages/actions'
 import ImageUpload from './ImageUpload'
 import RichTextEditor from './RichTextEditor'
 import EntityPicker from './EntityPicker'
+import PackagePriceEditor, { cleanRatePlans, type RatePlan } from './PackagePriceEditor'
+import { accommodationTypeOf } from '@/lib/content'
 import { AREAS, areaLabel, normalizeArea, stayLegs } from '@/lib/areas'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -39,7 +41,8 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
   // Nested structures
   const [days, setDays] = useState<any[]>(initialDays.length > 0 ? initialDays : [])
   const [stayPlan, setStayPlan] = useState<string[]>(Array.isArray(initialData?.stay_plan) ? initialData.stay_plan.map((a: string) => normalizeArea(a)) : [])
-  const [ratePlans, setRatePlans] = useState<any[]>(initialData?.rate_plans || [])
+  const [ratePlans, setRatePlans] = useState<RatePlan[]>(initialData?.rate_plans || [])
+  const [basePrice, setBasePrice] = useState<string>(String(initialData?.price ?? ''))
   const [resortIds, setResortIds] = useState<string[]>(Array.isArray(initialData?.resort_ids) ? initialData.resort_ids : [])
 
   // SEO Defaults
@@ -129,64 +132,13 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
       return [...prev, ...Array(count - prev.length).fill(fill)]
     })
   }
-  const attachedAreas = new Set(availableResorts.filter((r: any) => resortIds.includes(r.id)).map((r: any) => normalizeArea(r.area)))
-
-  // Rate Plans Logic
-  const addRatePlan = () => {
-    setRatePlans([...ratePlans, {
-      id: `temp-plan-${Date.now()}`,
-      title: '',
-      badge: '',
-      is_best_value: false,
-      price: '',
-      mrp: '',
-      features: [],
-      resort_ids: []
-    }])
-  }
-
-  const updateRatePlan = (planIndex: number, field: string, value: any) => {
-    const newPlans = [...ratePlans]
-    newPlans[planIndex][field] = value
-    setRatePlans(newPlans)
-  }
-
-  const removeRatePlan = (planIndex: number) => {
-    setRatePlans(ratePlans.filter((_, i) => i !== planIndex))
-  }
-
-  const addRatePlanFeature = (planIndex: number) => {
-    const newPlans = [...ratePlans]
-    newPlans[planIndex].features.push('')
-    setRatePlans(newPlans)
-  }
-
-  const updateRatePlanFeature = (planIndex: number, featureIndex: number, value: string) => {
-    const newPlans = [...ratePlans]
-    newPlans[planIndex].features[featureIndex] = value
-    setRatePlans(newPlans)
-  }
-
-  const removeRatePlanFeature = (planIndex: number, featureIndex: number) => {
-    const newPlans = [...ratePlans]
-    newPlans[planIndex].features = newPlans[planIndex].features.filter((_: any, i: number) => i !== featureIndex)
-    setRatePlans(newPlans)
-  }
-
-  const toggleRatePlanResort = (planIndex: number, resortId: string) => {
-    setRatePlans(prev => {
-      const newPlans = [...prev];
-      const updatedPlan = { ...newPlans[planIndex] };
-      const currentResorts = updatedPlan.resort_ids || [];
-      if (currentResorts.includes(resortId)) {
-        updatedPlan.resort_ids = currentResorts.filter((id: string) => id !== resortId);
-      } else {
-        updatedPlan.resort_ids = [...currentResorts, resortId];
-      }
-      newPlans[planIndex] = updatedPlan;
-      return newPlans;
-    });
-  }
+  const attachedHotels = availableResorts.filter((r: any) => resortIds.includes(r.id))
+  const attachedAreas = new Set(attachedHotels.map((r: any) => normalizeArea(r.area)))
+  const offeredTypes = new Set<string>(
+    attachedHotels.flatMap((r: any) =>
+      (r.resort_room_types || []).filter((rt: any) => rt.is_available).map((rt: any) => accommodationTypeOf(rt.room_type) || rt.room_type)
+    )
+  )
 
   // Form Submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -207,7 +159,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
     // Nested Data
     formData.append('days', JSON.stringify(days))
     formData.append('stay_plan', JSON.stringify(stayPlan))
-    formData.append('rate_plans', JSON.stringify(ratePlans))
+    formData.append('rate_plans', JSON.stringify(cleanRatePlans(ratePlans)))
     formData.append('resort_ids', JSON.stringify(resortIds))
     
     try {
@@ -242,7 +194,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
           
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Price (₹) *</label>
-            <input type="number" name="price" defaultValue={initialData?.price} required className="w-full p-3 border rounded-lg bg-gray-50" />
+            <input type="number" name="price" value={basePrice} onChange={e => setBasePrice(e.target.value)} required className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Price Label</label>
@@ -515,92 +467,14 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
         />
       </div>
 
-      {/* Rate Plans (Optional) */}
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
-          <h3 className="text-xl font-heading font-bold">Custom Rate Plans <span className="text-sm font-medium text-gray-400">(optional – shown only when no hotels are attached)</span></h3>
-          <button type="button" onClick={addRatePlan} className="flex items-center gap-1 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition-colors">
-            <Plus size={16} /> Add Rate Plan
-          </button>
-        </div>
-        
-        {ratePlans.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-            <p className="text-gray-500 mb-4">No custom rate plans added. (The default package price will be used)</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {ratePlans.map((plan, pIdx) => (
-              <div key={pIdx} className="bg-gray-50 p-6 rounded-xl border border-gray-200 relative">
-                <button type="button" onClick={() => removeRatePlan(pIdx)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 flex items-center gap-1 text-sm"><Trash2 size={16}/> Delete</button>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                  <div className="lg:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Plan Title</label>
-                    <input type="text" value={plan.title} onChange={e => updateRatePlan(pIdx, 'title', e.target.value)} placeholder="e.g. With AC DELUXE ROOM" className="w-full p-2 border rounded-md text-sm font-bold" />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Badge (Optional)</label>
-                    <input type="text" value={plan.badge || ''} onChange={e => updateRatePlan(pIdx, 'badge', e.target.value)} placeholder="e.g. Bestseller, PROMO" className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                  <div className="lg:col-span-1 flex items-center mt-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={plan.is_best_value || false} onChange={e => updateRatePlan(pIdx, 'is_best_value', e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-teal focus:ring-teal" />
-                      <span className="text-xs font-bold text-gray-700 uppercase">Best Value (Green)</span>
-                    </label>
-                  </div>
-                  
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Selling Price (₹)</label>
-                    <input type="number" value={plan.price || ''} onChange={e => updateRatePlan(pIdx, 'price', e.target.value)} placeholder="e.g. 5049" className="w-full p-2 border rounded-md text-sm font-bold text-emerald-600" />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">MRP Price (₹)</label>
-                    <input type="number" value={plan.mrp || ''} onChange={e => updateRatePlan(pIdx, 'mrp', e.target.value)} placeholder="e.g. 5728" className="w-full p-2 border rounded-md text-sm" />
-                  </div>
-                </div>
-
-                <div className="mt-4 border-t border-gray-200 pt-4">
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Features / Highlights</label>
-                  <div className="space-y-2 mb-2">
-                    {plan.features?.map((feat: string, fIdx: number) => (
-                      <div key={fIdx} className="flex items-center gap-2">
-                        <input type="text" value={feat} onChange={e => updateRatePlanFeature(pIdx, fIdx, e.target.value)} placeholder="e.g. Inc Complimentary Breakfast" className="flex-1 p-2 border rounded-md text-sm" />
-                        <button type="button" onClick={() => removeRatePlanFeature(pIdx, fIdx)} className="text-gray-400 hover:text-red-500"><X size={16}/></button>
-                      </div>
-                    ))}
-                  </div>
-                  <button type="button" onClick={() => addRatePlanFeature(pIdx)} className="flex items-center gap-1 text-sm font-bold text-charcoal hover:text-blue-600 transition-colors">
-                    <Plus size={14}/> Add Feature
-                  </button>
-                </div>
-                
-                {availableResorts && availableResorts.length > 0 && (
-                  <div className="mt-4 border-t border-gray-200 pt-4">
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Available Resorts for this Rate Plan</label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                      {availableResorts.map(resort => {
-                        const isSelected = (plan.resort_ids || []).includes(resort.id);
-                        return (
-                          <label key={resort.id} className={`flex items-center gap-2 p-2 rounded border cursor-pointer transition-colors ${isSelected ? 'bg-teal/5 border-teal text-teal' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-                            <input 
-                              type="checkbox" 
-                              checked={isSelected}
-                              onChange={() => toggleRatePlanResort(pIdx, resort.id)}
-                              className="rounded border-gray-300 text-teal focus:ring-teal"
-                            />
-                            <span className="text-xs font-bold truncate">{resort.name}</span>
-                          </label>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Package price per accommodation type */}
+      <PackagePriceEditor
+        value={ratePlans}
+        onChange={setRatePlans}
+        basePrice={Number(basePrice) || 0}
+        offeredTypes={offeredTypes}
+        hasHotels={attachedHotels.length > 0}
+      />
 
       {/* 6. Includes / Excludes */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -20,7 +20,7 @@ const PATHS: Path[] = [
     intro: "From a first idea to a fully planned trip — usually within a few hours.",
     steps: [
       { icon: Search, title: "Pick a package or describe your trip", text: "Browse our itineraries for Vizag, Araku, Lambasingi and more — or tell us what you have in mind and we'll build it.", tip: "Not sure? Use Plan my trip on the home page." },
-      { icon: BedDouble, title: "Choose your stay", text: "Select a room type — Non AC, Deluxe AC or Premium AC — then the hotel you like, with prices and photos side by side.", tip: "Prices are per night." },
+      { icon: BedDouble, title: "Choose your stay", text: "Select a room type — Non AC, Deluxe AC or Premium AC — then the hotel you like, with photos side by side.", tip: "Prices are per night." },
       { icon: MessageCircle, title: "Send your request", text: "Fill in a short form. We save your request securely and open WhatsApp with all your details pre-filled — just press send.", tip: "Takes under two minutes." },
       { icon: BadgeCheck, title: "We confirm everything", text: "Our team confirms dates, vehicle, stay and the final fixed price. No surge, no hidden extras.", tip: "A real person replies." },
       { icon: Sparkles, title: "Travel, then tell us how it went", text: "Your verified driver meets you on time, support is a call away, and your feedback helps us get better every trip." },

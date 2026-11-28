@@ -180,13 +180,13 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
             <StayOptions pkg={pkg} options={stayOptions} legs={stayLegs(pkg.stay_plan)} />
 
             {/* Custom rate plans (legacy) – only when no hotels are attached */}
-            {stayOptions.length === 0 && pkg.rate_plans && pkg.rate_plans.length > 0 && (
+            {stayOptions.length === 0 && pkg.rate_plans?.some((p: any) => p?.title && Number(p.price) > 0) && (
               <div className="bg-white rounded-[24px] border border-charcoal/10 overflow-hidden shadow-sm">
                 <div className="p-4 sm:p-5 bg-blue-50/50 border-b border-charcoal/10 flex items-center justify-between">
                   <h3 className="font-heading text-lg font-bold text-charcoal">Choose Your Plan</h3>
                 </div>
                 <div className="divide-y divide-charcoal/10">
-                  {pkg.rate_plans.map((plan: any, i: number) => {
+                  {pkg.rate_plans.filter((p: any) => p?.title && Number(p.price) > 0).map((plan: any, i: number) => {
                     const planMrp = plan.mrp || plan.originalPrice;
                     const planPrice = plan.price || 0;
                     const planDiscount = planMrp && planMrp > planPrice
@@ -283,7 +283,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
         {similarPackages && similarPackages.length > 0 && (
           <div className="mt-12 pt-12 border-t border-charcoal/10">
             <h2 className="font-heading text-3xl font-black text-charcoal mb-6 tracking-tight">You might also like</h2>
-            <ScrollCarousel gap="gap-4">
+            <ScrollCarousel gap="gap-3 md:gap-4" wide>
               {similarPackages.map((p: any) => (
                 <div key={p.id} className="w-[320px] sm:w-[320px] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start h-auto flex flex-col">
                   <PackageCard

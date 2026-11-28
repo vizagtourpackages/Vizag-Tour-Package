@@ -6,13 +6,15 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 interface ScrollCarouselProps {
   children: ReactNode;
   gap?: string;
+  /** Phones: one near full-width card with just the edge of the next one showing. */
+  wide?: boolean;
 }
 
 /**
  * Horizontal carousel. Desktop: arrow buttons. Mobile: edge fade + a "Swipe" hint with a
  * progress bar so people know there is more to the side.
  */
-export default function ScrollCarousel({ children, gap = "gap-5" }: ScrollCarouselProps) {
+export default function ScrollCarousel({ children, gap = "gap-5", wide = false }: ScrollCarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0); // 0..1
   const [scrollable, setScrollable] = useState(false);
@@ -65,14 +67,16 @@ export default function ScrollCarousel({ children, gap = "gap-5" }: ScrollCarous
       )}
 
       {/* soft edge fade on mobile: signals "more this way" */}
-      {canRight && (
+      {canRight && !wide && (
         <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-warm-white/90 to-transparent md:hidden" />
       )}
 
       <div
         ref={containerRef}
         onScroll={measure}
-        className={`flex ${gap} overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 pr-6 hide-scrollbar [&>*]:max-w-[84%] md:pr-0 md:[&>*]:max-w-none`}
+        className={`flex ${gap} overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 hide-scrollbar ${
+          wide ? "max-md:-mr-4 max-md:pr-4 max-md:[&>*]:!w-[calc(100%-0.75rem)]" : "pr-6 md:pr-0 [&>*]:max-w-[84%] md:[&>*]:max-w-none"
+        }`}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {children}

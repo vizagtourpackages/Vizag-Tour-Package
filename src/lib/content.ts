@@ -47,6 +47,15 @@ export function indexHeadings(html: string): { html: string; headings: Heading[]
 export const ACCOMMODATION_TYPES = ['Non AC', 'Deluxe AC', 'Premium AC'] as const
 export type AccommodationType = (typeof ACCOMMODATION_TYPES)[number]
 
+/** Which accommodation type a free-text plan title means ("AC DELUXE" -> "Deluxe AC"), or null. */
+export function accommodationTypeOf(title?: string | null): AccommodationType | null {
+  const n = (title || '').toLowerCase().replace(/[^a-z]/g, '')
+  if (n.includes('nonac')) return 'Non AC'
+  if (n.includes('premium')) return 'Premium AC'
+  if (n.includes('deluxe')) return 'Deluxe AC'
+  return null
+}
+
 /**
  * Stable sort by display_order (1 first). Rows without an order (0/null) keep their incoming
  * order (newest first) after the explicitly ordered ones.

@@ -1,5 +1,6 @@
 'use client'
 
+import type { Dispatch, SetStateAction } from 'react'
 import { BedDouble } from 'lucide-react'
 import MultiImageUpload from './MultiImageUpload'
 import { ACCOMMODATION_TYPES } from '@/lib/content'
@@ -24,20 +25,17 @@ export default function AccommodationTypesEditor({
   onChange,
 }: {
   value: RoomTypeRow[]
-  onChange: (rows: RoomTypeRow[]) => void
+  onChange: Dispatch<SetStateAction<RoomTypeRow[]>>
 }) {
   const find = (type: string) => value.find(r => norm(r.room_type) === norm(type))
 
+  // functional update: an image upload that finishes late must not undo edits made meanwhile
   const update = (type: string, patch: Partial<RoomTypeRow>) => {
-    const existing = find(type)
-    if (existing) {
-      onChange(value.map(r => (r === existing ? { ...r, ...patch } : r)))
-    } else {
-      onChange([
-        ...value,
-        { room_type: type, price: '', has_ac: type !== 'Non AC', is_available: false, images: [], ...patch },
-      ])
-    }
+    onChange(prev => {
+      const existing = prev.find(r => norm(r.room_type) === norm(type))
+      if (existing) return prev.map(r => (r === existing ? { ...r, ...patch, has_ac: type !== 'Non AC' } : r))
+      return [...prev, { room_type: type, price: '', is_available: false, images: [], ...patch, has_ac: type !== 'Non AC' }]
+    })
   }
 
   const legacy = value.filter(r => !ACCOMMODATION_TYPES.some(t => norm(t) === norm(r.room_type)))
@@ -49,7 +47,8 @@ export default function AccommodationTypesEditor({
         Accommodation Types
       </h4>
       <p className="text-sm text-gray-500 mb-6">
-        Enable the types this hotel offers, then set the price per night and add photos. These appear when a hotel is attached to a tour package.
+        Enable the types this hotel offers, set the price per night and add photos. The price is used for direct hotel bookings.
+        Inside tour packages guests see the package price, and this hotel is listed under every type enabled here.
       </p>
 
       <div className="grid grid-cols-1 gap-5">
@@ -75,8 +74,9 @@ export default function AccommodationTypesEditor({
                   <span className="text-sm text-gray-600 font-medium">Price / night (₹)</span>
                   <input
                     type="number"
-                    min={0}
-                    value={row?.price ?? ''}
+                    min={1}
+                    required={enabled}
+                    value={enabled && Number(row?.price) === 0 ? '' : row?.price ?? ''}
                     disabled={!enabled}
                     onChange={e => update(type, { price: e.target.value })}
                     className="w-32 p-2 border rounded-lg disabled:bg-gray-100 focus:ring-1 focus:ring-emerald-500"

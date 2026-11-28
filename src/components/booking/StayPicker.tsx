@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BedDouble, Check, ChevronLeft, ChevronRight, Images, MapPin } from 'lucide-react'
 import ModalShell from './ModalShell'
@@ -13,13 +13,16 @@ export interface StayHotel {
   location?: string
   category?: string
   cover?: string
-  price: number
-  unit?: string // "night" (default) or e.g. "couple" for legacy plan pricing
   images: string[]
 }
 
+/** One accommodation type. The price is the tour package price for that type. */
 export interface StayOption {
   type: string
+  price: number
+  mrp?: number
+  features?: string[]
+  unit: string // e.g. "couple"
   hotels: StayHotel[]
 }
 
@@ -41,19 +44,23 @@ const nightsText = (l: StayLeg) =>
 
 /**
  * The whole "choose your stay" popup.
- * 1) pick the room type (applies to the whole trip), 2) pick a hotel for each place in order
- * (each hotel shows its place), 3) optional photo view. The back arrow lives in the popup header, left of the title.
+ * 1) pick the room type (this sets the package price), 2) pick a hotel for each place. Guests can
+ * jump between places and change picks until they confirm, 3) optional photo view.
+ * The back arrow lives in the popup header, left of the title.
  */
 export default function StayPicker({
   options,
   legs = [],
   initialType,
+  initialPicks,
   onConfirm,
   onClose,
 }: {
   options: StayOption[]
   legs?: StayLeg[]
   initialType?: string | null
+  /** hotel id per stay, to restore earlier choices when the guest reopens the picker */
+  initialPicks?: string[]
   onConfirm: (type: string, picks: StayPick[]) => void
   onClose: () => void
 }) {
@@ -63,9 +70,18 @@ export default function StayPicker({
 
   const [type, setType] = useState<string | null>(initialType || null)
   const [li, setLi] = useState(0)
-  const [picks, setPicks] = useState<Record<number, string>>({})
+  const [pickedType, setPickedType] = useState(initialType || null) // type the current picks belong to
+  const [picks, setPicks] = useState<Record<number, string>>(() => Object.fromEntries((initialPicks || []).map((id, i) => [i, id])))
   const [gallery, setGallery] = useState<StayHotel | null>(null)
   const [imgIdx, setImgIdx] = useState(0)
+
+  // keep the current place chip in view when there are more places than fit
+  const chips = useRef<HTMLOListElement>(null)
+  useEffect(() => {
+    const row = chips.current
+    const chip = row?.children[li] as HTMLElement | undefined
+    if (row && chip) row.scrollTo({ left: chip.offsetLeft - row.offsetLeft - 24, behavior: 'smooth' })
+  }, [li, type, gallery])
 
   const active = options.find(o => o.type === type)
   const leg = stays[li]
@@ -77,14 +93,12 @@ export default function StayPicker({
     return inArea.length > 0 ? inArea : opt.hotels
   }
 
-  const typeFrom = (o: StayOption) => Math.min(...o.hotels.map(h => h.price))
-
   // ---- Step 1: accommodation types ----
   if (!active) {
     return (
       <ModalShell
         title="Choose your stay"
-        subtitle={multi ? `Pick a room type for the whole trip, then a hotel in each place.` : 'Pick a room type, then the hotel you prefer.'}
+        subtitle={multi ? 'Your package price depends on the room type. Then pick a hotel in each place.' : 'Your package price depends on the room type. Then pick your hotel.'}
         onClose={onClose}
       >
         {multi && (
@@ -105,7 +119,7 @@ export default function StayPicker({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-              onClick={() => { setType(o.type); setLi(0); setPicks({}) }}
+              onClick={() => { if (o.type !== pickedType) setPicks({}); setPickedType(o.type); setType(o.type); setLi(0) }}
               className="flex w-full items-center gap-4 rounded-2xl border-2 border-ocean/10 p-4 text-left transition-colors hover:border-coral hover:bg-coral/5"
             >
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-sunset text-white">
@@ -114,11 +128,13 @@ export default function StayPicker({
               <span className="min-w-0 flex-1">
                 <span className="block font-heading text-lg text-ocean">{o.type}</span>
                 <span className="block text-xs text-charcoal/55">{o.hotels.length} hotel{o.hotels.length > 1 ? 's' : ''} available</span>
+                {!!o.features?.length && <span className="mt-0.5 block text-xs text-teal">{o.features.join(' • ')}</span>}
               </span>
               <span className="shrink-0 text-right">
-                <span className="block text-[0.62rem] font-bold uppercase tracking-wider text-charcoal/40">Starting from</span>
-                <span className="block font-heading text-lg leading-tight text-ocean">{money(typeFrom(o))}</span>
-                <span className="block text-[0.62rem] text-charcoal/50">/ {o.hotels[0]?.unit || 'night'}</span>
+                <span className="block text-[0.62rem] font-bold uppercase tracking-wider text-charcoal/40">Package price</span>
+                {!!o.mrp && o.mrp > o.price && <span className="block text-[0.68rem] text-charcoal/40 line-through">{money(o.mrp)}</span>}
+                <span className="block font-heading text-lg leading-tight text-ocean">{money(o.price)}</span>
+                <span className="block text-[0.62rem] text-charcoal/50">/ {o.unit}</span>
               </span>
             </motion.button>
           ))}
@@ -131,10 +147,18 @@ export default function StayPicker({
   const selectedId = picks[li] || null
   const chosen = list.find(h => h.id === selectedId)
 
+  // picks survive going back, so guests can move around freely until they confirm
   const goBack = () => {
     if (li > 0) setLi(li - 1)
-    else { setType(null); setPicks({}) }
+    else setType(null)
   }
+
+  const pickedHotel = (i: number) => hotelsFor(active, stays[i]).find(h => h.id === picks[i])
+  const pendingStay = stays.findIndex((_, i) => !pickedHotel(i))
+  const allPicked = pendingStay === -1
+  // the next stay still needing a hotel, looking forward first
+  const nextPending = stays.findIndex((_, i) => i > li && !pickedHotel(i))
+  const goTo = nextPending !== -1 ? nextPending : pendingStay
 
   // ---- Step 3: images of one hotel ----
   if (gallery) {
@@ -201,26 +225,20 @@ export default function StayPicker({
   }
 
   // ---- Step 2: hotels for the current stay ----
-  const lastStay = li === stays.length - 1
-  const next = !lastStay ? stays[li + 1] : null
-
   const advance = () => {
     if (!chosen) return
-    if (!lastStay) {
-      setLi(li + 1)
+    if (!allPicked) {
+      setLi(goTo)
       return
     }
-    const finalPicks: StayPick[] = stays.map((l, i) => {
-      const h = (i === li ? chosen : hotelsFor(active, l).find(x => x.id === picks[i])) as StayHotel
-      return { leg: l, hotel: h }
-    })
+    const finalPicks: StayPick[] = stays.map((l, i) => ({ leg: l, hotel: pickedHotel(i) as StayHotel }))
     onConfirm(active.type, finalPicks)
   }
 
   return (
     <ModalShell
       title={multi && leg ? `${areaLabel(leg.area)} · ${active.type}` : `${active.type} hotels`}
-      subtitle={multi && leg ? `Stay ${li + 1} of ${stays.length} · ${nightsText(leg)} (${leg.nights} night${leg.nights > 1 ? 's' : ''})` : 'Select the hotel you would like to stay in.'}
+      subtitle={multi && leg ? `${nightsText(leg)} · tap a place below to switch` : 'Select the hotel you would like to stay in.'}
       onClose={onClose}
       onBack={options.length > 1 || li > 0 ? goBack : undefined}
       backLabel={li > 0 ? 'Back to the previous stay' : 'Back to room types'}
@@ -228,19 +246,22 @@ export default function StayPicker({
       <motion.div key={li} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
         {/* where am I in the trip */}
         {multi && (
-          <ol className="mb-4 flex gap-2 overflow-x-auto pb-1" aria-label="Your stays">
+          <ol ref={chips} className="no-scrollbar mb-4 flex gap-2 overflow-x-auto pb-1" aria-label="Your stays">
             {stays.map((l, i) => l && (
-              <li
-                key={i}
-                aria-current={i === li ? 'step' : undefined}
-                className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold ${
-                  i === li ? 'border-coral bg-coral/8 text-ocean' : picks[i] ? 'border-teal/40 bg-teal/8 text-ocean' : 'border-ocean/12 text-ocean/50'
-                }`}
-              >
-                <span className={`grid h-5 w-5 place-items-center rounded-full text-[0.65rem] text-white ${picks[i] ? 'bg-teal' : i === li ? 'bg-coral' : 'bg-ocean/25'}`}>
-                  {picks[i] ? <Check size={11} strokeWidth={3} /> : i + 1}
-                </span>
-                {areaLabel(l.area)}
+              <li key={i} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setLi(i)}
+                  aria-current={i === li ? 'step' : undefined}
+                  className={`flex items-center gap-2 rounded-full border-2 px-3.5 py-2.5 text-xs font-semibold transition-[background-color,border-color,transform] duration-150 active:scale-95 ${
+                    i === li ? 'border-coral bg-coral/8 text-ocean' : pickedHotel(i) ? 'border-teal/40 bg-teal/8 text-ocean' : 'border-ocean/12 text-ocean/60 hover:border-ocean/30'
+                  }`}
+                >
+                  <span className={`grid h-5 w-5 place-items-center rounded-full text-[0.65rem] text-white ${pickedHotel(i) ? 'bg-teal' : i === li ? 'bg-coral' : 'bg-ocean/25'}`}>
+                    {pickedHotel(i) ? <Check size={11} strokeWidth={3} /> : i + 1}
+                  </span>
+                  {areaLabel(l.area)}
+                </button>
               </li>
             ))}
           </ol>
@@ -278,16 +299,10 @@ export default function StayPicker({
                   </span>
                   <h4 className="font-heading text-[1.05rem] leading-tight text-ocean">{h.name}</h4>
                   {h.location && <p className="mt-1 text-xs text-charcoal/55">{h.location}</p>}
-                </div>
-                <div className="flex shrink-0 flex-col items-end justify-between text-right">
-                  <div>
-                    <div className="font-heading text-lg leading-none text-ocean">{money(h.price)}</div>
-                    <div className="text-[0.62rem] text-charcoal/50">/ {h.unit || 'night'}</div>
-                  </div>
                   <button
                     type="button"
                     onClick={e => { e.stopPropagation(); setGallery(h); setImgIdx(0) }}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-ocean hover:text-coral"
+                    className="mt-auto inline-flex w-fit items-center gap-1.5 whitespace-nowrap py-1 text-xs font-bold text-ocean hover:text-coral"
                   >
                     <Images size={14} /> View images
                   </button>
@@ -297,17 +312,22 @@ export default function StayPicker({
           })}
         </div>
 
+        <p className="mt-4 flex flex-wrap items-baseline justify-between gap-x-3 rounded-2xl bg-sand/70 px-4 py-3 text-sm">
+          <span className="font-semibold text-ocean">{active.type} package</span>
+          <span className="whitespace-nowrap font-heading text-lg text-ocean">{money(active.price)} <span className="font-sans text-[0.68rem] text-charcoal/55">/ {active.unit}</span></span>
+        </p>
+
         <button
           type="button"
           disabled={!chosen}
           onClick={advance}
-          className="btn-coral mt-5 w-full !py-3.5 text-sm disabled:pointer-events-none disabled:opacity-50"
+          className="btn-coral mt-3 w-full !py-3.5 text-sm disabled:pointer-events-none disabled:opacity-50"
         >
           {!chosen
             ? 'Select a hotel to continue'
-            : lastStay
+            : allPicked
               ? <><Check size={16} /> {multi ? 'Confirm my stays' : `Continue with ${chosen.name}`}</>
-              : <>Next: {next ? areaLabel(next.area) : ''} <ChevronRight size={16} /></>}
+              : <>Next: {stays[goTo] ? areaLabel(stays[goTo]!.area) : ''} <ChevronRight size={16} /></>}
         </button>
       </motion.div>
     </ModalShell>

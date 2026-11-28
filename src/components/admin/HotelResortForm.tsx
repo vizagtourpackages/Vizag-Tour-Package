@@ -40,8 +40,6 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
 
   // Room Types
   const [roomTypes, setRoomTypes] = useState<any[]>(initialRoomTypes)
-  const [showRoomModal, setShowRoomModal] = useState(false)
-  const [newRoom, setNewRoom] = useState({ room_type: '', price: '', has_ac: false, is_available: true })
 
   // Defaults
   const effectiveMetaTitle = metaTitle || name
@@ -111,21 +109,6 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
     } finally {
       setFetchingPlaces(false)
     }
-  }
-
-  // Room Types Logic
-  const addRoomType = () => {
-    if (!newRoom.room_type || !newRoom.price) {
-      alert("Please enter room type and price.")
-      return
-    }
-    setRoomTypes([...roomTypes, newRoom])
-    setNewRoom({ room_type: '', price: '', has_ac: false, is_available: true })
-    setShowRoomModal(false)
-  }
-
-  const removeRoomType = (idx: number) => {
-    setRoomTypes(roomTypes.filter((_, i) => i !== idx))
   }
 
   const router = useRouter()

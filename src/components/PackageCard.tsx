@@ -66,7 +66,7 @@ export default function PackageCard({ pkg }: PackageCardProps) {
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.82rem] font-medium text-charcoal/60">
           <span className="flex items-center gap-1.5"><Clock size={15} className="text-teal" />{pkg.duration}</span>
-          <span className="flex items-center gap-1.5"><Users size={15} className="text-teal" />{pkg.people}</span>
+          {pkg.people && <span className="flex items-center gap-1.5"><Users size={15} className="text-teal" />{pkg.people}</span>}
         </div>
 
         {route.length > 0 && (

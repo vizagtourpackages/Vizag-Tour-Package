@@ -52,6 +52,10 @@ export async function saveHotelResort(formData: FormData) {
     console.error("Error parsing JSON arrays from form data", e)
   }
   
+  // an enabled accommodation type needs a price; check before anything is written
+  const unpriced = roomTypes.find((rt: any) => rt.is_available && !(parseFloat(rt.price) > 0))
+  if (unpriced) return { error: `Enter a price per night for ${unpriced.room_type}, or untick it.` }
+
   const area = normalizeArea(formData.get('area') as string)
 
   const data = {
@@ -111,7 +115,7 @@ export async function saveHotelResort(formData: FormData) {
   // First delete existing ones
   if (resortId && id !== 'new') {
     const { error: deleteError } = await supabase.from('resort_room_types').delete().eq('resort_id', resortId)
-    if (deleteError) console.error("Error deleting old room types", deleteError)
+    if (deleteError) return { error: `Hotel saved, but room types could not be updated: ${deleteError.message}` }
   }
   
   // Then insert the new ones
@@ -122,15 +126,18 @@ export async function saveHotelResort(formData: FormData) {
         resort_id: resortId,
         room_type: rt.room_type,
         price: parseFloat(rt.price) || 0,
-        has_ac: rt.has_ac ?? (/ac/i.test(rt.room_type) && !/non/i.test(rt.room_type)),
+        has_ac: /non[^a-z]*a[^a-z]*c/i.test(rt.room_type) ? false : rt.has_ac ?? /ac/i.test(rt.room_type),
         is_available: rt.is_available,
         images: rt.images || []
       }))
-    const { error: insertError } = await supabase.from('resort_room_types').insert(roomTypesToInsert)
-    if (insertError) console.error("Error inserting room types", insertError)
+    if (roomTypesToInsert.length > 0) {
+      const { error: insertError } = await supabase.from('resort_room_types').insert(roomTypesToInsert)
+      if (insertError) return { error: `Hotel saved, but room types could not be saved: ${insertError.message}` }
+    }
   }
 
   revalidatePath('/admin/hotels-resorts')
+  revalidatePath('/hotels-and-resorts')
   revalidatePath('/')
   return { success: true }
 }

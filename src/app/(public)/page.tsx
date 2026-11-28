@@ -288,7 +288,7 @@ export default async function Home() {
             subtitle="Explore the best Vizag tour packages to Araku Valley, Vanjangi and Lambasingi with perfect itineraries, comfortable vehicles, hotels and resorts. Book customized Vizag to Araku tours today."
           />
           <ScrollReveal delay={0.2}>
-            <ScrollCarousel gap="gap-4">
+            <ScrollCarousel gap="gap-3 md:gap-4" wide>
               {displayPackages.map((pkg: any) => (
                 <div key={pkg.id} className="w-[320px] sm:w-[320px] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start h-auto flex flex-col">
                   <PackageCard pkg={pkg} />
