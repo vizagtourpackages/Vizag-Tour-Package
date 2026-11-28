@@ -25,10 +25,15 @@ export default function DestinationPageForm({ initialData, packages = [], hotels
       formData.append('package_ids', JSON.stringify(packageIds))
       formData.append('hotel_ids', JSON.stringify(hotelIds))
 
-      await updateDestinationPage(initialData.id, formData)
-    } catch (error) {
+      const res = await updateDestinationPage(initialData.id, formData)
+      if (res.error) alert(`Could not save: ${res.error}`)
+      else {
+        router.push('/admin/destination-pages')
+        router.refresh()
+      }
+    } catch (error: any) {
       console.error(error)
-      alert('Failed to save changes')
+      alert(`Failed to save changes: ${error?.message || error}`)
     } finally {
       setLoading(false)
     }
@@ -134,7 +139,7 @@ export default function DestinationPageForm({ initialData, packages = [], hotels
       {/* Attached packages & hotels */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Attached Tour Packages</h3>
-        <p className="text-xs text-gray-500">Packages selected here appear in the Packages tab of this page, in the order you pick them. If none are selected, packages marked for this page the old way are shown.</p>
+        <p className="text-xs text-gray-500">Packages selected here appear in the Packages tab of this page, in the order you pick them. If none are selected, packages with a night here in their stay plan are shown.</p>
         <EntityPicker
           items={packages.map((p: any) => ({ id: p.id, title: p.title, subtitle: p.duration, image: p.cover_image_url || p.image_url }))}
           value={packageIds}
@@ -145,6 +150,7 @@ export default function DestinationPageForm({ initialData, packages = [], hotels
 
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Attached Hotels &amp; Resorts</h3>
+        <p className="text-xs text-gray-500">If none are selected, all hotels whose area is this destination are shown.</p>
         <EntityPicker
           items={hotels.map((h: any) => ({ id: h.id, title: h.name, subtitle: h.location, image: h.cover_image_url }))}
           value={hotelIds}

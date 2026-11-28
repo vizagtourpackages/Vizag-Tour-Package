@@ -1,20 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import DestinationPageForm from '@/components/admin/DestinationPageForm'
+import { defaultDestination, isDestinationSlug } from '@/lib/destinations'
 
 export default async function EditDestinationPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params
+  const slug = resolvedParams.id
+  if (!isDestinationSlug(slug)) notFound()
   const supabase = await createClient()
 
-  const { data: page } = await supabase
-    .from('destination_pages')
-    .select('*')
-    .eq('id', resolvedParams.id)
-    .single()
-
-  if (!page) {
-    notFound()
-  }
+  const { data: saved } = await supabase.from('destination_pages').select('*').eq('id', slug).maybeSingle()
+  const page = saved || defaultDestination(slug)
 
   const { data: packages } = await supabase.from('tour_packages').select('id, title, duration, cover_image_url, image_url').order('title')
   const { data: hotels } = await supabase.from('hotels_resorts').select('id, name, location, cover_image_url').order('name')

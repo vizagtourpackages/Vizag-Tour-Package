@@ -3,6 +3,7 @@ import { MapPin, Clock } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Destination } from "@/data/destinations";
 import { Arrow } from "./Motion";
+import { AREAS, DEFAULT_AREA } from "@/lib/areas";
 
 interface DestinationCardProps {
   destination: Destination;
@@ -13,7 +14,7 @@ export default function DestinationCard({ destination, basePath }: DestinationCa
   const slug = destination.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
   // Check if this destination has a dedicated page
-  const hasDedicatedPage = ["araku-valley", "lambasingi", "vanjangi"].includes(slug);
+  const hasDedicatedPage = AREAS.some((a) => a.id !== DEFAULT_AREA && a.id === slug);
 
   // If basePath is provided, we assume it supports dynamic routes (like /devotional/[id])
   // Otherwise, default fallback is the tourist places page

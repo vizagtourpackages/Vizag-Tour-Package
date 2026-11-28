@@ -22,6 +22,7 @@ const destinations = [
   { label: "Araku Valley", href: "/araku-valley" },
   { label: "Lambasingi Hills", href: "/lambasingi" },
   { label: "Vanjangi Hills", href: "/vanjangi" },
+  { label: "Maredumilli", href: "/maredumilli" },
   { label: "Top Tourist Places", href: "/top-tourist-places" },
 ];
 

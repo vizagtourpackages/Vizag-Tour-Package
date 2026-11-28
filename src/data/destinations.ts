@@ -185,4 +185,21 @@ export const destinationDetails: Record<string, DestinationDetail> = {
     elevation: "1,100 meters",
     imageGradient: "from-purple-400 to-violet-600",
   },
+  maredumilli: {
+    id: "maredumilli",
+    name: "Maredumilli",
+    tagline: "Forest Escape in the Eastern Ghats",
+    description:
+      "Maredumilli is a forest getaway in the Eastern Ghats, in the Alluri Sitarama Raju district of Andhra Pradesh. Known for dense woodland, streams, waterfalls, hill viewpoints and eco-tourism, it makes a relaxed nature trip from Vizag.",
+    highlights: [
+      "Jalatarangini Waterfalls — a forest waterfall reached by a short walk",
+      "Amruthadhara Waterfalls — a quiet cascade surrounded by trees",
+      "Rampa Waterfalls — a popular stop on the forest route",
+      "Gudisa viewpoint — open grassland hilltop known for sunrise and clouds",
+      "Bamboo chicken — the local speciality cooked in bamboo",
+    ],
+    bestTimeToVisit: "October to February",
+    distance: "About 200 km from Vizag",
+    imageGradient: "from-emerald-500 to-teal-700",
+  },
 };

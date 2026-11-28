@@ -7,41 +7,46 @@ import PlaceholderImage from "@/components/PlaceholderImage";
 import DestinationTabs from "@/components/DestinationTabs";
 import EnquirySidebar from "@/components/EnquirySidebar";
 import RichContent from "@/components/RichContent";
-import { destinationDetails } from "@/data/destinations";
+import { defaultDestination, type DestinationSlug } from "@/lib/destinations";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import { getSiteSettings } from "@/lib/settings";
 import { createClient } from "@/lib/supabase/server";
 import { sortByDisplayOrder } from "@/lib/content";
 
-const FLAG: Record<string, string> = {
+// older "show on page" checkboxes (no such column exists for newer destinations)
+const LEGACY_FLAG: Partial<Record<DestinationSlug, string>> = {
   "araku-valley": "araku",
   lambasingi: "lambasingi",
   vanjangi: "vanjangi",
 };
 
-const GRADIENT: Record<string, string> = {
+const GRADIENT: Record<DestinationSlug, string> = {
   "araku-valley": "from-green-400 to-emerald-600",
   lambasingi: "from-blue-300 to-indigo-600",
   vanjangi: "from-purple-400 to-violet-600",
+  maredumilli: "from-emerald-500 to-teal-700",
 };
 
 /**
  * Shared destination page: hero, info strip, overview (inline, not a tab),
  * then tabs for the attached Packages and Hotels. A sticky enquiry sidebar sits beside the content.
  */
-export default async function DestinationView({ slug }: { slug: "araku-valley" | "lambasingi" | "vanjangi" }) {
+export default async function DestinationView({ slug }: { slug: DestinationSlug }) {
   const supabase = await createClient();
   const { contact } = await getSiteSettings();
 
-  const { data: dbDest } = await supabase.from("destination_pages").select("*").eq("id", slug).single();
+  const { data: dbDest } = await supabase.from("destination_pages").select("*").eq("id", slug).maybeSingle();
 
-  const fallback = destinationDetails[slug];
-  const dest: any = dbDest
-    ? { ...dbDest, bestTimeToVisit: dbDest.best_time_to_visit || dbDest.bestTimeToVisit, highlights: dbDest.highlights || [] }
-    : fallback;
-  const heroImage: string | undefined = dbDest?.image_url;
-  const gradient = dest.imageGradient || GRADIENT[slug];
-  const flag = FLAG[slug];
+  const row: any = dbDest || defaultDestination(slug);
+  const dest: any = { ...row, bestTimeToVisit: row.best_time_to_visit, highlights: row.highlights || [] };
+  const heroImage: string | undefined = row.image_url || undefined;
+  const gradient = GRADIENT[slug];
+  const flag = LEGACY_FLAG[slug];
+  const infoItems = [
+    { icon: MapPin, label: "Distance", value: dest.distance, hover: "group-hover:bg-coral" },
+    { icon: Mountain, label: "Elevation", value: dest.elevation, hover: "group-hover:bg-teal" },
+    { icon: Clock, label: "Best Time", value: dest.bestTimeToVisit, hover: "group-hover:bg-sky" },
+  ].filter((i) => i.value);
 
   // ---- Packages: explicitly attached ones, else legacy "show on page" flag ----
   const packageIds: string[] = Array.isArray(dbDest?.package_ids) ? dbDest.package_ids : [];
@@ -52,13 +57,17 @@ export default async function DestinationView({ slug }: { slug: "araku-valley" |
       ? [...data].sort((a, b) => packageIds.indexOf(a.id) - packageIds.indexOf(b.id))
       : null;
   } else {
+    // automatic: packages with a night here (stay plan), plus any marked the old way
     const { data } = await supabase
       .from("tour_packages")
       .select("*")
       .eq("is_published", true)
-      .eq(`show_in_${flag}`, true)
       .order("created_at", { ascending: false });
-    dbPackages = data ? sortByDisplayOrder(data) : null;
+    dbPackages = data
+      ? sortByDisplayOrder(
+          data.filter((p: any) => (Array.isArray(p.stay_plan) && p.stay_plan.includes(slug)) || (flag && p[`show_in_${flag}`]))
+        )
+      : null;
   }
 
   // ---- Hotels: explicitly attached ones, else legacy flag ----
@@ -68,11 +77,12 @@ export default async function DestinationView({ slug }: { slug: "araku-valley" |
     const { data } = await supabase.from("hotels_resorts").select("*").in("id", hotelIds).eq("is_published", true);
     dbHotels = data ? [...data].sort((a, b) => hotelIds.indexOf(a.id) - hotelIds.indexOf(b.id)) : null;
   } else {
+    // automatic: hotels whose area is this destination
     const { data } = await supabase
       .from("hotels_resorts")
       .select("*")
       .eq("is_published", true)
-      .eq(`show_in_${flag}`, true)
+      .eq("area", slug)
       .order("created_at", { ascending: false });
     dbHotels = data;
   }
@@ -117,9 +127,9 @@ export default async function DestinationView({ slug }: { slug: "araku-valley" |
         <SectionHeading title={`About ${dest.name}`} centered={true} />
       </ScrollReveal>
 
-      {dbDest?.content && (
+      {row.content && (
         <ScrollReveal direction="up">
-          <RichContent html={dbDest.content} className="mb-10" />
+          <RichContent html={row.content} className="mb-10" />
         </ScrollReveal>
       )}
 
@@ -220,9 +230,11 @@ export default async function DestinationView({ slug }: { slug: "araku-valley" |
         </div>
         <div className="container-max relative z-10 text-center px-4 mt-8">
           <ScrollReveal>
-            <span className="inline-flex badge bg-white/10 text-white backdrop-blur-md border border-white/20 mb-8 px-5 py-2.5 font-bold tracking-widest text-[10px] uppercase shadow-sm">
-              {dest.tagline}
-            </span>
+            {dest.tagline && (
+              <span className="inline-flex badge bg-white/10 text-white backdrop-blur-md border border-white/20 mb-8 px-5 py-2.5 font-bold tracking-widest text-[10px] uppercase shadow-sm">
+                {dest.tagline}
+              </span>
+            )}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-white mb-4 leading-[1.1] tracking-tight drop-shadow-sm">
               Explore <span className="text-sunset">{dest.name}</span>
             </h1>
@@ -238,11 +250,7 @@ export default async function DestinationView({ slug }: { slug: "araku-valley" |
         <div className="container-max">
           <div className="bg-white rounded-[24px] shadow-card border border-charcoal/5 p-2 max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-center divide-y sm:divide-y-0 sm:divide-x divide-charcoal/5 py-4 w-full">
-              {[
-                { icon: MapPin, label: "Distance", value: dest.distance, hover: "group-hover:bg-coral" },
-                { icon: Mountain, label: "Elevation", value: dest.elevation, hover: "group-hover:bg-teal" },
-                { icon: Clock, label: "Best Time", value: dest.bestTimeToVisit, hover: "group-hover:bg-sky" },
-              ].map(({ icon: Icon, label, value, hover }) => (
+              {infoItems.map(({ icon: Icon, label, value, hover }) => (
                 <div key={label} className="flex flex-col items-center py-4 sm:py-2 px-4 text-center group flex-1">
                   <div className={`w-10 h-10 rounded-full bg-sand flex items-center justify-center mb-2 ${hover} group-hover:text-white transition-colors text-charcoal duration-500 shadow-sm border border-charcoal/5`}>
                     <Icon size={20} />

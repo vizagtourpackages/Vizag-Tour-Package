@@ -35,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     stat("/araku-valley", 0.7),
     stat("/lambasingi", 0.7),
     stat("/vanjangi", 0.7),
+    stat("/maredumilli", 0.7),
     stat("/itinerary", 0.5),
     stat("/how-it-works", 0.5, "monthly"),
     stat("/about", 0.4, "monthly"),

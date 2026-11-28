@@ -1,11 +1,7 @@
-import { Metadata } from "next";
 import DestinationView from "@/components/DestinationView";
-import { destinationDetails } from "@/data/destinations";
+import { destinationMetadata } from "@/lib/destinations";
 
-export const metadata: Metadata = {
-  title: "Lambasingi Tour Packages",
-  description: destinationDetails["lambasingi"].description,
-};
+export const generateMetadata = () => destinationMetadata("lambasingi");
 
 export default function LambasingiPage() {
   return <DestinationView slug="lambasingi" />;

@@ -2,9 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { isDestinationSlug } from '@/lib/destinations'
 
-export async function updateDestinationPage(id: string, formData: FormData) {
+export async function updateDestinationPage(id: string, formData: FormData): Promise<{ success?: boolean; error?: string }> {
+  if (!isDestinationSlug(id)) return { error: 'Unknown destination page.' }
   const supabase = await createClient()
 
   // Parse highlights (textarea split by newlines)
@@ -25,20 +26,15 @@ export async function updateDestinationPage(id: string, formData: FormData) {
     hotel_ids: JSON.parse((formData.get('hotel_ids') as string) || '[]'),
   }
 
-  const { error } = await supabase
-    .from('destination_pages')
-    .update(data)
-    .eq('id', id)
-
-  if (error) {
-    console.error('Error updating destination page:', error)
-    throw new Error('Failed to update destination page')
+  // update the saved page, or create it on the first save
+  const { data: updated, error } = await supabase.from('destination_pages').update(data).eq('id', id).select('id')
+  if (error) return { error: error.message }
+  if (!updated?.length) {
+    const { error: insertError } = await supabase.from('destination_pages').insert([{ id, ...data }])
+    if (insertError) return { error: insertError.message }
   }
 
   revalidatePath('/admin/destination-pages')
   revalidatePath(`/${id}`)
-  revalidatePath('/araku-valley')
-  revalidatePath('/lambasingi')
-  revalidatePath('/vanjangi')
-  redirect('/admin/destination-pages')
+  return { success: true }
 }
