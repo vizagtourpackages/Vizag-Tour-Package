@@ -13,6 +13,8 @@ import DynamicIcon from "@/components/admin/DynamicIcon";
 import { waMessages } from "@/lib/whatsapp";
 import type { Vehicle } from "@/data/vehicles";
 import { useSite } from "@/components/SiteProvider";
+import FareTable from "@/components/FareTable";
+import type { FareRow } from "@/lib/fares";
 
 const CAPACITY = [
   { label: "All vehicles", test: () => true },
@@ -40,10 +42,12 @@ export default function TravelsClient({
   vehicles,
   trustPoints = [],
   notes = [],
+  fares = [],
 }: {
   vehicles: Vehicle[];
   trustPoints?: any[];
   notes?: any[];
+  fares?: FareRow[];
 }) {
   const { openBooking } = useBooking();
   const { wa } = useSite();
@@ -138,16 +142,18 @@ export default function TravelsClient({
         </div>
       </section>
 
+      <FareTable rows={fares} vehicles={vehicles} />
+
       {/* ---------- Fleet ---------- */}
       <section className="container-max px-4 pt-6 sm:px-6 lg:px-8">
         <SectionHeading kicker="Our fleet" title="Pick the ride that fits your group" subtitle="Filter by the number of seats you need. Every vehicle comes with a professional driver." />
 
-        <div role="tablist" aria-label="Filter by seats" className="no-scrollbar -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
+        <div role="group" aria-label="Filter by seats" className="no-scrollbar -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
           {CAPACITY.map((c, i) => (
             <button
               key={c.label}
-              role="tab"
-              aria-selected={cap === i}
+              type="button"
+              aria-pressed={cap === i}
               onClick={() => setCap(i)}
               className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-2.5 text-sm font-semibold transition-[background-color,color,border-color,transform] duration-150 active:scale-[0.97] ${
                 cap === i ? "border-ocean bg-ocean text-white" : "border-ocean/15 bg-white text-ocean/75 hover:border-ocean/40"

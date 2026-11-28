@@ -8,6 +8,7 @@ import AccommodationTypesEditor from './AccommodationTypesEditor'
 import RichTextField from './RichTextField'
 import Link from 'next/link'
 import { AREAS, normalizeArea } from '@/lib/areas'
+import { HOTEL_CATEGORIES } from '@/lib/content'
 import { useRouter } from 'next/navigation'
 import { Plus, X, MapPin, Loader2 } from 'lucide-react'
 
@@ -94,7 +95,7 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
       alert("Please enter both Latitude and Longitude first.")
       return
     }
-    
+
     setFetchingPlaces(true)
     try {
       const data = await fetchNearbyPlaces(parseFloat(latitude), parseFloat(longitude))
@@ -124,7 +125,7 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
     formData.append('amenities', JSON.stringify(amenities))
     formData.append('nearby_places', JSON.stringify(nearbyPlaces))
     formData.append('room_types', JSON.stringify(roomTypes))
-    
+
     try {
       const result = await saveHotelResort(formData)
       if (result?.error) {
@@ -141,11 +142,11 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
 
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl space-y-8 pb-24">
-      
+
       {/* Main Form Box */}
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
+
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Resort Name *</label>
             <input type="text" name="name" value={name} onChange={handleNameChange} required className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" />
@@ -164,10 +165,7 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
             <select name="category" defaultValue={initialData?.category || 'Resorts'} className="w-full p-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-teal focus:border-teal">
-              <option value="Resorts">Resorts</option>
-              <option value="Hotels">Hotels</option>
-              <option value="Homestays">Homestays</option>
-              <option value="Cottages">Cottages</option>
+              {HOTEL_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           </div>
 
@@ -227,40 +225,40 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
 
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-widest text-xs">Cover Image</label>
-            <ImageUpload 
-              bucket="site-images" 
-              folder="hotels" 
-              defaultImage={imageUrl} 
-              onUpload={setImageUrl} 
+            <ImageUpload
+              bucket="site-images"
+              folder="hotels"
+              defaultImage={imageUrl}
+              onUpload={setImageUrl}
             />
           </div>
 
           <div className="md:col-span-2 pt-4 border-t border-gray-100">
             <div className="flex justify-between items-center mb-4">
               <label className="block text-sm font-semibold text-gray-700">Gallery Images</label>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setGalleryImages([...galleryImages, ''])}
                 className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1"
               >
                 <Plus size={14} /> Add Image
               </button>
             </div>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {galleryImages.map((img, idx) => (
                 <div key={idx} className="relative group">
-                  <ImageUpload 
-                    bucket="site-images" 
-                    folder="hotels/gallery" 
-                    defaultImage={img} 
+                  <ImageUpload
+                    bucket="site-images"
+                    folder="hotels/gallery"
+                    defaultImage={img}
                     onUpload={(url) => {
                       const newArr = [...galleryImages];
                       newArr[idx] = url;
                       setGalleryImages(newArr);
-                    }} 
+                    }}
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setGalleryImages(galleryImages.filter((_, i) => i !== idx))}
                     className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md"
@@ -281,12 +279,12 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           <div className="md:col-span-2 pt-4 border-t border-gray-100">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Highlights</label>
             <div className="flex gap-2 mb-2">
-              <input 
-                type="text" 
-                value={highlightInput} 
+              <input
+                type="text"
+                value={highlightInput}
                 onChange={(e) => setHighlightInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addHighlight())}
-                className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" 
+                className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal"
                 placeholder="e.g. Coffee plantation walks"
               />
               <button type="button" onClick={addHighlight} className="bg-orange-600 hover:bg-orange-700 text-white px-6 rounded-lg font-medium transition-colors">
@@ -311,12 +309,12 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           <div className="md:col-span-2 pt-4 border-t border-gray-100">
             <label className="block text-sm font-semibold text-gray-700 mb-1">Amenities</label>
             <div className="flex gap-2 mb-2">
-              <input 
-                type="text" 
-                value={amenityInput} 
+              <input
+                type="text"
+                value={amenityInput}
                 onChange={(e) => setAmenityInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
-                className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal" 
+                className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal"
                 placeholder="e.g. Free WiFi"
               />
               <button type="button" onClick={addAmenity} className="bg-orange-600 hover:bg-orange-700 text-white px-6 rounded-lg font-medium transition-colors">
@@ -340,15 +338,15 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
           {/* SEO & Meta Data */}
           <div className="md:col-span-2 bg-gray-50 border border-gray-200 rounded-xl p-6 space-y-4">
             <h4 className="font-bold text-gray-900">SEO & Meta Data</h4>
-            
+
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Meta Title (defaults to resort name)</label>
-              <input 
-                type="text" 
-                name="meta_title" 
+              <input
+                type="text"
+                name="meta_title"
                 value={metaTitle}
                 onChange={(e) => setMetaTitle(e.target.value)}
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal bg-white" 
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal bg-white"
                 placeholder={name}
               />
               <div className="text-xs text-gray-500 mt-1">{effectiveMetaTitle.length}/60 characters</div>
@@ -356,12 +354,12 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Meta Description (defaults to resort description)</label>
-              <textarea 
-                name="meta_description" 
+              <textarea
+                name="meta_description"
                 value={metaDescription}
                 onChange={(e) => setMetaDescription(e.target.value)}
                 rows={3}
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal bg-white" 
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal focus:border-teal bg-white"
                 placeholder={description.substring(0, 100) + (description.length > 100 ? '...' : '')}
               />
               <div className="text-xs text-gray-500 mt-1">{effectiveMetaDescription.length}/160 characters</div>
@@ -432,9 +430,9 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
         <h4 className="font-bold text-gray-900 mb-2">Nearby Places API Integration</h4>
         <p className="text-sm text-gray-600 mb-4">Uses Mapbox API to find attractions, restaurants, beaches, etc. within 20km based on the Latitude/Longitude above.</p>
-        
-        <button 
-          type="button" 
+
+        <button
+          type="button"
           onClick={handleFetchPlaces}
           disabled={fetchingPlaces}
           className="flex items-center gap-2 px-4 py-2 border border-emerald-700 text-emerald-700 bg-emerald-50 rounded-lg font-medium hover:bg-emerald-100 transition-colors"

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import ModalShell from './ModalShell'
 import { FormError, FormSuccess, PhoneInput, Stepper, SubmitButton, TextArea, TextInput, Field, controlClass } from '../forms/Fields'
 import { useSite } from '@/components/SiteProvider'
+import PriceNote, { PRICE_NOTE, needsPriceNote } from '../forms/PriceNote'
 import { formatDate } from '@/lib/format'
 
 const priceUnit = (label?: string) => {
@@ -18,10 +19,10 @@ const priceUnit = (label?: string) => {
 
 export default function ResortBookingModal({ data, onClose }: { data: any; onClose: () => void }) {
   const { openWhatsApp } = useSite();
-  const [step, setStep] = useState<1 | 2>(1)
+  const [step, setStep] = useState<1 | 2>(data?.room ? 2 : 1)
   const [rooms, setRooms] = useState<any[]>([])
   const [loadingRooms, setLoadingRooms] = useState(true)
-  const [room, setRoom] = useState<any>(null)
+  const [room, setRoom] = useState<any>(data?.room || null)
 
   const [form, setForm] = useState({
     fullName: '',
@@ -31,7 +32,9 @@ export default function ResortBookingModal({ data, onClose }: { data: any; onClo
     email: '',
     checkIn: '',
     checkOut: '',
-    guests: 2,
+    adults: 2,
+    children: 0,
+    rooms: 1,
     notes: '',
   })
   const set = (patch: Partial<typeof form>) => setForm((p) => ({ ...p, ...patch }))
@@ -53,18 +56,13 @@ export default function ResortBookingModal({ data, onClose }: { data: any; onClo
       if (!rows || rows.length === 0) {
         setRoom({ room_type: 'Standard Room' })
         setStep(2)
-      } else if (data?.roomId) {
-        const chosen = rows.find((r: any) => r.id === data.roomId)
-        if (chosen) {
-          setRoom(chosen)
-          setStep(2)
-        }
       }
     }
     load()
   }, [data?.id])
 
   const today = new Date().toISOString().split('T')[0]
+  const showNote = needsPriceNote(form.adults + form.children, form.rooms)
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -79,9 +77,10 @@ export default function ResortBookingModal({ data, onClose }: { data: any; onClo
       email: form.email,
       check_in: form.checkIn,
       check_out: form.checkOut,
-      guests: form.guests,
+      guests: form.adults + form.children,
       room_type: room?.room_type || 'Unknown Room',
-      special_requests: form.notes,
+      // the bookings table keeps one guest count, so the breakdown goes with the requests
+      special_requests: [`Rooms: ${form.rooms} | Adults: ${form.adults} | Children: ${form.children}`, form.notes.trim()].filter(Boolean).join('\n'),
     }
     const res = await submitResortBooking(booking)
     if (!res.success) {
@@ -96,8 +95,8 @@ Room Type: ${booking.room_type}
 Name: ${booking.full_name}
 Contact: +91 ${booking.contact_number}${booking.whatsapp_number ? ` (WA: +91 ${booking.whatsapp_number})` : ''}
 Dates: ${formatDate(booking.check_in)} to ${formatDate(booking.check_out)}
-Guests: ${booking.guests}
-Special Requests: ${booking.special_requests || 'None'}`
+Rooms: ${form.rooms} | Adults: ${form.adults} | Children: ${form.children}
+Special Requests: ${form.notes.trim() || 'None'}${showNote ? `\nNote: ${PRICE_NOTE}` : ''}`
     setDone(text)
     setLoading(false)
     openWhatsApp(text)
@@ -105,7 +104,7 @@ Special Requests: ${booking.special_requests || 'None'}`
 
   if (done) {
     return (
-      <ModalShell title="Booking request" onClose={onClose}>
+      <ModalShell key="done" title="Booking request" onClose={onClose}>
         <FormSuccess whatsappMessage={done} onClose={onClose} />
       </ModalShell>
     )
@@ -113,7 +112,7 @@ Special Requests: ${booking.special_requests || 'None'}`
 
   if (step === 1) {
     return (
-      <ModalShell title="Choose your room" subtitle={`Select a room at ${data?.name}`} onClose={onClose}>
+      <ModalShell key="rooms" title="Choose your room" subtitle={`Select a room at ${data?.name}`} onClose={onClose}>
         {loadingRooms ? (
           <div className="flex justify-center py-14"><span className="h-8 w-8 animate-spin rounded-full border-4 border-teal border-t-transparent" /></div>
         ) : (
@@ -121,23 +120,26 @@ Special Requests: ${booking.special_requests || 'None'}`
             {rooms.map((r) => {
               const img = Array.isArray(r.images) && r.images[0]
               return (
-                <div key={r.id} className="overflow-hidden rounded-2xl border-2 border-ocean/10 bg-white transition-colors hover:border-coral/60">
-                  {img && <img src={img} alt={r.room_type} loading="lazy" className="aspect-[16/8] w-full object-cover" />}
-                  <div className="flex items-center justify-between gap-4 p-4">
-                    <div className="min-w-0">
-                      <span className={`mb-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-wider ${r.has_ac ? 'bg-sky/12 text-sky' : 'bg-amber/20 text-ocean/70'}`}>
-                        {r.has_ac ? <Snowflake size={11} /> : <Sun size={11} />} {r.has_ac ? 'AC room' : 'Non-AC room'}
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => { setRoom(r); setStep(2) }}
+                  className="block w-full overflow-hidden rounded-2xl border-2 border-ocean/10 bg-white text-left transition-colors hover:border-coral"
+                >
+                  {img && <img src={img} alt="" loading="lazy" className="aspect-[16/8] w-full object-cover" />}
+                  <span className="flex items-center justify-between gap-4 p-4">
+                    <span className="block min-w-0">
+                      <span className={`mb-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-wider ${r.has_ac ? 'bg-sky/12 text-ocean' : 'bg-amber/20 text-ocean'}`}>
+                        {r.has_ac ? <Snowflake size={11} aria-hidden /> : <Sun size={11} aria-hidden />} {r.has_ac ? 'AC room' : 'Non-AC room'}
                       </span>
-                      <h4 className="font-heading text-lg leading-tight text-ocean">{r.room_type}</h4>
-                      <p className="mt-0.5 text-xs text-charcoal/55">
+                      <span className="block font-heading text-lg leading-tight text-ocean">{r.room_type}</span>
+                      <span className="mt-0.5 block text-xs text-charcoal/65">
                         <span className="font-heading text-base text-ocean">₹{(r.price || 0).toLocaleString('en-IN')}</span> / {priceUnit(data?.price_label)}
-                      </p>
-                    </div>
-                    <button type="button" onClick={() => { setRoom(r); setStep(2) }} className="btn-coral shrink-0 !px-5 !py-3 text-sm">
-                      Select
-                    </button>
-                  </div>
-                </div>
+                      </span>
+                    </span>
+                    <span className="btn-coral shrink-0 !px-5 !py-3 text-sm">Select</span>
+                  </span>
+                </button>
               )
             })}
           </div>
@@ -148,6 +150,7 @@ Special Requests: ${booking.special_requests || 'None'}`
 
   return (
     <ModalShell
+      key="form"
       title="Book your stay"
       onClose={onClose}
       onBack={rooms.length > 0 ? () => setStep(1) : undefined}
@@ -184,7 +187,12 @@ Special Requests: ${booking.special_requests || 'None'}`
           <TextInput label="Check-out" required type="date" min={form.checkIn || today} value={form.checkOut} onChange={(e) => set({ checkOut: e.target.value })} />
         </div>
 
-        <Stepper label="Guests" required min={1} value={form.guests} onChange={(n) => set({ guests: n })} />
+        <div className="grid grid-cols-2 gap-3">
+          <Stepper label="Adults" required min={1} value={form.adults} onChange={(n) => set({ adults: n })} />
+          <Stepper label="Children" min={0} value={form.children} onChange={(n) => set({ children: n })} />
+        </div>
+        <Stepper label="Rooms" required min={1} value={form.rooms} onChange={(n) => set({ rooms: n })} />
+        <PriceNote show={showNote} />
 
         <TextArea label="Special requests" hint="optional" value={form.notes} onChange={(e) => set({ notes: e.target.value })} placeholder="Early check-in, extra bed, celebrations…" />
 

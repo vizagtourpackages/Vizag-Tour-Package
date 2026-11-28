@@ -18,20 +18,20 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
   const [title, setTitle] = useState(initialData?.title || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!initialData?.slug)
-  
+
   const [overviewDescription, setOverviewDescription] = useState(initialData?.overview_description || initialData?.description || '')
   const [fullOverviewContent, setFullOverviewContent] = useState(initialData?.full_overview_content || '')
-  
+
   // Basic arrays
   const [importantNotes, setImportantNotes] = useState<string[]>(initialData?.important_notes || [])
   const [noteInput, setNoteInput] = useState('')
-  
+
   const [includes, setIncludes] = useState<string[]>(initialData?.includes || [])
   const [includeInput, setIncludeInput] = useState('')
-  
+
   const [excludes, setExcludes] = useState<string[]>(initialData?.excludes || [])
   const [excludeInput, setExcludeInput] = useState('')
-  
+
   const [highlights, setHighlights] = useState<string[]>(initialData?.highlights || [])
   const [highlightInput, setHighlightInput] = useState('')
 
@@ -88,7 +88,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
       stops: []
     }])
   }
-  
+
   const updateDay = (dayIndex: number, field: string, value: any) => {
     const newDays = [...days]
     newDays[dayIndex][field] = value
@@ -148,20 +148,20 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
     formData.append('id', id)
     formData.append('cover_image_url', imageUrl)
     formData.set('full_overview_content', fullOverviewContent)
-    
+
     // Arrays
     formData.append('important_notes', JSON.stringify(importantNotes))
     formData.append('includes', JSON.stringify(includes))
     formData.append('excludes', JSON.stringify(excludes))
     formData.append('highlights', JSON.stringify(highlights))
     formData.append('destination_tags', JSON.stringify(destinationTags))
-    
+
     // Nested Data
     formData.append('days', JSON.stringify(days))
     formData.append('stay_plan', JSON.stringify(stayPlan))
     formData.append('rate_plans', JSON.stringify(cleanRatePlans(ratePlans)))
     formData.append('resort_ids', JSON.stringify(resortIds))
-    
+
     try {
       const result = await saveTourPackage(formData)
       if (result?.error) {
@@ -178,7 +178,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
 
   return (
     <form onSubmit={handleSubmit} className="space-y-12 max-w-6xl pb-24">
-      
+
       {/* 1. Basic Info */}
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
         <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-6">Basic Info</h3>
@@ -191,7 +191,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
             <label className="block text-sm font-bold text-gray-700 mb-2">Slug *</label>
             <input type="text" name="slug" value={slug} onChange={(e) => { setSlug(e.target.value); setIsSlugManuallyEdited(true) }} required className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
-          
+
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Price (₹) *</label>
             <input type="number" name="price" value={basePrice} onChange={e => setBasePrice(e.target.value)} required className="w-full p-3 border rounded-lg bg-gray-50" />
@@ -241,11 +241,11 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
 
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Rating</label>
-            <input type="number" step="0.1" max="5" name="rating" defaultValue={initialData?.rating || 4.5} className="w-full p-3 border rounded-lg bg-gray-50" />
+            <input type="number" step="0.1" min="0" max="5" name="rating" placeholder="e.g. 4.8 (empty hides it)" defaultValue={initialData?.rating ?? ''} className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Review Count</label>
-            <input type="number" name="review_count" defaultValue={initialData?.review_count || 10} className="w-full p-3 border rounded-lg bg-gray-50" />
+            <input type="number" min="0" name="review_count" placeholder="Number of reviews" defaultValue={initialData?.review_count ?? ''} className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Badge</label>
@@ -263,13 +263,13 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
               ))}
             </div>
             <div className="flex gap-2">
-              <input 
-                type="text" 
-                value={destinationInput} 
-                onChange={e => setDestinationInput(e.target.value)} 
+              <input
+                type="text"
+                value={destinationInput}
+                onChange={e => setDestinationInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addToArray(setDestinationTags, destinationTags, destinationInput, setDestinationInput))}
-                placeholder="e.g. Araku Valley" 
-                className="flex-1 p-3 border rounded-lg bg-gray-50" 
+                placeholder="e.g. Araku Valley"
+                className="flex-1 p-3 border rounded-lg bg-gray-50"
               />
               <button type="button" onClick={() => addToArray(setDestinationTags, destinationTags, destinationInput, setDestinationInput)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold hover:bg-gray-300">Add</button>
             </div>
@@ -286,19 +286,19 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
       <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-6">
         <div>
           <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-4">Short Package Description (For Cards & SEO)</h3>
-          <textarea 
-            name="overview_description" 
+          <textarea
+            name="overview_description"
             value={overviewDescription}
             onChange={e => setOverviewDescription(e.target.value)}
-            placeholder="Enter a 50-word short overview of the package..." 
-            rows={4} 
-            className="w-full p-3 border rounded-lg bg-gray-50" 
+            placeholder="Enter a 50-word short overview of the package..."
+            rows={4}
+            className="w-full p-3 border rounded-lg bg-gray-50"
           />
         </div>
 
         <div>
           <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-4">Full Overview Content (For 'Overview' Tab)</h3>
-          <RichTextEditor 
+          <RichTextEditor
             value={fullOverviewContent}
             onChange={setFullOverviewContent}
             placeholder="Write the full detailed overview here. Add images, paragraphs, etc."
@@ -320,13 +320,13 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
             ))}
           </div>
           <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={noteInput} 
+            <input
+              type="text"
+              value={noteInput}
               onChange={e => setNoteInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addToArray(setImportantNotes, importantNotes, noteInput, setNoteInput))}
-              placeholder="e.g. Borra Caves entry ticket is extra." 
-              className="flex-1 p-3 border rounded-lg bg-gray-50 text-sm" 
+              placeholder="e.g. Borra Caves entry ticket is extra."
+              className="flex-1 p-3 border rounded-lg bg-gray-50 text-sm"
             />
             <button type="button" onClick={() => addToArray(setImportantNotes, importantNotes, noteInput, setNoteInput)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold text-sm hover:bg-gray-300">Add</button>
           </div>
@@ -370,14 +370,14 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
                 <div className="absolute top-4 right-4">
                   <button type="button" onClick={() => removeDay(dIdx)} className="text-gray-400 hover:text-red-500 p-2"><Trash2 size={18}/></button>
                 </div>
-                
+
                 <div className="mb-6 max-w-xl">
                   <label className="block text-xs font-bold text-teal uppercase tracking-wider mb-2">Day {day.day_number}</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={day.day_summary_headline}
                     onChange={(e) => updateDay(dIdx, 'day_summary_headline', e.target.value)}
-                    placeholder="Day Summary Headline (e.g. Arrival in Vizag)" 
+                    placeholder="Day Summary Headline (e.g. Arrival in Vizag)"
                     className="w-full p-3 border rounded-lg font-bold text-lg"
                   />
                 </div>
@@ -404,7 +404,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
                 </div>
               </div>
             ))}
-            
+
             <button type="button" onClick={addDay} className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2">
               <Plus size={18}/> Add New Day Block
             </button>
@@ -489,13 +489,13 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
             ))}
           </div>
           <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={includeInput} 
+            <input
+              type="text"
+              value={includeInput}
               onChange={e => setIncludeInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addToArray(setIncludes, includes, includeInput, setIncludeInput))}
-              placeholder="e.g. Daily Breakfast" 
-              className="flex-1 p-3 border rounded-lg bg-gray-50 text-sm" 
+              placeholder="e.g. Daily Breakfast"
+              className="flex-1 p-3 border rounded-lg bg-gray-50 text-sm"
             />
             <button type="button" onClick={() => addToArray(setIncludes, includes, includeInput, setIncludeInput)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold text-sm hover:bg-gray-300">Add</button>
           </div>
@@ -511,13 +511,13 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
             ))}
           </div>
           <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={excludeInput} 
+            <input
+              type="text"
+              value={excludeInput}
               onChange={e => setExcludeInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addToArray(setExcludes, excludes, excludeInput, setExcludeInput))}
-              placeholder="e.g. Flight Tickets" 
-              className="flex-1 p-3 border rounded-lg bg-gray-50 text-sm" 
+              placeholder="e.g. Flight Tickets"
+              className="flex-1 p-3 border rounded-lg bg-gray-50 text-sm"
             />
             <button type="button" onClick={() => addToArray(setExcludes, excludes, excludeInput, setExcludeInput)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold text-sm hover:bg-gray-300">Add</button>
           </div>
@@ -536,13 +536,13 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
           ))}
         </div>
         <div className="flex gap-2 max-w-md">
-          <input 
-            type="text" 
-            value={highlightInput} 
-            onChange={e => setHighlightInput(e.target.value)} 
+          <input
+            type="text"
+            value={highlightInput}
+            onChange={e => setHighlightInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addToArray(setHighlights, highlights, highlightInput, setHighlightInput))}
-            placeholder="e.g. Borra Caves" 
-            className="flex-1 p-3 border rounded-lg bg-gray-50" 
+            placeholder="e.g. Borra Caves"
+            className="flex-1 p-3 border rounded-lg bg-gray-50"
           />
           <button type="button" onClick={() => addToArray(setHighlights, highlights, highlightInput, setHighlightInput)} className="px-4 py-2 bg-gray-200 rounded-lg font-bold hover:bg-gray-300">Add</button>
         </div>
@@ -603,7 +603,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
           <input type="checkbox" name="is_published" value="true" defaultChecked={initialData ? initialData.is_published : true} className="w-6 h-6 rounded border-gray-300 text-teal focus:ring-teal" />
           <span className="font-bold text-gray-700">Publish this package</span>
         </label>
-        
+
         <div className="flex gap-4 w-full sm:w-auto">
           <Link href="/admin/tour-packages" className="flex-1 sm:flex-none text-center px-6 py-3 border border-gray-200 rounded-lg font-bold text-gray-600 hover:bg-gray-50 transition-colors">
             Cancel

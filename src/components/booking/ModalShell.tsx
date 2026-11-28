@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowLeft, X } from "lucide-react";
 
 /**
@@ -22,6 +22,32 @@ export default function ModalShell({
   backLabel?: string;
   children: React.ReactNode;
 }) {
+  const dialog = useRef<HTMLDivElement>(null);
+
+  // move focus into the dialog, keep Tab inside it, and give focus back on close
+  useEffect(() => {
+    const node = dialog.current;
+    const opener = document.activeElement as HTMLElement | null;
+    node?.focus({ preventScroll: true });
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !node) return;
+      const items = Array.from(
+        node.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      ).filter((el) => el.getClientRects().length > 0);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const at = document.activeElement;
+      if (e.shiftKey && (at === first || at === node)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && at === last) { e.preventDefault(); first.focus(); }
+    };
+    node?.addEventListener("keydown", trap);
+    return () => {
+      node?.removeEventListener("keydown", trap);
+      if (opener?.isConnected) opener.focus({ preventScroll: true });
+    };
+  }, []);
+
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -41,11 +67,13 @@ export default function ModalShell({
       }}
     >
       <div
+        ref={dialog}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={title}
         data-lenis-prevent
-        className="thin-scroll relative flex max-h-[94vh] w-full flex-col overflow-hidden rounded-t-[26px] bg-white shadow-2xl [max-height:94dvh] sm:max-h-[90vh] sm:max-w-xl sm:rounded-[26px]"
+        className="thin-scroll relative flex outline-none max-h-[94vh] w-full flex-col overflow-hidden rounded-t-[26px] bg-white shadow-2xl [max-height:94dvh] sm:max-h-[90vh] sm:max-w-xl sm:rounded-[26px]"
       >
         <div aria-hidden className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-ocean/15 sm:hidden" />
 

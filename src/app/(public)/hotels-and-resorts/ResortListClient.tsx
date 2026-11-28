@@ -6,28 +6,29 @@ import { SlidersHorizontal } from 'lucide-react';
 import FilterSheet, { FilterGroup, OptionPill } from '@/components/FilterSheet';
 import { AREAS, DEFAULT_AREA, normalizeArea, areaLabel, type AreaId } from '@/lib/areas';
 import { useSite } from '@/components/SiteProvider';
+import { HOTEL_CATEGORIES, categoryKey } from '@/lib/content';
 
 export default function ResortListClient({ initialHotels }: { initialHotels: any[] }) {
   const { wa } = useSite();
   const [category, setCategory] = useState<string>('All');
-  const [minRating, setMinRating] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(20000);
   const [showFilters, setShowFilters] = useState(false);
   const [area, setArea] = useState<AreaId>(DEFAULT_AREA); // Vizag is the default switch
-  const clearAll = () => { setCategory('All'); setMinRating(0); setMaxPrice(20000); };
+  const clearAll = () => { setCategory('All'); setMaxPrice(20000); };
 
   // Extract unique categories
   const inArea = useMemo(() => initialHotels.filter(h => normalizeArea(h.area) === area), [initialHotels, area]);
   const counts = useMemo(() => Object.fromEntries(AREAS.map(a => [a.id, initialHotels.filter(h => normalizeArea(h.area) === a.id).length])), [initialHotels]);
-  const categories = ['All', ...Array.from(new Set(inArea.map(h => h.type)))];
+  // the main categories are always offered; Cottages only when one is listed
+  const categories = [
+    { value: 'All', label: 'All stays' },
+    ...HOTEL_CATEGORIES.filter(c => c.value !== 'Cottages' || initialHotels.some(h => categoryKey(h.type) === categoryKey(c.value))),
+  ];
 
   const filteredHotels = useMemo(() => {
     return inArea.filter((hotel) => {
       // Category filter
-      if (category !== 'All' && hotel.type !== category) return false;
-      
-      // Rating filter
-      if (hotel.rating < minRating) return false;
+      if (category !== 'All' && categoryKey(hotel.type) !== categoryKey(category)) return false;
 
       // Price filter (extract numbers from '₹8,500' format)
       const priceVal = parseInt(hotel.price.replace(/[^0-9]/g, '')) || 0;
@@ -35,9 +36,9 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
 
       return true;
     });
-  }, [inArea, category, minRating, maxPrice]);
+  }, [inArea, category, maxPrice]);
 
-  const activeCount = (category !== 'All' ? 1 : 0) + (minRating > 0 ? 1 : 0) + (maxPrice < 20000 ? 1 : 0);
+  const activeCount = (category !== 'All' ? 1 : 0) + (maxPrice < 20000 ? 1 : 0);
 
   return (
     <div>
@@ -87,14 +88,7 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
         <FilterGroup title="Category">
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
-              <OptionPill key={cat} active={category === cat} onClick={() => setCategory(cat)}>{cat}</OptionPill>
-            ))}
-          </div>
-        </FilterGroup>
-        <FilterGroup title="Rating">
-          <div className="flex flex-wrap gap-2">
-            {[0, 3, 4, 4.5].map((r) => (
-              <OptionPill key={r} active={minRating === r} onClick={() => setMinRating(r)}>{r === 0 ? 'Any rating' : `${r}+ stars`}</OptionPill>
+              <OptionPill key={cat.value} active={category === cat.value} onClick={() => setCategory(cat.value)}>{cat.label}</OptionPill>
             ))}
           </div>
         </FilterGroup>
@@ -118,36 +112,15 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
               <h4 className="font-bold text-[#332A20] mb-3">Category</h4>
               <div className="space-y-2">
                 {categories.map((cat) => (
-                  <label key={cat} className="flex items-center gap-3 cursor-pointer">
-                    <input 
-                      type="radio" 
+                  <label key={cat.value} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
                       name="category"
-                      checked={category === cat}
-                      onChange={() => setCategory(cat)}
+                      checked={category === cat.value}
+                      onChange={() => setCategory(cat.value)}
                       className="text-[#2D6A4F] focus:ring-[#2D6A4F] cursor-pointer"
                     />
-                    <span className="text-[#6B5744] text-[15px]">{cat}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Rating */}
-            <div>
-              <h4 className="font-bold text-[#332A20] mb-3">Rating</h4>
-              <div className="space-y-2">
-                {[0, 3, 4, 4.5].map((rating) => (
-                  <label key={rating} className="flex items-center gap-3 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      name="rating"
-                      checked={minRating === rating}
-                      onChange={() => setMinRating(rating)}
-                      className="text-[#2D6A4F] focus:ring-[#2D6A4F] cursor-pointer"
-                    />
-                    <span className="text-[#6B5744] text-[15px]">
-                      {rating === 0 ? 'Any Rating' : `${rating}+ Stars`}
-                    </span>
+                    <span className="text-[#6B5744] text-[15px]">{cat.label}</span>
                   </label>
                 ))}
               </div>
@@ -159,10 +132,10 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
                 <h4 className="font-bold text-[#332A20]">Max Price</h4>
                 <span className="text-[#2D6A4F] font-bold text-sm">₹{maxPrice.toLocaleString()}</span>
               </div>
-              <input 
-                type="range" 
-                min="1000" 
-                max="30000" 
+              <input
+                type="range"
+                min="1000"
+                max="30000"
                 step="500"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(parseInt(e.target.value))}
@@ -182,7 +155,7 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
         <div className="mb-4 text-[#6B5744] font-medium text-sm">
           Showing {filteredHotels.length} {filteredHotels.length === 1 ? 'property' : 'properties'} in {areaLabel(area)}
         </div>
-        
+
         {inArea.length === 0 ? (
           <div className="text-center py-16 px-6 bg-white rounded-[24px] border border-[#E8DDD4] shadow-sm">
             <h3 className="text-xl font-bold text-[#332A20] mb-2">Stays in {areaLabel(area)} are coming soon</h3>
@@ -200,13 +173,9 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
         ) : (
           <div className="text-center py-16 bg-white rounded-[24px] border border-[#E8DDD4] shadow-sm">
             <h3 className="text-xl font-bold text-[#332A20] mb-2">No properties found</h3>
-            <p className="text-[#6B5744]">Try adjusting your filters to see more results.</p>
-            <button 
-              onClick={() => {
-                setCategory('All');
-                setMinRating(0);
-                setMaxPrice(20000);
-              }}
+            <p className="text-[#6B5744]">Try another category or a higher price.</p>
+            <button
+              onClick={clearAll}
               className="mt-6 text-[#2D6A4F] font-bold hover:underline"
             >
               Clear all filters

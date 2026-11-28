@@ -336,7 +336,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                   rating: r.rating || 0,
                   reviews: r.reviews || 0,
                   location: r.location,
-                  price: r.price_per_night ? `₹${r.price_per_night}` : r.price,
+                  price: r.price_per_night ? `₹${Number(r.price_per_night).toLocaleString("en-IN")}` : r.price,
                   price_label: r.price_label,
                   no_of_persons: r.no_of_persons,
                   image: r.cover_image_url || r.image_url,

@@ -6,16 +6,20 @@ import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import { getSiteSettings } from "@/lib/settings";
 
-export default async function PackageBookingSidebar({ 
-  pkg, 
-  originalPrice, 
-  discountPercent 
-}: { 
-  pkg: any; 
-  originalPrice: number | null; 
-  discountPercent: number; 
+export default async function PackageBookingSidebar({
+  pkg,
+  originalPrice,
+  discountPercent
+}: {
+  pkg: any;
+  originalPrice: number | null;
+  discountPercent: number;
 }) {
   const { contact } = await getSiteSettings();
+  // this package's own rating; the company's Google rating when none is set
+  const own = Number(pkg.rating) > 0;
+  const rating = own ? Number(pkg.rating) : siteInfo.googleReviews.rating;
+  const reviews = own ? Number(pkg.review_count) || 0 : siteInfo.googleReviews.count;
   return (
     <div className="bg-white border border-charcoal/10 shadow-xl rounded-[16px] lg:rounded-[24px] p-4 lg:p-6 flex flex-col gap-3 lg:gap-5">
       {/* Pricing Block */}
@@ -51,7 +55,7 @@ export default async function PackageBookingSidebar({
           By booking you agree to our <TermsButton category="packages" />
         </div>
       </div>
-      
+
       <div className="h-px bg-charcoal/10 w-full" />
 
       {/* Key Details */}
@@ -87,7 +91,7 @@ export default async function PackageBookingSidebar({
       {/* Rating Block */}
       <div className="flex flex-col items-center justify-center space-y-1 lg:space-y-2">
         <div className="flex items-center gap-2 lg:gap-3">
-          <span className="text-xl lg:text-2xl font-black font-heading text-charcoal">{siteInfo.googleReviews.rating}</span>
+          <span className="text-xl lg:text-2xl font-black font-heading text-charcoal">{rating}</span>
           <div className="flex gap-0.5 lg:gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star key={star} size={14} className="fill-amber-500 text-amber-500 lg:w-[18px] lg:h-[18px]" />
@@ -95,7 +99,7 @@ export default async function PackageBookingSidebar({
           </div>
         </div>
         <span className="text-[10px] lg:text-xs font-bold text-charcoal/50 uppercase tracking-widest">
-          {siteInfo.googleReviews.count.toLocaleString('en-IN')} Google Reviews
+          {own ? (reviews > 0 ? `${reviews.toLocaleString('en-IN')} reviews` : 'Package rating') : `${reviews.toLocaleString('en-IN')} Google Reviews`}
         </span>
       </div>
 

@@ -21,7 +21,7 @@ export default function ResortBookingButton({
     slug: hotel.slug,
     name: hotel.name,
     price_label: hotel.price_label,
-    roomId: room?.id,
+    room, // chosen room: the popup opens on the booking form
   };
 
   return (

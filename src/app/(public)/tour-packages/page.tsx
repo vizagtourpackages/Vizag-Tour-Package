@@ -32,7 +32,7 @@ export default async function TourPackagesPage() {
       includes: pkg.includes || [],
       excludes: pkg.excludes || [],
       category: pkg.category || pkg.type || '',
-      rating: pkg.rating || 4.5,
+      rating: pkg.rating || 0,
       review_count: pkg.review_count || 0,
       rate_plans: pkg.rate_plans || [],
       imageGradient: 'from-teal to-blue-600', // fallback

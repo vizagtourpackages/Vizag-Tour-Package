@@ -18,7 +18,7 @@ export default function HotelCard({ hotel, compact = false }: { hotel: Hotel, co
 
   return (
     <article className="group flex h-full flex-col">
-      <Link href={href} className="relative block aspect-[4/5] overflow-hidden rounded-[26px] bg-sand">
+      <Link href={href} className="relative block aspect-[4/3] overflow-hidden rounded-[26px] bg-sand">
         <img
           src={hotel.image || '/placeholder.jpg'}
           alt={hotel.name || 'Resort'}

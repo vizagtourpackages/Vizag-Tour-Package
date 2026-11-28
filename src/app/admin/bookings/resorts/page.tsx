@@ -13,7 +13,7 @@ export default async function ResortBookingsPage(props: { searchParams?: Promise
   const statusFilter = resolvedParams?.status || 'all'
 
   let query = supabase.from('resort_bookings').select('*').order('created_at', { ascending: false })
-  
+
   if (statusFilter !== 'all') {
     query = query.eq('status', statusFilter)
   }
@@ -56,7 +56,7 @@ export default async function ResortBookingsPage(props: { searchParams?: Promise
                     <p className="text-sm text-coral font-medium mt-1">{booking.room_type}</p>
                     <p className="text-xs text-gray-500 mt-1">Guests: {booking.guests}</p>
                     {booking.special_requests && (
-                      <p className="text-xs text-gray-400 mt-2 italic max-w-xs truncate">"{booking.special_requests}"</p>
+                      <p className="text-xs text-gray-600 mt-2 max-w-xs whitespace-pre-line">{booking.special_requests}</p>
                     )}
                   </td>
                   <td className="p-4 align-top">

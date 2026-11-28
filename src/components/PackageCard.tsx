@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Clock, Users, Star } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import type { Package } from "@/data/packages";
-import { siteInfo } from "@/data/siteInfo";
 import { waMessages } from "@/lib/whatsapp";
 import { Arrow } from "./Motion";
 import { useSite } from "@/components/SiteProvider";
@@ -52,10 +51,13 @@ export default function PackageCard({ pkg }: PackageCardProps) {
             {pkg.badge}
           </span>
         )}
-        <span className="absolute bottom-4 left-5 flex items-center gap-1.5 text-xs font-medium text-white/90">
-          <Star size={13} className="fill-amber text-amber" />
-          {siteInfo.googleReviews.rating} <span className="text-white/60">({siteInfo.googleReviews.count})</span>
-        </span>
+        {Number(pkg.rating) > 0 && (
+          <span className="absolute bottom-4 left-5 flex items-center gap-1.5 text-xs font-medium text-white/90">
+            <Star size={13} className="fill-amber text-amber" aria-hidden />
+            <span className="sr-only">Rated </span>{pkg.rating}
+            {Number(pkg.review_count) > 0 && <span className="text-white/75">({Number(pkg.review_count).toLocaleString("en-IN")} reviews)</span>}
+          </span>
+        )}
       </Link>
 
       {/* Body */}

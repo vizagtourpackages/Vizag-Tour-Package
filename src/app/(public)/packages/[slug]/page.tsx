@@ -116,19 +116,16 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-white leading-tight tracking-tight drop-shadow-md max-w-3xl">
                   {pkg.title}
                 </h1>
-                
-                <div className="flex items-center gap-2 mt-3 text-white/90 drop-shadow-md">
-                  <div className="flex items-center text-yellow-400">
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" className="opacity-50" />
-                  </div>
-                  <span className="text-sm font-medium">
-                    {siteInfo.googleReviews.rating} ({siteInfo.googleReviews.count} Google reviews)
-                  </span>
-                </div>
+
+                {Number(pkg.rating) > 0 && (
+                  <p className="flex items-center gap-2 mt-3 text-sm font-medium text-white/90 drop-shadow-md">
+                    <Star size={16} className="fill-amber text-amber" aria-hidden />
+                    <span>
+                      Rated {pkg.rating}
+                      {Number(pkg.review_count) > 0 && ` (${pkg.review_count.toLocaleString('en-IN')} reviews)`}
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
 
@@ -199,7 +196,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                     return (
                       <div key={i} className="p-4 sm:p-5 hover:bg-gray-50 transition-colors">
                         <div className="grid grid-cols-[1fr_auto] gap-x-4 sm:gap-x-6 gap-y-3 sm:gap-y-2 items-center">
-                          
+
                           {/* Row 1, Col 1: Title & Badges */}
                           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pr-2">
                             <h4 className="font-heading text-sm sm:text-base font-bold text-charcoal leading-tight">
@@ -305,7 +302,9 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                       category: p.category as any,
                       imageUrl: p.cover_image_url || p.image_url,
                       imageGradient: "from-sky-400 to-teal-500", // fallback
-                      originalPrice: p.original_price || p.mrp
+                      originalPrice: p.original_price || p.mrp,
+                      rating: p.rating,
+                      review_count: p.review_count
                     }}
                   />
                 </div>

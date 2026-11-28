@@ -20,7 +20,7 @@ export default async function HotelsPage() {
     type: r.category || 'Resorts',
     rating: r.rating || 4.5,
     location: r.location,
-    price: r.price_per_night ? `₹${r.price_per_night}` : (r.price || '₹0'),
+    price: r.price_per_night ? `₹${Number(r.price_per_night).toLocaleString("en-IN")}` : (r.price || '₹0'),
     price_label: r.price_label,
     no_of_persons: r.no_of_persons,
     image: r.cover_image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',

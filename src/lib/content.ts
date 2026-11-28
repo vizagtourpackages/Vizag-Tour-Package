@@ -44,6 +44,18 @@ export function indexHeadings(html: string): { html: string; headings: Heading[]
   return { html: out, headings }
 }
 
+/** Property categories. `value` is what is stored on the hotel. */
+export const HOTEL_CATEGORIES = [
+  { value: 'Hotels', label: 'Hotels' },
+  { value: 'Resorts', label: 'Resorts' },
+  { value: 'Camp Sites', label: 'Camp Sites' },
+  { value: 'Homestays', label: 'Home Stays' },
+  { value: 'Cottages', label: 'Cottages' },
+] as const
+
+/** "Home Stays", "homestays" and "Homestay" are the same category. */
+export const categoryKey = (c?: string | null) => (c || '').toLowerCase().replace(/[^a-z]/g, '').replace(/s$/, '')
+
 export const ACCOMMODATION_TYPES = ['Non AC', 'Deluxe AC', 'Premium AC'] as const
 export type AccommodationType = (typeof ACCOMMODATION_TYPES)[number]
 

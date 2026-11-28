@@ -8,6 +8,7 @@ import { formatDate } from '@/lib/format'
 import ModalShell from './ModalShell'
 import { FormError, FormSuccess, PhoneInput, SelectInput, Stepper, SubmitButton, TextArea, TextInput, Field, controlClass } from '../forms/Fields'
 import { useSite } from '@/components/SiteProvider'
+import PriceNote, { PRICE_NOTE, needsPriceNote } from '../forms/PriceNote'
 
 export default function PackageBookingModal({ data, onClose }: { data: any; onClose: () => void }) {
   const { openWhatsApp } = useSite();
@@ -119,6 +120,7 @@ export default function PackageBookingModal({ data, onClose }: { data: any; onCl
   }, [form.startDate, data?.duration, isCustom])
 
   const today = new Date().toISOString().split('T')[0]
+  const showNote = needsPriceNote(form.guests, form.rooms)
   const packageName = isCustom
     ? form.customName || 'Custom Package'
     : selectedPlan && !hasStay
@@ -166,7 +168,7 @@ Dates: ${formatDate(booking.start_date)} to ${formatDate(booking.end_date)}
 Guests: ${booking.guests} | Rooms: ${booking.rooms}
 Vehicle: ${booking.vehicle_preference}
 Accommodation: ${booking.accommodation_type}${booking.pickup_location ? `\nPickup: ${booking.pickup_location}` : ''}${booking.drop_location ? `\nDrop: ${booking.drop_location}` : ''}
-Special Requests: ${booking.special_requests || 'None'}`
+Special Requests: ${booking.special_requests || 'None'}${showNote ? `\nNote: ${PRICE_NOTE}` : ''}`
 
     setDone(text)
     setLoading(false)
@@ -328,6 +330,7 @@ Special Requests: ${booking.special_requests || 'None'}`
           <Stepper label="Guests" required min={1} value={form.guests} onChange={(n) => set({ guests: n })} />
           <Stepper label="Rooms" required min={1} value={form.rooms} onChange={(n) => set({ rooms: n })} />
         </div>
+        <PriceNote show={showNote} />
 
         <SelectInput label="Vehicle" required value={form.vehicle} onChange={(e) => set({ vehicle: e.target.value })}>
           {vehicles.length > 0 ? (

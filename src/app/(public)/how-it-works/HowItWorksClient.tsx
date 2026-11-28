@@ -47,7 +47,7 @@ const PATHS: Path[] = [
     icon: BedDouble,
     intro: "Find the right room in Vizag, Araku or Lambasingi without the back-and-forth.",
     steps: [
-      { icon: Search, title: "Browse stays", text: "Filter hotels, homestays and resorts by category, rating and price.", tip: "Full-screen filters on mobile." },
+      { icon: Search, title: "Browse stays", text: "Filter hotels, homestays and resorts by place, category and price.", tip: "Full-screen filters on mobile." },
       { icon: BedDouble, title: "Pick a room type", text: "Compare the available rooms with photos and per-night prices.", tip: "Tap View images to see the rooms." },
       { icon: MessageCircle, title: "Send check-in and check-out", text: "Share your dates and guests. We save the request and open WhatsApp with everything filled in." },
       { icon: BadgeCheck, title: "We confirm availability", text: "We check the property, confirm the room and the final price, and send you the details." },

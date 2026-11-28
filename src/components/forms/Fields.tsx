@@ -13,7 +13,7 @@ import { useSite } from "@/components/SiteProvider";
 export const controlClass =
   "block w-full min-h-[3rem] rounded-2xl border border-ocean/12 bg-white px-4 py-3 text-base font-medium text-ocean outline-none " +
   "placeholder:font-normal placeholder:text-ocean/35 transition-[border-color,box-shadow] duration-150 " +
-  "focus:border-coral focus:ring-4 focus:ring-coral/15 disabled:bg-sand/60 disabled:text-ocean/50 read-only:bg-sand/60";
+  "focus:border-coral focus:ring-4 focus:ring-coral/15 disabled:bg-sand/60 disabled:text-ocean/50 [&[readonly]]:bg-sand/60";
 
 export function Field({
   label,
@@ -33,12 +33,12 @@ export function Field({
   const id = useId();
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1.5 flex items-baseline justify-between gap-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-ocean/60">
+      <label htmlFor={id} className="mb-1.5 flex items-baseline justify-between gap-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-ocean/75">
         <span>
           {label}
-          {required && <span className="ml-0.5 text-coral">*</span>}
+          {required && <span className="ml-0.5 text-red-700">*</span>}
         </span>
-        {hint && <span className="text-[0.66rem] font-medium normal-case tracking-normal text-ocean/40">{hint}</span>}
+        {hint && <span className="text-[0.7rem] font-medium normal-case tracking-normal text-ocean/75">{hint}</span>}
       </label>
       {children(id)}
       {error && <p role="alert" className="mt-1.5 text-xs font-medium text-red-600">{error}</p>}
@@ -154,12 +154,12 @@ export function Stepper({
     "grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ocean/12 bg-white text-ocean transition-[background-color,transform] duration-150 active:scale-90 disabled:opacity-35";
   return (
     <Field label={label} required={required}>
-      {() => (
+      {(id) => (
         <div className="flex min-h-[3rem] items-center justify-between rounded-2xl border border-ocean/12 bg-white px-1.5 py-1">
           <button type="button" aria-label={`Decrease ${label}`} className={btn} disabled={value <= min} onClick={() => onChange(Math.max(min, value - 1))}>
             <Minus size={17} />
           </button>
-          <output aria-live="polite" className="min-w-8 text-center text-base font-bold text-ocean">{value}</output>
+          <output id={id} aria-live="polite" className="min-w-8 text-center text-base font-bold text-ocean">{value}</output>
           <button type="button" aria-label={`Increase ${label}`} className={btn} disabled={value >= max} onClick={() => onChange(Math.min(max, value + 1))}>
             <Plus size={17} />
           </button>

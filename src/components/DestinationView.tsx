@@ -103,6 +103,8 @@ export default async function DestinationView({ slug }: { slug: DestinationSlug 
     imageGradient: "from-teal to-blue-600",
     imageUrl: pkg.cover_image_url || pkg.image_url,
     originalPrice: pkg.original_price || pkg.mrp,
+    rating: pkg.rating,
+    review_count: pkg.review_count,
   }));
 
   const mappedHotels = (dbHotels || []).map((r: any) => ({
@@ -112,7 +114,7 @@ export default async function DestinationView({ slug }: { slug: DestinationSlug 
     type: r.category || "Resorts",
     rating: r.rating || 4.5,
     location: r.location,
-    price: r.price_per_night ? `₹${r.price_per_night}` : r.price || "₹0",
+    price: r.price_per_night ? `₹${Number(r.price_per_night).toLocaleString("en-IN")}` : r.price || "₹0",
     price_label: r.price_label,
     no_of_persons: r.no_of_persons,
     image: r.cover_image_url || r.image_url,

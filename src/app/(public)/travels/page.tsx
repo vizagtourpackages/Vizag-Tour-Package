@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { createPublicClient as createClient } from "@/lib/supabase/public";
 import TravelsClient from "./TravelsClient";
+import { readFares } from "@/lib/fares";
 
 export default async function TravelsPage() {
   const supabase = await createClient();
@@ -35,12 +36,13 @@ export default async function TravelsPage() {
     .eq('is_active', true)
     .order('display_order', { ascending: true });
 
+  const fares = await readFares(supabase);
   const trustPoints = dbTrustPoints || [];
   const notes = dbNotes || [];
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <TravelsClient vehicles={displayTravels} trustPoints={trustPoints} notes={notes} />
+      <TravelsClient vehicles={displayTravels} trustPoints={trustPoints} notes={notes} fares={fares} />
     </Suspense>
   );
 }
