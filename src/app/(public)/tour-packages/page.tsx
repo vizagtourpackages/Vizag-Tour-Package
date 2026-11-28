@@ -1,6 +1,7 @@
 import { createPublicClient as createClient } from "@/lib/supabase/public";
 import TourPackagesClient from "./TourPackagesClient";
 import { sortByDisplayOrder } from "@/lib/content";
+import { withDisplayPrices } from "@/lib/stay";
 
 export const metadata = {
   title: "Tour Packages | Vizag Tour Packages",
@@ -16,7 +17,10 @@ export default async function TourPackagesPage() {
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
-  const validPackages = sortByDisplayOrder(dbPackages?.filter(pkg => pkg.show_on_packages_page !== false) || []);
+  const validPackages = await withDisplayPrices(
+    supabase,
+    sortByDisplayOrder(dbPackages?.filter(pkg => pkg.show_on_packages_page !== false) || [])
+  );
 
   const displayPackages = validPackages.length > 0
     ? validPackages.map(pkg => ({

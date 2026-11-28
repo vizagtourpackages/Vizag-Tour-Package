@@ -14,22 +14,68 @@ const norm = (s: string) => (s || "").toLowerCase().replace(/[^a-z]/g, "");
  *    that at least one attached hotel offers. A type that was not added is hidden from visitors.
  * 2. Packages without attached hotels: each priced rate plan with its own hotel list.
  */
-export async function buildStayOptions(
-  supabase: any,
-  pkg: { resort_ids?: unknown; rate_plans?: any[]; price_label?: string }
-): Promise<StayOption[]> {
-  const attached = Array.isArray(pkg.resort_ids) ? (pkg.resort_ids as string[]) : [];
-  const plans = Array.isArray(pkg.rate_plans) ? pkg.rate_plans : [];
-  const planResortIds = plans.flatMap((p: any) => (Array.isArray(p.resort_ids) ? p.resort_ids : []));
-  const ids = Array.from(new Set(attached.length ? attached : planResortIds));
-  if (ids.length === 0) return [];
+export async function buildStayOptions(supabase: any, pkg: StayPackage): Promise<StayOption[]> {
+  const { resorts, rooms } = await loadStayData(supabase, hotelIdsOf(pkg));
+  return stayOptionsFrom(pkg, resorts, rooms);
+}
 
+/**
+ * The price shown for each package on cards, lists and the package page:
+ * the cheapest accommodation visitors can choose, or the package's own price when it has none.
+ * Loads the hotels for all packages in one go.
+ */
+export async function withDisplayPrices<T extends StayPackage>(supabase: any, packages: T[]): Promise<T[]> {
+  const ids = Array.from(new Set(packages.flatMap(hotelIdsOf)));
+  const { resorts, rooms } = await loadStayData(supabase, ids);
+  return packages.map((p) => applyDisplayPrice(p, stayOptionsFrom(p, resorts, rooms)));
+}
+
+/** `options` are the package's stay options; priced rate plans count when there are none. */
+export function applyDisplayPrice<T extends StayPackage>(pkg: T, options: StayOption[]): T {
+  const choices: { price: number; mrp?: number }[] = options.length
+    ? options
+    : (Array.isArray(pkg.rate_plans) ? pkg.rate_plans : [])
+        .filter((p: any) => p?.title && Number(p.price) > 0)
+        .map((p: any) => ({ price: Number(p.price), mrp: Number(p.mrp) || undefined }));
+  if (!choices.length) return pkg;
+  const cheapest = choices.reduce((a, b) => (b.price < a.price ? b : a));
+  // the struck-through price must belong to the same option
+  const was = cheapest.mrp && cheapest.mrp > cheapest.price ? cheapest.mrp : null;
+  return { ...pkg, price: cheapest.price, original_price: was, mrp: null };
+}
+
+type StayPackage = {
+  resort_ids?: unknown;
+  rate_plans?: any[];
+  price_label?: string;
+  price?: number | string;
+  original_price?: number | null;
+  mrp?: number | null;
+};
+
+/** Attached hotels, or for older packages the hotels listed on their rate plans. */
+function hotelIdsOf(pkg: StayPackage): string[] {
+  const attached = Array.isArray(pkg.resort_ids) ? (pkg.resort_ids as string[]) : [];
+  if (attached.length) return attached;
+  const plans = Array.isArray(pkg.rate_plans) ? pkg.rate_plans : [];
+  return Array.from(new Set(plans.flatMap((p: any) => (Array.isArray(p.resort_ids) ? p.resort_ids : []))));
+}
+
+async function loadStayData(supabase: any, ids: string[]): Promise<{ resorts: any[]; rooms: any[] }> {
+  if (!ids.length) return { resorts: [], rooms: [] };
   const [{ data: resorts }, { data: rooms }] = await Promise.all([
     supabase.from("hotels_resorts").select("*").in("id", ids).eq("is_published", true),
     supabase.from("resort_room_types").select("*").in("resort_id", ids).eq("is_available", true),
   ]);
-  if (!resorts) return [];
-  const roomRows: any[] = rooms || [];
+  return { resorts: resorts || [], rooms: rooms || [] };
+}
+
+function stayOptionsFrom(pkg: StayPackage, allResorts: any[], roomRows: any[]): StayOption[] {
+  const attached = Array.isArray(pkg.resort_ids) ? (pkg.resort_ids as string[]) : [];
+  const plans = Array.isArray(pkg.rate_plans) ? pkg.rate_plans : [];
+  const ids = hotelIdsOf(pkg);
+  const resorts = allResorts.filter((r: any) => ids.includes(r.id));
+  if (!resorts.length) return [];
 
   const roomOf = (resortId: string, type: string) =>
     roomRows.find((rm: any) => rm.resort_id === resortId && norm(rm.room_type) === norm(type));

@@ -5,6 +5,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
 import { stripHtml } from "@/lib/content";
 import { getSiteSettings } from "@/lib/settings";
+import { withDisplayPrices } from "@/lib/stay";
 import Marquee from "@/components/Marquee";
 import PackageCard from "@/components/PackageCard";
 import DestinationCard from "@/components/DestinationCard";
@@ -27,13 +28,15 @@ import { createPublicClient as createClient } from "@/lib/supabase/public";
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: dbPackages } = await supabase
+  const { data: homePackages } = await supabase
     .from('tour_packages')
     .select('*')
     .eq('is_published', true)
     .eq('show_on_home', true)
     .order('home_order', { ascending: true })
     .order('created_at', { ascending: false });
+
+  const dbPackages = await withDisplayPrices(supabase, homePackages || []);
 
   const { data: dbEvents } = await supabase
     .from('upcoming_events')
@@ -247,7 +250,7 @@ export default async function Home() {
   let heroPkg: any = null;
   if (hero.packageId) {
     const { data } = await supabase.from('tour_packages').select('*').eq('id', hero.packageId).eq('is_published', true).maybeSingle();
-    heroPkg = data;
+    heroPkg = data ? (await withDisplayPrices(supabase, [data]))[0] : null;
   }
   const pkgTile = (p: any) => ({
     title: p.title,

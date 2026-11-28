@@ -193,7 +193,7 @@ export default function TourPackageForm({ initialData, id, initialDays = [], ava
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Price (₹) *</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Price (₹) * <span className="font-normal text-gray-500">– shown only without accommodation prices</span></label>
             <input type="number" name="price" value={basePrice} onChange={e => setBasePrice(e.target.value)} required className="w-full p-3 border rounded-lg bg-gray-50" />
           </div>
           <div>

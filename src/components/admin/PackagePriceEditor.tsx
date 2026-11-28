@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertCircle, Trash2 } from 'lucide-react'
+import { Info, Trash2 } from 'lucide-react'
 import { ACCOMMODATION_TYPES, accommodationTypeOf, type AccommodationType } from '@/lib/content'
 
 export interface RatePlan {
@@ -57,7 +57,8 @@ export default function PackagePriceEditor({
   }
 
   const priceOf = (t: AccommodationType) => Number(value[planIndexOf(value, t)]?.price) || 0
-  const typePrices = ACCOMMODATION_TYPES.map(priceOf).filter(n => n > 0)
+  // what visitors can choose: with hotels attached, a priced type must also be offered by a hotel
+  const typePrices = ACCOMMODATION_TYPES.filter(t => !hasHotels || offeredTypes.has(t)).map(priceOf).filter(n => n > 0)
   const lowest = typePrices.length ? Math.min(...typePrices) : 0
   const others = value.filter((p, i) => p.title?.trim() && !ACCOMMODATION_TYPES.some(t => planIndexOf(value, t) === i))
 
@@ -69,12 +70,12 @@ export default function PackagePriceEditor({
         is shown to visitors only when it has a price here and an attached hotel offers it.
       </p>
 
-      {lowest > 0 && basePrice > 0 && lowest !== basePrice && (
-        <p className="mb-4 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
-          <AlertCircle size={16} className="mt-0.5 shrink-0" />
-          Package cards show “Starting from ₹{basePrice.toLocaleString('en-IN')}” but the lowest type price is ₹{lowest.toLocaleString('en-IN')}. Update the price at the top if they should match.
-        </p>
-      )}
+      <p role="status" className="mb-4 flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-900">
+        <Info size={16} className="mt-0.5 shrink-0" aria-hidden />
+        {lowest > 0
+          ? `Visitors will see “Starting from ₹${lowest.toLocaleString('en-IN')}”, the lowest accommodation price. The package price at the top is not shown.`
+          : `No accommodation price applies yet, so visitors see the package price at the top${basePrice > 0 ? ` (₹${basePrice.toLocaleString('en-IN')})` : ''}.`}
+      </p>
 
       <div className="space-y-4">
         {ACCOMMODATION_TYPES.map(type => {

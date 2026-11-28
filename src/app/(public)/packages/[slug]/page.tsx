@@ -6,7 +6,7 @@ import PackageBookingButton from "@/components/PackageBookingButton";
 import PackageBookingSidebar from "@/components/booking/PackageBookingSidebar";
 import PackageTabs from "@/components/PackageTabs";
 import StayOptions from "@/components/booking/StayOptions";
-import { buildStayOptions } from "@/lib/stay";
+import { applyDisplayPrice, buildStayOptions, withDisplayPrices } from "@/lib/stay";
 import { stayLegs } from "@/lib/areas";
 import ScrollCarousel from "@/components/ScrollCarousel";
 import { siteInfo } from "@/data/siteInfo";
@@ -73,11 +73,13 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
     .limit(4);
 
   const stayOptions = await buildStayOptions(supabase, pkg);
-  const pkgWithStay = { ...pkg, stay_options: stayOptions, stay_legs: stayLegs(pkg.stay_plan) };
+  const shown = applyDisplayPrice(pkg, stayOptions);
+  const pkgWithStay = { ...shown, stay_options: stayOptions, stay_legs: stayLegs(pkg.stay_plan) };
+  similarPackages = await withDisplayPrices(supabase, similarPackages || []);
 
-  const originalPrice = pkg.original_price || pkg.mrp;
-  const discountPercent = originalPrice && originalPrice > pkg.price
-    ? Math.round(((originalPrice - pkg.price) / originalPrice) * 100)
+  const originalPrice = shown.original_price || shown.mrp;
+  const discountPercent = originalPrice && originalPrice > shown.price
+    ? Math.round(((originalPrice - shown.price) / originalPrice) * 100)
     : 0;
 
   return (

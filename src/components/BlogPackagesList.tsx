@@ -2,6 +2,9 @@ import Link from "next/link";
 import { createPublicClient as createClient } from "@/lib/supabase/public";
 import { getSiteSettings } from "@/lib/settings";
 import { Arrow } from "./Motion";
+import { withDisplayPrices } from "@/lib/stay";
+
+const FIELDS = "id, slug, title, price, price_label, rate_plans, resort_ids, duration, cover_image_url, image_url";
 
 /**
  * The packages chosen in admin → Settings → Blog sidebar (up to 5), shown as a list with photo and starting price.
@@ -15,7 +18,7 @@ export default async function BlogPackagesList({ className = "" }: { className?:
   if (blogSidebarIds.length > 0) {
     const { data } = await supabase
       .from("tour_packages")
-      .select("id, slug, title, price, duration, cover_image_url, image_url")
+      .select(FIELDS)
       .in("id", blogSidebarIds.slice(0, 5))
       .eq("is_published", true);
     rows = blogSidebarIds.map((id) => (data || []).find((p) => p.id === id)).filter(Boolean) as any[];
@@ -23,13 +26,14 @@ export default async function BlogPackagesList({ className = "" }: { className?:
   if (rows.length === 0) {
     const { data } = await supabase
       .from("tour_packages")
-      .select("id, slug, title, price, duration, cover_image_url, image_url")
+      .select(FIELDS)
       .eq("is_published", true)
       .order("created_at", { ascending: false })
       .limit(5);
     rows = data || [];
   }
   if (rows.length === 0) return null;
+  rows = await withDisplayPrices(supabase, rows);
 
   return (
     <section className={`overflow-hidden rounded-[28px] border border-ocean/8 bg-white shadow-float ${className}`} aria-labelledby="blog-packages-heading">

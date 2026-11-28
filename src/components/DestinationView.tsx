@@ -12,6 +12,7 @@ import { waMessages, waUrl } from "@/lib/whatsapp";
 import { getSiteSettings } from "@/lib/settings";
 import { createPublicClient as createClient } from "@/lib/supabase/public";
 import { sortByDisplayOrder } from "@/lib/content";
+import { withDisplayPrices } from "@/lib/stay";
 
 // older "show on page" checkboxes (no such column exists for newer destinations)
 const LEGACY_FLAG: Partial<Record<DestinationSlug, string>> = {
@@ -87,7 +88,7 @@ export default async function DestinationView({ slug }: { slug: DestinationSlug 
     dbHotels = data;
   }
 
-  const relatedPackages = (dbPackages || []).map((pkg: any) => ({
+  const relatedPackages = (await withDisplayPrices(supabase, dbPackages || [])).map((pkg: any) => ({
     id: pkg.id,
     slug: pkg.slug,
     title: pkg.title,
