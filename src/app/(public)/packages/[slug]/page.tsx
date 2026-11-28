@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import Link from "next/link";
 import { Check, ChevronRight, Star } from "lucide-react";
 import PackageCard from "@/components/PackageCard";
@@ -11,6 +11,9 @@ import { stayLegs } from "@/lib/areas";
 import ScrollCarousel from "@/components/ScrollCarousel";
 import { siteInfo } from "@/data/siteInfo";
 import { Metadata } from "next";
+
+// built on first visit, then served from cache (refreshed every minute and on admin saves)
+export const generateStaticParams = async () => [];
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;

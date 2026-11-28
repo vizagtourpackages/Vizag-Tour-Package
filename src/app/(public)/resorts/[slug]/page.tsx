@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Check, MapPin, Snowflake, Star, Sun, Utensils } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import RichContent from "@/components/RichContent";
 import { EnquiryForm } from "@/components/EnquirySidebar";
 import ResortGallery from "@/components/ResortGallery";
@@ -14,6 +14,9 @@ import { Reveal } from "@/components/Motion";
 import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import { getSiteSettings } from "@/lib/settings";
+
+// built on first visit, then served from cache (refreshed every minute and on admin saves)
+export const generateStaticParams = async () => [];
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -67,8 +70,11 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
     similar = fallback;
   }
 
-  const rooms = (roomTypes || []).slice().sort((a: any, b: any) => Number(b.is_available) - Number(a.is_available) || Number(a.price) - Number(b.price));
-  const roomPrices = rooms.filter((r: any) => r.is_available).map((r: any) => Number(r.price)).filter(Boolean);
+  // visitors only see room types the hotel has switched on and priced
+  const rooms = (roomTypes || [])
+    .filter((r: any) => r.is_available && Number(r.price) > 0)
+    .sort((a: any, b: any) => Number(a.price) - Number(b.price));
+  const roomPrices = rooms.map((r: any) => Number(r.price));
   const fromPrice = Number(hotel.price_per_night) || (roomPrices.length ? Math.min(...roomPrices) : 0);
   const priceText = fromPrice ? inr(fromPrice) : hotel.price || "On request";
   const unit = unitLabel(hotel.price_label);
@@ -235,7 +241,7 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                   const img = Array.isArray(r.images) && r.images[0];
                   return (
                     <Reveal key={r.id} delay={i * 0.04}>
-                      <div className={`overflow-hidden rounded-[26px] border bg-white shadow-card sm:flex ${r.is_available ? "border-ocean/8" : "border-ocean/8 opacity-70"}`}>
+                      <div className="overflow-hidden rounded-[26px] border border-ocean/8 bg-white shadow-card sm:flex">
                         {img && (
                           <div className="relative aspect-[16/9] shrink-0 bg-sand sm:aspect-auto sm:w-[38%]">
                             <img src={img} alt={r.room_type} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
@@ -254,13 +260,9 @@ export default async function ResortDetailPage({ params }: { params: Promise<{ s
                               {inr(Number(r.price) || 0)}
                               <span className="ml-1 font-sans text-xs font-medium text-charcoal/50">/ night</span>
                             </p>
-                            {r.is_available ? (
-                              <ResortBookingButton hotel={bookingHotel} room={r} className="btn-coral shrink-0 !px-6 !py-3 text-sm">
-                                Select room
-                              </ResortBookingButton>
-                            ) : (
-                              <span className="rounded-full bg-red-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-600">Unavailable</span>
-                            )}
+                            <ResortBookingButton hotel={bookingHotel} room={r} className="btn-coral shrink-0 !px-6 !py-3 text-sm">
+                              Select room
+                            </ResortBookingButton>
                           </div>
                         </div>
                       </div>

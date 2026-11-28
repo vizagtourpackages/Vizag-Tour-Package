@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { destinationDetails } from "@/data/destinations";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 
 /** Places that have their own public page, all editable under Admin → Destination Pages. */
 export const DESTINATION_SLUGS = ["araku-valley", "lambasingi", "vanjangi", "maredumilli"] as const;

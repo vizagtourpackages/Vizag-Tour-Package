@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone, ShieldCheck, Star } from "lucide-react";
 import { siteInfo } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import TermsButton from "@/components/TermsButton";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import { getSiteSettings } from "@/lib/settings";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -91,8 +91,8 @@ export default async function Footer() {
         Vizag Tour Packages footer
       </h2>
       <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-sunset" />
-      <div aria-hidden className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-coral/20 blur-[90px]" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-24 left-0 h-72 w-72 rounded-full bg-teal/20 blur-[90px]" />
+      <div aria-hidden className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full blob text-coral/20" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-24 left-0 h-72 w-72 rounded-full blob text-teal/20" />
 
       {/* Closing call to action */}
       <div className="container-max relative z-10 px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8">

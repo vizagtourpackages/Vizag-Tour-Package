@@ -20,6 +20,7 @@ export async function saveNote(formData: FormData) {
   } else {
     await supabase.from('travel_notes').update(data).eq('id', id)
   }
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels/notes')
   redirect('/admin/travels/notes')
 }
@@ -27,11 +28,13 @@ export async function saveNote(formData: FormData) {
 export async function deleteNote(id: string) {
   const supabase = await createClient()
   await supabase.from('travel_notes').delete().eq('id', id)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels/notes')
 }
 
 export async function toggleNote(id: string, is_active: boolean) {
   const supabase = await createClient()
   await supabase.from('travel_notes').update({ is_active }).eq('id', id)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels/notes')
 }

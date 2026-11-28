@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { Loader2, Plus, X } from 'lucide-react'
+import { compressImage } from '@/lib/compressImage'
 
-async function uploadOne(file: File, folder: string): Promise<string> {
+async function uploadOne(original: File, folder: string): Promise<string> {
+  const file = await compressImage(original)
   const ext = file.name.split('.').pop()
   const filePath = `${folder}/${Math.random().toString(36).substring(2, 15)}.${ext}`
   const res = await fetch('/api/upload', {

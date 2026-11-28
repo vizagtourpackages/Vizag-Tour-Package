@@ -205,7 +205,7 @@ export default function StayPicker({
                 <div className="thin-scroll mt-3 flex gap-2 overflow-x-auto pb-1">
                   {imgs.map((u, i) => (
                     <button type="button" key={u + i} onClick={() => setImgIdx(i)} aria-label={`Photo ${i + 1}`} className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 ${i === imgIdx ? 'border-coral' : 'border-transparent opacity-70'}`}>
-                      <img src={u} alt="" className="h-full w-full object-cover" />
+                      <img loading="lazy" decoding="async" src={u} alt="" className="h-full w-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -284,7 +284,7 @@ export default function StayPicker({
                   {on && <span className="h-2.5 w-2.5 rounded-full bg-coral" />}
                 </span>
                 {h.cover ? (
-                  <img src={h.cover} alt="" onError={e => { e.currentTarget.style.visibility = 'hidden' }} className="h-24 w-24 shrink-0 rounded-xl bg-sand object-cover sm:h-28 sm:w-28" />
+                  <img loading="lazy" decoding="async" src={h.cover} alt="" onError={e => { e.currentTarget.style.visibility = 'hidden' }} className="h-24 w-24 shrink-0 rounded-xl bg-sand object-cover sm:h-28 sm:w-28" />
                 ) : (
                   <div className="h-24 w-24 shrink-0 rounded-xl bg-sand sm:h-28 sm:w-28" />
                 )}

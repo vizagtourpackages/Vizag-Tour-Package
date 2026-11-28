@@ -23,7 +23,7 @@ import PromoBannerSection from "@/components/PromoBannerSection";
 import HotelCard from "@/components/HotelCard";
 import NewsPromoCard from "@/components/NewsPromoCard";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -310,7 +310,7 @@ export default async function Home() {
 
       {/* 7. Top Destinations from Vizag */}
       <section className="section-padding bg-warm-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-sand rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] blob text-sand rounded-full -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
 
         <div className="container-max relative z-10">
           <SectionHeading
@@ -372,7 +372,7 @@ export default async function Home() {
       {/* NEW: Hill Station Destinations */}
       <section className="section-padding bg-sand relative overflow-hidden">
         {/* Background Decorative Blob */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-teal/5 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/4 pointer-events-none -z-10"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] blob text-teal/5 rounded-full translate-x-1/3 -translate-y-1/4 pointer-events-none -z-10"></div>
 
         <div className="container-max relative z-10">
           <SectionHeading
@@ -448,7 +448,7 @@ export default async function Home() {
 
       {/* 10. Upcoming Events */}
       <section className="section-padding bg-warm-white relative overflow-hidden">
-        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-sand rounded-full blur-[120px] opacity-50 -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] blob text-sand rounded-full opacity-50 -translate-y-1/2 -translate-x-1/4 pointer-events-none" />
         <div className="container-max relative z-10">
           <SectionHeading
             kicker="Events"
@@ -471,7 +471,7 @@ export default async function Home() {
       <section className="section-padding bg-sand relative overflow-hidden">
         {/* Background decorative blob */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-teal/5 blur-[120px]"></div>
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full blob text-teal/5"></div>
         </div>
 
         <div className="container-max">
@@ -555,7 +555,7 @@ export default async function Home() {
         </div>
 
         {/* Decorative Blobs */}
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-coral/10 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] blob text-coral/10 rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
         <div className="container-max relative z-10">
           <SectionHeading

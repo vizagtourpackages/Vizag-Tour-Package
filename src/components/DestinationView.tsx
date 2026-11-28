@@ -10,7 +10,7 @@ import RichContent from "@/components/RichContent";
 import { defaultDestination, type DestinationSlug } from "@/lib/destinations";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import { getSiteSettings } from "@/lib/settings";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import { sortByDisplayOrder } from "@/lib/content";
 
 // older "show on page" checkboxes (no such column exists for newer destinations)
@@ -139,7 +139,7 @@ export default async function DestinationView({ slug }: { slug: DestinationSlug 
             <ScrollReveal direction="right">
               {heroImage ? (
                 <div className="w-full aspect-[4/3] rounded-[32px] shadow-card border border-charcoal/5 relative overflow-hidden">
-                  <img src={heroImage} alt={`${dest.name} Highlights`} className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={heroImage} alt={`${dest.name} Highlights`} className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <PlaceholderImage
@@ -274,8 +274,8 @@ export default async function DestinationView({ slug }: { slug: DestinationSlug 
 
       {/* CTA */}
       <section className="py-10 bg-ocean-gradient text-center px-4 relative overflow-hidden rounded-[24px] mx-4 sm:mx-6 lg:mx-8 mb-12 shadow-card">
-        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-coral/30 rounded-full blur-[70px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-amber/20 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/3 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] blob text-coral/30 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] blob text-amber/20 rounded-full translate-y-1/2 -translate-x-1/3 pointer-events-none" />
         <ScrollReveal>
           <div className="max-w-2xl mx-auto relative z-10">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black font-heading text-white mb-3 tracking-tight leading-[1.1]">

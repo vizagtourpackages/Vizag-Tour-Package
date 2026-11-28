@@ -10,7 +10,7 @@ export default function BlogCta({ title }: { title: string }) {
   const { wa } = useSite();
   return (
     <div className="grain relative overflow-hidden rounded-[28px] bg-ocean-gradient px-6 py-9 text-center text-white sm:px-10">
-      <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-coral/30 blur-[70px]" />
+      <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full blob text-coral/30" />
       <div className="relative">
         <h2 className="font-heading text-[clamp(1.5rem,3.4vw,2.2rem)] leading-[1.12]">
           Inspired? Let&apos;s plan <span className="italic text-sunset">your trip.</span>

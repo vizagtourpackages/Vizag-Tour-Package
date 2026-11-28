@@ -10,23 +10,15 @@ export default function BackToTopFab() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const check = () => {
-      const doc = document.documentElement;
-      const remaining = doc.scrollHeight - (window.scrollY + window.innerHeight);
-      // near the very end, and the page is actually long
-      setShow(remaining < 900 && doc.scrollHeight > window.innerHeight * 1.6);
-    };
-    check();
-    window.addEventListener("scroll", check, { passive: true });
-    window.addEventListener("resize", check);
-    // page height changes as content loads without any scroll event
-    const ro = new ResizeObserver(check);
-    ro.observe(document.body);
-    return () => {
-      window.removeEventListener("scroll", check);
-      window.removeEventListener("resize", check);
-      ro.disconnect();
-    };
+    // watching the footer costs nothing while scrolling (no scroll listener, no layout reads)
+    const footer = document.querySelector("footer");
+    if (!footer) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShow(entry.isIntersecting && window.scrollY > window.innerHeight * 0.5),
+      { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] }
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
   }, []);
 
   return (

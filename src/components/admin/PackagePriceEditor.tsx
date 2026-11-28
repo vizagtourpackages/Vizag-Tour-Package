@@ -57,10 +57,7 @@ export default function PackagePriceEditor({
   }
 
   const priceOf = (t: AccommodationType) => Number(value[planIndexOf(value, t)]?.price) || 0
-  const anyAcPriced = priceOf('Deluxe AC') > 0 || priceOf('Premium AC') > 0
-  // what guests actually pay: Non AC falls back to the main package price
-  const nonAc = priceOf('Non AC') || (offeredTypes.has('Non AC') ? basePrice : 0)
-  const typePrices = [nonAc, priceOf('Deluxe AC'), priceOf('Premium AC')].filter(n => n > 0)
+  const typePrices = ACCOMMODATION_TYPES.map(priceOf).filter(n => n > 0)
   const lowest = typePrices.length ? Math.min(...typePrices) : 0
   const others = value.filter((p, i) => p.title?.trim() && !ACCOMMODATION_TYPES.some(t => planIndexOf(value, t) === i))
 
@@ -68,9 +65,8 @@ export default function PackagePriceEditor({
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
       <h3 className="text-xl font-heading font-bold border-b border-gray-100 pb-4 mb-2">Package Price by Accommodation Type</h3>
       <p className="text-sm text-gray-500 mb-5">
-        This is the price guests see for each room type. Hotel tariffs are not shown inside a package. Leave Non AC
-        empty to use the package price above. Leave an AC price empty to not offer that type. If both AC prices are
-        empty, every type your hotels offer uses the package price above.
+        This is the price visitors see for each room type. Hotel tariffs are not shown inside a package. A room type
+        is shown to visitors only when it has a price here and an attached hotel offers it.
       </p>
 
       {lowest > 0 && basePrice > 0 && lowest !== basePrice && (
@@ -85,24 +81,20 @@ export default function PackagePriceEditor({
           const plan = value[planIndexOf(value, type)]
           const priced = Number(plan?.price) > 0
           const offered = offeredTypes.has(type)
-          const usesMain = type === 'Non AC' && !priced && offered && basePrice > 0
-          const cheapestAc = Math.min(...[priceOf('Deluxe AC'), priceOf('Premium AC')].filter(n => n > 0))
           const warning = !hasHotels
             ? ''
             : priced && !offered
-              ? `No attached hotel offers ${type} yet, so guests will not see it. Enable ${type} on a hotel under Hotels & Resorts.`
-              : usesMain && anyAcPriced && basePrice >= cheapestAc
-                ? `Guests see Non AC at the package price ₹${basePrice.toLocaleString('en-IN')}, which is not cheaper than AC. Enter a Non AC price.`
-                : !priced && offered && type !== 'Non AC' && anyAcPriced
-                  ? `Attached hotels offer ${type}, but it has no price, so guests will not see it.`
-                  : ''
+              ? `No attached hotel offers ${type} yet, so visitors will not see it. Enable ${type} on a hotel under Hotels & Resorts.`
+              : !priced && offered
+                ? `Hidden from visitors. Attached hotels offer ${type}; add a price to show it.`
+                : ''
           return (
             <div key={type} className={`rounded-xl border-2 p-5 ${priced ? 'border-blue-300 bg-blue-50/30' : 'border-gray-200 bg-gray-50/50'}`}>
               <h4 className="mb-3 font-bold text-gray-900 text-lg">{type}</h4>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <label className={label} htmlFor={`${type}-price`}>Package price (₹)</label>
-                  <input id={`${type}-price`} type="number" min={0} className={input} value={plan?.price ?? ''} onChange={e => update(type, { price: e.target.value })} placeholder={usesMain ? `Using ${basePrice}` : 'e.g. 8999'} />
+                  <input id={`${type}-price`} type="number" min={0} className={input} value={plan?.price ?? ''} onChange={e => update(type, { price: e.target.value })} placeholder="e.g. 8999" />
                 </div>
                 <div>
                   <label className={label} htmlFor={`${type}-mrp`}>Original price (₹)</label>

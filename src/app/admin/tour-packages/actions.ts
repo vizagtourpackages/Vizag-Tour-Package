@@ -9,6 +9,7 @@ export async function deleteTourPackage(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('tour_packages').delete().eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/tour-packages')
   revalidatePath('/')
 }
@@ -17,6 +18,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('tour_packages').update({ is_published }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/tour-packages')
   revalidatePath('/')
 }
@@ -117,6 +119,7 @@ export async function saveTourPackage(formData: FormData) {
     }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/tour-packages')
   revalidatePath('/tour-packages')
   revalidatePath('/packages/[slug]', 'page')
@@ -144,6 +147,7 @@ export async function moveTourPackage(id: string, direction: 'up' | 'down') {
       await supabase.from('tour_packages').update({ display_order: i + 1 }).eq('id', ordered[i].id)
     }
   }
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/tour-packages')
   revalidatePath('/tour-packages')
   revalidatePath('/')
@@ -153,6 +157,7 @@ export async function toggleFeatured(id: string, show_on_home: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('tour_packages').update({ show_on_home }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/tour-packages')
   revalidatePath('/')
 }
@@ -160,6 +165,7 @@ export async function toggleFeatured(id: string, show_on_home: boolean) {
 /** Pick which package is featured on the home hero. Clicking the current one clears it. */
 export async function setHeroPackage(id: string, currentlyHero: boolean) {
   await toggleSetting('hero_package_id', currentlyHero ? '' : id)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/tour-packages')
   revalidatePath('/')
 }

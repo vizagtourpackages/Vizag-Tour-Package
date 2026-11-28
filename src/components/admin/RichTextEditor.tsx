@@ -1,4 +1,5 @@
 'use client'
+import { compressImage } from '@/lib/compressImage'
 
 import React, { useRef, useState, useEffect } from 'react'
 import { Bold, Italic, Underline, Link as LinkIcon, Heading2, Heading3, List, ListOrdered, Image as ImageIcon, LayoutGrid, X, Loader2, MousePointerClick } from 'lucide-react'
@@ -94,7 +95,8 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
     handleInput()
   }
 
-  const uploadFile = async (file: File): Promise<string> => {
+  const uploadFile = async (original: File): Promise<string> => {
+    const file = await compressImage(original)
     const fileExt = file.name.split('.').pop()
     const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`
     const filePath = `blog/${fileName}`

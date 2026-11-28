@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient()
+    const { data: auth } = await supabase.auth.getUser()
+    if (!auth.user) {
+      return NextResponse.json({ error: 'Please sign in again to upload.' }, { status: 401 })
+    }
+
     const body = await request.json()
     const { filename, contentType } = body
 

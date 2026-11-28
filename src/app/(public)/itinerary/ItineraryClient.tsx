@@ -164,7 +164,7 @@ export default function ItineraryClient() {
       {/* ---------- CTA ---------- */}
       <section className="container-max px-4 pt-20 sm:px-6 lg:px-8">
         <div className="grain relative overflow-hidden rounded-[32px] bg-ocean-gradient px-6 py-14 text-center text-white sm:px-12">
-          <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-coral/30 blur-[80px]" />
+          <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full blob text-coral/30" />
           <div className="relative mx-auto max-w-2xl">
             <p className="kicker !text-amber mb-4 justify-center">Make it yours</p>
             <h2 className="font-heading text-[clamp(1.9rem,4.5vw,3.1rem)] leading-[1.08]">

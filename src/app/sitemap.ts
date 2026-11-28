@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
+import { nowToTheMinute } from "@/lib/format";
 import { absoluteUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
-  const nowIso = new Date().toISOString();
+  const nowIso = nowToTheMinute();
 
   const [packages, hotels, posts, guides, places, events, devotional] = await Promise.all([
     supabase.from("tour_packages").select("slug, updated_at").eq("is_published", true),

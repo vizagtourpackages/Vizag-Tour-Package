@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
+import { nowToTheMinute } from "@/lib/format";
 
 export interface BlogPost {
   id: string;
@@ -29,7 +30,7 @@ export async function publishedPosts(
   opts: { category?: string; q?: string; limit?: number; offset?: number; excludeId?: string } = {}
 ): Promise<{ posts: BlogPost[]; total: number }> {
   const supabase = await createClient();
-  const nowIso = new Date().toISOString();
+  const nowIso = nowToTheMinute();
   let query = supabase
     .from("blog_posts")
     .select("*", { count: "exact" })
@@ -55,7 +56,7 @@ export async function publishedPosts(
 
 export async function publishedPostBySlug(slug: string): Promise<BlogPost | null> {
   const supabase = await createClient();
-  const nowIso = new Date().toISOString();
+  const nowIso = nowToTheMinute();
   const { data } = await supabase
     .from("blog_posts")
     .select("*")
@@ -68,7 +69,7 @@ export async function publishedPostBySlug(slug: string): Promise<BlogPost | null
 
 export async function blogCategories(): Promise<string[]> {
   const supabase = await createClient();
-  const nowIso = new Date().toISOString();
+  const nowIso = nowToTheMinute();
   const { data } = await supabase
     .from("blog_posts")
     .select("category")

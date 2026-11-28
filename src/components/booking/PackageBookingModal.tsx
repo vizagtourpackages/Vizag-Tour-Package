@@ -258,7 +258,7 @@ Special Requests: ${booking.special_requests || 'None'}`
                 onClick={() => { set({ accommodation: `${selectedPlan || 'Selected Plan'} - ${r.name}` }); setResortStep(false) }}
                 className="flex w-full items-center gap-4 rounded-2xl border-2 border-ocean/10 p-3 text-left transition-colors hover:border-coral hover:bg-coral/5"
               >
-                {r.cover_image_url && <img src={r.cover_image_url} alt="" className="h-20 w-20 shrink-0 rounded-xl object-cover" />}
+                {r.cover_image_url && <img loading="lazy" decoding="async" src={r.cover_image_url} alt="" className="h-20 w-20 shrink-0 rounded-xl object-cover" />}
                 <span className="min-w-0">
                   <span className="text-[0.65rem] font-bold uppercase tracking-wider text-teal">{r.category || 'Resort'}</span>
                   <span className="block font-heading text-lg leading-tight text-ocean">{r.name}</span>

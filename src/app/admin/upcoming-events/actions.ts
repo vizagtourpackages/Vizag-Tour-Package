@@ -8,6 +8,7 @@ export async function deleteEvent(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('upcoming_events').delete().eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/upcoming-events')
   revalidatePath('/')
 }
@@ -16,6 +17,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('upcoming_events').update({ is_published }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/upcoming-events')
   revalidatePath('/')
 }
@@ -46,6 +48,7 @@ export async function saveEvent(formData: FormData) {
     if (error) throw new Error(error.message)
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/upcoming-events')
   revalidatePath('/')
   redirect('/admin/upcoming-events')

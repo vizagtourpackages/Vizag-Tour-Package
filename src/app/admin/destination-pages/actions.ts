@@ -34,6 +34,7 @@ export async function updateDestinationPage(id: string, formData: FormData): Pro
     if (insertError) return { error: insertError.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/destination-pages')
   revalidatePath(`/${id}`)
   return { success: true }

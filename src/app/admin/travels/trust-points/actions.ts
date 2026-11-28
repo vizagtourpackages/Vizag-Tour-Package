@@ -20,6 +20,7 @@ export async function saveTrustPoint(formData: FormData) {
   } else {
     await supabase.from('travel_trust_points').update(data).eq('id', id)
   }
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels/trust-points')
   redirect('/admin/travels/trust-points')
 }
@@ -27,11 +28,13 @@ export async function saveTrustPoint(formData: FormData) {
 export async function deleteTrustPoint(id: string) {
   const supabase = await createClient()
   await supabase.from('travel_trust_points').delete().eq('id', id)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels/trust-points')
 }
 
 export async function toggleTrustPoint(id: string, is_active: boolean) {
   const supabase = await createClient()
   await supabase.from('travel_trust_points').update({ is_active }).eq('id', id)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels/trust-points')
 }

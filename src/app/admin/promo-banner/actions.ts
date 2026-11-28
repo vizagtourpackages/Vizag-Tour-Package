@@ -11,6 +11,7 @@ export async function deletePromoBanner(id: string) {
   const { error } = await supabase.from('promo_banner').delete().eq('id', id)
   
   if (error) throw new Error('Failed to delete promo banner')
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/promo-banner')
   revalidatePath('/')
 }
@@ -26,6 +27,7 @@ export async function togglePublishPromoBanner(id: string, is_active: boolean) {
   const { error } = await supabase.from('promo_banner').update({ is_active }).eq('id', id)
   
   if (error) throw new Error('Failed to update status')
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/promo-banner')
   revalidatePath('/')
 }
@@ -72,6 +74,7 @@ export async function savePromoBanner(formData: FormData, images: string[], id?:
     }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/promo-banner')
   revalidatePath('/')
   redirect('/admin/promo-banner')

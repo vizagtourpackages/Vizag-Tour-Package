@@ -68,8 +68,8 @@ export default function GoldStandardGrid() {
   return (
     <section className="section-padding bg-warm-white relative overflow-hidden">
       {/* Decorative Blobs */}
-      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-sand rounded-full blur-[120px] opacity-60 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-coral/5 rounded-full blur-[100px]" />
+      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] blob text-sand rounded-full opacity-60 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] blob text-coral/5 rounded-full" />
 
       <div className="container-max relative z-10">
         <div className="text-center mb-16 flex flex-col items-center">

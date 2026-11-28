@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import SectionHeading from "./SectionHeading";
 import ScrollReveal from "./ScrollReveal";
 import NewsPromoCard from "./NewsPromoCard";
@@ -55,7 +55,7 @@ export default async function LatestUpdatesSection() {
       </div>
 
       {/* Decorative Blobs */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-coral/10 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] blob text-coral/10 rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
       <div className="container-max relative z-10">
         <SectionHeading

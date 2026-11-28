@@ -21,3 +21,6 @@ export function formatDateTime(value?: string | Date | null): string {
   const time = dt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
   return `${formatDate(dt)}, ${time}`;
 }
+
+/** Current time rounded down to the minute, so cached queries that filter on "now" can be reused. */
+export const nowToTheMinute = () => new Date(Math.floor(Date.now() / 60000) * 60000).toISOString();

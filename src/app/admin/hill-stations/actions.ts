@@ -7,6 +7,7 @@ export async function deleteHillStation(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('hill_station_escapes').delete().eq('id', id)
   if (error) return { error: error.message }
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/hill-stations')
   revalidatePath('/')
   return { success: true }
@@ -16,6 +17,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('hill_station_escapes').update({ is_published }).eq('id', id)
   if (error) return { error: error.message }
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/hill-stations')
   revalidatePath('/')
   return { success: true }
@@ -44,6 +46,7 @@ export async function saveHillStation(formData: FormData) {
     if (error) return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/hill-stations')
   revalidatePath('/')
   return { success: true }

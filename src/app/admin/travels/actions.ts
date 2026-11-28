@@ -7,6 +7,7 @@ export async function deleteTravel(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('travels').delete().eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels')
   revalidatePath('/travels')
   revalidatePath('/')
@@ -16,6 +17,7 @@ export async function togglePublishTravel(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('travels').update({ is_published }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels')
   revalidatePath('/travels')
   revalidatePath('/')
@@ -49,6 +51,7 @@ export async function saveTravel(formData: FormData) {
     if (error) return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travels')
   revalidatePath('/travels')
   revalidatePath('/')

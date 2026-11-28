@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Upload, X, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { compressImage } from '@/lib/compressImage'
 
 interface ImageUploadProps {
   bucket: string
@@ -23,7 +24,7 @@ export default function ImageUpload({ bucket, folder, onUpload, defaultImage }: 
         throw new Error('You must select an image to upload.')
       }
 
-      const file = event.target.files[0]
+      const file = await compressImage(event.target.files[0])
       const fileExt = file.name.split('.').pop()
       const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`
       const filePath = `${folder}/${fileName}`

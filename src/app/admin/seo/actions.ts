@@ -23,6 +23,7 @@ export async function savePageSeo(formData: FormData) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/seo')
   // We don't revalidate everything here, but ideally we revalidate the specific path
   

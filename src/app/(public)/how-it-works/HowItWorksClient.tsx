@@ -182,7 +182,7 @@ export default function HowItWorksClient() {
       {/* ---------- Promises ---------- */}
       <section className="container-max px-4 pt-24 sm:px-6 lg:px-8">
         <div className="grain relative overflow-hidden rounded-[32px] bg-ocean-gradient px-6 py-12 text-white sm:px-12">
-          <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-coral/30 blur-[70px]" />
+          <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full blob text-coral/30" />
           <div className="relative">
             <p className="kicker !text-amber mb-3">What you can count on</p>
             <h2 className="max-w-lg font-heading text-[clamp(1.8rem,4vw,2.8rem)] leading-[1.1]">Simple promises, kept on every trip.</h2>

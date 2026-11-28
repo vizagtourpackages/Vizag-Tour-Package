@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import EnquirySidebar from "@/components/EnquirySidebar";
 import RichContent from "@/components/RichContent";
 import DestinationCard from "@/components/DestinationCard";

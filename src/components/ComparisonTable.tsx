@@ -34,8 +34,8 @@ export default async function ComparisonTable() {
           {/* Promise panel */}
           <Reveal>
             <div className="grain relative flex h-full flex-col justify-between overflow-hidden rounded-[32px] bg-ocean-gradient p-8 text-white sm:p-10">
-              <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-coral/35 blur-[80px]" />
-              <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-teal/30 blur-[80px]" />
+              <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blob text-coral/35" />
+              <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full blob text-teal/30" />
 
               <div className="relative">
                 <p className="kicker !text-amber mb-5">Our promise</p>

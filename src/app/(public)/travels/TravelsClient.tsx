@@ -204,7 +204,7 @@ export default function TravelsClient({
       {/* ---------- Why us ---------- */}
       <section className="container-max px-4 pt-20 sm:px-6 lg:px-8">
         <div className="grain relative overflow-hidden rounded-[32px] bg-ocean-gradient px-6 py-12 text-white sm:px-12 sm:py-14">
-          <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-coral/30 blur-[80px]" />
+          <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full blob text-coral/30" />
           <div className="relative grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div>
               <p className="kicker !text-amber mb-4">Why ride with us</p>

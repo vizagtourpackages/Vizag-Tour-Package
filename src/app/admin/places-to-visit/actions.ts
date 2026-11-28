@@ -8,6 +8,7 @@ export async function deletePlace(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('places_to_visit').delete().eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/places-to-visit')
   revalidatePath('/')
 }
@@ -16,6 +17,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('places_to_visit').update({ is_published }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/places-to-visit')
   revalidatePath('/')
 }
@@ -44,6 +46,7 @@ export async function savePlace(formData: FormData) {
     if (error) throw new Error(error.message)
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/places-to-visit')
   revalidatePath('/')
   redirect('/admin/places-to-visit')

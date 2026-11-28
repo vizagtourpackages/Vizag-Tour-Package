@@ -8,6 +8,7 @@ export async function deleteHotelResort(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('hotels_resorts').delete().eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/hotels-resorts')
   revalidatePath('/hotels-and-resorts')
   revalidatePath('/')
@@ -17,6 +18,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('hotels_resorts').update({ is_published }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/hotels-resorts')
   revalidatePath('/')
 }
@@ -136,6 +138,7 @@ export async function saveHotelResort(formData: FormData) {
     }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/hotels-resorts')
   revalidatePath('/hotels-and-resorts')
   revalidatePath('/')

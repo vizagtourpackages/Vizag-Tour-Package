@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, ArrowLeft, Clock } from "lucide-react";
@@ -133,7 +133,7 @@ export default async function DevotionalDetailPage({ params }: { params: Promise
           {/* Main Content */}
           <div className="w-full lg:w-2/3">
             <div className="bg-white rounded-[32px] p-8 sm:p-12 shadow-[0_-8px_40px_rgba(0,0,0,0.08)] border border-white space-y-10 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-sand/30 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-[300px] h-[300px] blob text-sand/30 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 
               <section className="relative z-10">
                 <h2 className="text-2xl font-heading font-bold text-charcoal mb-4">About {destination.name}</h2>

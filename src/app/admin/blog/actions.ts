@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { readingMinutes, slugify } from '@/lib/content'
 
 function refresh(slug?: string) {
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/blog')
   revalidatePath('/blog')
   revalidatePath('/blog/rss.xml')

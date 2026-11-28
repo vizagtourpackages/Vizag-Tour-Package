@@ -7,6 +7,7 @@ export async function deleteUpdateOffer(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('latest_updates_offers').delete().eq('id', id)
   if (error) return { error: error.message }
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/updates-offers')
   revalidatePath('/')
   return { success: true }
@@ -16,6 +17,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('latest_updates_offers').update({ is_published }).eq('id', id)
   if (error) return { error: error.message }
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/updates-offers')
   revalidatePath('/')
   return { success: true }
@@ -46,6 +48,7 @@ export async function saveUpdateOffer(formData: FormData) {
     if (error) return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/updates-offers')
   revalidatePath('/')
   return { success: true }

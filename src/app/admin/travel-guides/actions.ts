@@ -9,6 +9,7 @@ export async function deleteGuide(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('travel_guides').delete().eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travel-guides')
   revalidatePath('/')
 }
@@ -17,6 +18,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('travel_guides').update({ is_published }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travel-guides')
   revalidatePath('/')
 }
@@ -51,6 +53,7 @@ export async function saveGuide(formData: FormData) {
     if (error) throw new Error(friendly(error.code, error.message))
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/travel-guides')
   revalidatePath('/travel-guides')
   revalidatePath('/')

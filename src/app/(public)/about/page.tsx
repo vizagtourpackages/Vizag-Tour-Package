@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Award, CreditCard, Clock, MapPin, ShieldCheck, Star, Users, Car, Phone } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 import { Reveal, Arrow } from "@/components/Motion";
 import SectionHeading from "@/components/SectionHeading";
 import CountUp from "@/components/CountUp";
@@ -170,8 +170,8 @@ export default async function AboutPage() {
       {/* ---------- CTA ---------- */}
       <section className="container-max px-4 pt-20 sm:px-6 lg:px-8">
         <div className="grain relative overflow-hidden rounded-[32px] bg-ocean-gradient px-6 py-14 text-center text-white sm:px-12">
-          <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-coral/30 blur-[80px]" />
-          <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-teal/30 blur-[80px]" />
+          <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full blob text-coral/30" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full blob text-teal/30" />
           <div className="relative mx-auto max-w-2xl">
             <p className="kicker !text-amber mb-4 justify-center">Let&apos;s talk</p>
             <h2 className="font-heading text-[clamp(1.9rem,4.5vw,3.2rem)] leading-[1.08]">

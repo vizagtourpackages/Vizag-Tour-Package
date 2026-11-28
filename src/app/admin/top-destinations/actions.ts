@@ -8,6 +8,7 @@ export async function deleteTopDestination(id: string) {
   const supabase = await createClient()
   const { error } = await supabase.from('top_destinations').delete().eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/top-destinations')
   revalidatePath('/')
 }
@@ -16,6 +17,7 @@ export async function togglePublish(id: string, is_published: boolean) {
   const supabase = await createClient()
   const { error } = await supabase.from('top_destinations').update({ is_published }).eq('id', id)
   if (error) throw new Error(error.message)
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/top-destinations')
   revalidatePath('/')
 }
@@ -49,6 +51,7 @@ export async function saveTopDestination(formData: FormData) {
     if (error) throw new Error(error.message)
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/top-destinations')
   revalidatePath('/')
   redirect('/admin/top-destinations')

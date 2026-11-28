@@ -1,6 +1,6 @@
 import SectionHeading from "@/components/SectionHeading";
 import ResortListClient from "./ResortListClient";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient as createClient } from "@/lib/supabase/public";
 
 export default async function HotelsPage() {
   const supabase = await createClient();
