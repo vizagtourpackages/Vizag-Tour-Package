@@ -21,7 +21,7 @@ export interface HeroTile {
   description?: string;
 }
 
-const destinations = ["Vizag city sightseeing", "Araku Valley", "Lambasingi", "Vanjangi", "Devotional tour", "Other places"];
+const destinations = ["Vizag city sightseeing", "Araku Valley", "Lambasingi", "Vanjangi", "Maredumilli", "Devotional tour", "Other places"];
 
 export default function HeroSection({ tiles = [] }: { tiles?: HeroTile[] }) {
   const { openBooking } = useBooking();

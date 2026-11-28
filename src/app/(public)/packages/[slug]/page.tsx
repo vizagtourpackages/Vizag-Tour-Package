@@ -217,7 +217,7 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
                           {/* Row 1, Col 2: Prices */}
                           <div className="text-right">
                             {planMrp && planDiscount > 0 && (
-                              <div className="flex items-center justify-end gap-1 mb-0.5">
+                              <div className="flex items-center justify-end gap-1 mb-0.5 whitespace-nowrap">
                                 <span className="text-[10px] sm:text-xs text-charcoal/40 line-through font-medium">
                                   ₹{planMrp.toLocaleString('en-IN')}
                                 </span>

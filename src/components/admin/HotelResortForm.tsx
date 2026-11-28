@@ -424,14 +424,6 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
             </div>
           </div>
 
-          <div className="md:col-span-2 pt-4 flex gap-4">
-            <button type="submit" disabled={loading} className="px-8 py-3 bg-emerald-700 text-white rounded-lg font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50 flex-1 md:flex-none">
-              {loading ? 'Saving...' : 'Update Resort'}
-            </button>
-            <Link href="/admin/hotels-resorts" className="px-8 py-3 border border-gray-300 bg-white rounded-lg font-medium hover:bg-gray-50 transition-colors">
-              Cancel
-            </Link>
-          </div>
 
         </div>
       </div>
@@ -477,6 +469,15 @@ export default function HotelResortForm({ initialData, id, initialRoomTypes = []
 
       {/* Accommodation Types */}
       <AccommodationTypesEditor value={roomTypes} onChange={setRoomTypes} />
+
+      <div className="sticky bottom-6 z-20 flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-lg">
+        <button type="submit" disabled={loading} className="px-8 py-3 bg-emerald-700 text-white rounded-lg font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50 flex-1 md:flex-none">
+          {loading ? 'Saving...' : id === 'new' ? 'Create Resort' : 'Update Resort'}
+        </button>
+        <Link href="/admin/hotels-resorts" className="px-8 py-3 border border-gray-300 bg-white rounded-lg font-medium hover:bg-gray-50 transition-colors">
+          Cancel
+        </Link>
+      </div>
 
     </form>
   )

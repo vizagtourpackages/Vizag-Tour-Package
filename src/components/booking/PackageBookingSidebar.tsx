@@ -21,7 +21,7 @@ export default async function PackageBookingSidebar({
       {/* Pricing Block */}
       <div className="text-center space-y-0.5 lg:space-y-1">
         {originalPrice && discountPercent > 0 && (
-          <div className="flex items-center justify-center gap-2 lg:gap-3 mb-1 lg:mb-2">
+          <div className="flex items-center justify-center gap-2 lg:gap-3 mb-1 lg:mb-2 whitespace-nowrap">
             <span className="text-base lg:text-lg text-charcoal/40 line-through font-bold">
               ₹{originalPrice.toLocaleString('en-IN')}
             </span>

@@ -1,9 +1,10 @@
-/** The four places we operate stays in. Vizag is the default everywhere. */
+/** The places we operate stays in. Vizag is the default everywhere. */
 export const AREAS = [
   { id: "vizag", label: "Vizag" },
   { id: "araku-valley", label: "Araku Valley" },
   { id: "lambasingi", label: "Lambasingi" },
   { id: "vanjangi", label: "Vanjangi" },
+  { id: "maredumilli", label: "Maredumilli" },
 ] as const;
 
 export type AreaId = (typeof AREAS)[number]["id"];

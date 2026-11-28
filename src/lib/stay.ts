@@ -11,8 +11,9 @@ const norm = (s: string) => (s || "").toLowerCase().replace(/[^a-z]/g, "");
  * type (set in the package's rate plans). A hotel's own room tariff is never used here.
  *
  * 1. Hotels attached to the package (`resort_ids`): one option per type that at least one attached
- *    hotel offers. When the package prices some types, only those types are offered; when it prices
- *    none, every offered type uses the base package price.
+ *    hotel offers. Non AC without its own price uses the main package price. An AC type without a
+ *    price is left out when the package prices other AC types; when it prices none, every offered
+ *    type uses the main package price.
  * 2. Packages without attached hotels: each priced rate plan with its own hotel list.
  */
 export async function buildStayOptions(
@@ -61,10 +62,10 @@ export async function buildStayOptions(
   if (attached.length > 0) {
     const order = new Map(attached.map((id, i) => [id, i]));
     const sorted = [...resorts].sort((a: any, b: any) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
-    const anyPriced = ACCOMMODATION_TYPES.some(t => planFor(t));
+    const anyAcPriced = ACCOMMODATION_TYPES.some(t => t !== "Non AC" && planFor(t));
     for (const type of ACCOMMODATION_TYPES) {
       const plan = planFor(type);
-      if (anyPriced && !plan) continue;
+      if (!plan && type !== "Non AC" && anyAcPriced) continue;
       const hotels = sorted.filter((r: any) => roomOf(r.id, type)).map((r: any) => toHotel(r, type));
       if (!hotels.length) continue;
       options.push({ type, price: Number(plan?.price ?? pkg.price) || 0, ...extras(plan), unit, hotels });

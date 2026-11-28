@@ -70,32 +70,31 @@ export default function PackageCard({ pkg }: PackageCardProps) {
         </div>
 
         {route.length > 0 && (
-          <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[0.8rem] text-charcoal/70">
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.8rem] text-charcoal/70">
             {route.map((r, k) => (
-              <span key={`${r}-${k}`} className="flex items-center gap-2">
-                {k > 0 && <span className="h-px w-3 bg-coral/60" />}
-                <span className="flex items-center gap-1.5"><i className="h-1.5 w-1.5 rounded-full bg-coral" />{r}</span>
+              <span key={`${r}-${k}`} className="flex items-center gap-1.5">
+                <i className="h-1.5 w-1.5 shrink-0 rounded-full bg-coral" />{r}
               </span>
             ))}
           </div>
         )}
 
         <div className="mt-auto pt-6">
-        <div className="flex items-end justify-between gap-3 border-t border-dashed border-ocean/15 pt-5">
-          <div className="min-w-0">
+        <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-4 border-t border-ocean/10 pt-5">
+          <div className="shrink-0">
             {discountPercent > 0 && (
-              <p className="flex items-center gap-1.5 text-[0.7rem] font-semibold text-charcoal/45">
+              <p className="mb-1 flex items-center gap-1.5 whitespace-nowrap text-[0.7rem] font-semibold text-charcoal/45">
                 <span className="line-through">₹{pkg.originalPrice?.toLocaleString("en-IN")}</span>
                 <span className="rounded bg-teal/10 px-1.5 py-0.5 text-teal">{discountPercent}% OFF</span>
               </p>
             )}
             <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-charcoal/45">Starting from</p>
-            <p className="font-heading text-[1.7rem] leading-none text-ocean">
+            <p className="whitespace-nowrap font-heading text-[1.7rem] leading-none text-ocean">
               <span className="text-base">₹</span>{pkg.price.toLocaleString("en-IN")}
               <span className="ml-1 font-sans text-[0.68rem] font-medium text-charcoal/50">/ {(pkg.priceLabel || "per couple").toLowerCase().replace(/^per\s+/, "")}</span>
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             <a
               href={wa(waMessages.package(pkg.title))}
               target="_blank"

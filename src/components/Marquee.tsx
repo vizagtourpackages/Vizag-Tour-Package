@@ -1,5 +1,5 @@
 const places = [
-  "Araku Valley", "Rushikonda Beach", "Lambasingi", "Kailasagiri", "Borra Caves", "Simhachalam", "Vanjangi",
+  "Araku Valley", "Rushikonda Beach", "Lambasingi", "Kailasagiri", "Borra Caves", "Simhachalam", "Vanjangi", "Maredumilli",
   "Yarada Beach", "Katiki Falls", "Submarine Museum", "Tyda", "Ananthagiri",
 ];
 

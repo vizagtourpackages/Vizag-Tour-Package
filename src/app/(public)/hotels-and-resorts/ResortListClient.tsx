@@ -5,8 +5,10 @@ import HotelCard from '@/components/HotelCard';
 import { SlidersHorizontal } from 'lucide-react';
 import FilterSheet, { FilterGroup, OptionPill } from '@/components/FilterSheet';
 import { AREAS, DEFAULT_AREA, normalizeArea, areaLabel, type AreaId } from '@/lib/areas';
+import { useSite } from '@/components/SiteProvider';
 
 export default function ResortListClient({ initialHotels }: { initialHotels: any[] }) {
+  const { wa } = useSite();
   const [category, setCategory] = useState<string>('All');
   const [minRating, setMinRating] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(20000);
@@ -39,8 +41,8 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
 
   return (
     <div>
-      {/* Area switch: Vizag (default) · Araku Valley · Lambasingi · Vanjangi */}
-      <div role="tablist" aria-label="Choose a place" className="no-scrollbar -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:justify-center sm:px-0">
+      {/* Area switch: Vizag is the default */}
+      <div role="tablist" aria-label="Choose a place" className="no-scrollbar -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
         {AREAS.map((a) => {
           const on = a.id === area;
           return (
@@ -181,7 +183,15 @@ export default function ResortListClient({ initialHotels }: { initialHotels: any
           Showing {filteredHotels.length} {filteredHotels.length === 1 ? 'property' : 'properties'} in {areaLabel(area)}
         </div>
         
-        {filteredHotels.length > 0 ? (
+        {inArea.length === 0 ? (
+          <div className="text-center py-16 px-6 bg-white rounded-[24px] border border-[#E8DDD4] shadow-sm">
+            <h3 className="text-xl font-bold text-[#332A20] mb-2">Stays in {areaLabel(area)} are coming soon</h3>
+            <p className="text-[#6B5744]">Message us and we will arrange a stay for you.</p>
+            <a href={wa(`Hi! I'm looking for a stay in ${areaLabel(area)}. Please share the options and prices.`)} target="_blank" rel="noopener noreferrer" className="btn-coral mt-6">
+              Ask on WhatsApp
+            </a>
+          </div>
+        ) : filteredHotels.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {filteredHotels.map((hotel) => (
               <HotelCard key={hotel.id} hotel={hotel} />
