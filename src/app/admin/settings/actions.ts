@@ -6,16 +6,11 @@ import { SETTING_KEYS } from '@/lib/settings'
 
 const ALLOWED = new Set<string>(Object.values(SETTING_KEYS))
 
-async function upsertSetting(supabase: Awaited<ReturnType<typeof createClient>>, key: string, value: string) {
-  // Manual upsert to avoid schema constraint issues
-  const { data: existing } = await supabase.from('site_settings').select('id').eq('key', key).maybeSingle()
-  if (existing) {
-    const { error } = await supabase.from('site_settings').update({ value }).eq('id', existing.id)
-    if (error) throw new Error(error.message)
-  } else {
-    const { error } = await supabase.from('site_settings').insert({ key, value })
-    if (error) throw new Error(error.message)
-  }
+async function upsertSettings(supabase: Awaited<ReturnType<typeof createClient>>, rows: { key: string; value: string }[]) {
+  if (!rows.length) return
+  // site_settings is keyed by `key`
+  const { error } = await supabase.from('site_settings').upsert(rows, { onConflict: 'key' })
+  if (error) throw new Error(error.message)
 }
 
 function refresh() {
@@ -26,7 +21,7 @@ function refresh() {
 /** Single setting (used by the packages list "hero" toggle). */
 export async function toggleSetting(key: string, value: string) {
   const supabase = await createClient()
-  await upsertSetting(supabase, key, value)
+  await upsertSettings(supabase, [{ key, value }])
   refresh()
 }
 
@@ -37,10 +32,12 @@ export async function saveSettings(values: Record<string, string>): Promise<{ su
     const { data: auth } = await supabase.auth.getUser()
     if (!auth.user) return { success: false, error: 'You are signed out. Please sign in again.' }
 
-    for (const [key, raw] of Object.entries(values)) {
-      if (!ALLOWED.has(key)) continue
-      await upsertSetting(supabase, key, (raw ?? '').toString().trim())
-    }
+    await upsertSettings(
+      supabase,
+      Object.entries(values)
+        .filter(([key]) => ALLOWED.has(key))
+        .map(([key, raw]) => ({ key, value: (raw ?? '').toString().trim() }))
+    )
     refresh()
     return { success: true }
   } catch (e: any) {

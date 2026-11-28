@@ -70,11 +70,12 @@ function parseIds(raw?: string): string[] {
   }
 }
 
-/** Reads site_settings once per request. Falls back to siteInfo so the site never shows blanks. */
-export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
+/** Reads site_settings with the given client. Falls back to siteInfo so the site never shows blanks. */
+export async function readSettings(supabase: { from: (table: string) => any }): Promise<SiteSettings> {
   try {
-    const supabase = await createClient();
-    const { data } = await supabase.from("site_settings").select("key, value");
+    const { data } = (await supabase.from("site_settings").select("key, value")) as {
+      data: { key: string; value: string | null }[] | null;
+    };
     const get = (k: string, d = "") => {
       const row = data?.find((r) => r.key === k);
       return row && typeof row.value === "string" && row.value.trim() !== "" ? row.value.trim() : d;
@@ -105,4 +106,7 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   } catch {
     return DEFAULT_SETTINGS;
   }
-});
+}
+
+/** Public site: read once per request (cached for a minute, cleared on every admin save). */
+export const getSiteSettings = cache(async (): Promise<SiteSettings> => readSettings(await createClient()));

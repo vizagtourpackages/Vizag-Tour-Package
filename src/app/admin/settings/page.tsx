@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { getSiteSettings } from '@/lib/settings'
+import { readSettings } from '@/lib/settings'
 import { BlogSidebarPanel, ContactPanel, HeroPanel, SecurityPanel, SocialPanel } from '@/components/admin/SettingsPanels'
 
 export const metadata = {
@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function SettingsPage() {
   const supabase = await createClient()
-  const settings = await getSiteSettings()
+  const settings = await readSettings(supabase)
   const { data: packages } = await supabase
     .from('tour_packages')
     .select('id, title, duration, cover_image_url, image_url')

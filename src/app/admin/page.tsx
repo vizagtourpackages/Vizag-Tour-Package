@@ -12,11 +12,14 @@ export default async function AdminDashboard() {
     { name: 'Hotels & Resorts', href: '/admin/hotels-resorts', desc: 'Update partner hotels and accommodations' },
     { name: 'Devotional Tours', href: '/admin/top-destinations', desc: 'Manage devotional tours and pilgrimage trips' },
     { name: 'Places to Visit', href: '/admin/places-to-visit', desc: 'Manage specific locations and attractions' },
-    { name: 'Hill Stations', href: '/admin/hill-stations', desc: 'Curate Araku and Lambasingi content' },
+    { name: 'Hill Stations', href: '/admin/hill-stations', desc: 'Cards in the home page "Eastern Ghats Getaways" section' },
+    { name: 'Destination Pages', href: '/admin/destination-pages', desc: 'Araku, Lambasingi, Vanjangi and Maredumilli pages' },
+    { name: 'Blog', href: '/admin/blog', desc: 'Write and publish blog posts' },
     { name: 'Travel Guides', href: '/admin/travel-guides', desc: 'Write helpful tips and checklists' },
     { name: 'Upcoming Events', href: '/admin/upcoming-events', desc: 'Post festivals and seasonal activities' },
     { name: 'Updates & Offers', href: '/admin/updates-offers', desc: 'Announce news and special promotions' },
     { name: 'FAQs', href: '/admin/faqs', desc: 'Manage frequently asked questions' },
+    { name: 'Settings', href: '/admin/settings', desc: 'Contact details, social links, home hero, blog sidebar, password' },
   ]
 
   return (
