@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Award, CreditCard, Clock, MapPin, ShieldCheck, Star, Users, Car, Phone } from "lucide-react";
+import { Award, CreditCard, Clock, MapPin, ShieldCheck, Users, Car, Phone } from "lucide-react";
 import { createPublicClient as createClient } from "@/lib/supabase/public";
 import { Reveal, Arrow } from "@/components/Motion";
 import SectionHeading from "@/components/SectionHeading";
 import CountUp from "@/components/CountUp";
-import { siteInfo, stats } from "@/data/siteInfo";
+import { stats } from "@/data/siteInfo";
 import { waMessages, waUrl } from "@/lib/whatsapp";
 import { getSiteSettings } from "@/lib/settings";
 
@@ -73,13 +73,6 @@ export default async function AboutPage() {
               <div className="aspect-[4/5] overflow-hidden rounded-[28px] bg-sand shadow-[0_30px_60px_-28px_rgba(10,42,77,.45)]">
                 <img src={c} alt="" className="h-full w-full object-cover object-right" />
               </div>
-            </div>
-            <div className="absolute -bottom-4 left-4 flex items-center gap-3 rounded-2xl border border-ocean/10 bg-white px-4 py-3 shadow-[0_18px_36px_-18px_rgba(10,42,77,.45)]">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-amber/25 text-ocean"><Star size={19} className="fill-amber text-amber" /></span>
-              <span className="leading-tight">
-                <span className="block font-heading text-lg text-ocean">{siteInfo.googleReviews.rating} on Google</span>
-                <span className="block text-xs text-charcoal/55">{siteInfo.googleReviews.count} reviews</span>
-              </span>
             </div>
           </div>
         </div>
