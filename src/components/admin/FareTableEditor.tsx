@@ -11,31 +11,38 @@ const input = 'w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm o
 const label = 'mb-1 block text-xs font-bold text-gray-600'
 const iconButton = 'grid size-9 place-items-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40'
 
+/** `kind` is only used by this editor; it decides which inputs a journey shows. */
+type Row = FareRow & { kind: 'route' | 'trip' }
+const withKind = (r: FareRow): Row => ({ ...r, kind: r.from || r.to ? 'route' : 'trip' })
+
 export default function FareTableEditor({ vehicles, initialRows }: { vehicles: Vehicle[]; initialRows: FareRow[] }) {
-  const [rows, setRows] = useState<FareRow[]>(initialRows)
+  const [rows, setRows] = useState<Row[]>(() => initialRows.map(withKind))
   const [dirty, setDirty] = useState(false)
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null)
   const [pending, start] = useTransition()
 
-  const change = (next: FareRow[]) => { setRows(next); setDirty(true); setMessage(null) }
-  const update = (i: number, patch: Partial<FareRow>) => change(rows.map((r, k) => (k === i ? { ...r, ...patch } : r)))
+  const change = (next: Row[]) => { setRows(next); setDirty(true); setMessage(null) }
+  const update = (i: number, patch: Partial<Row>) => change(rows.map((r, k) => (k === i ? { ...r, ...patch } : r)))
   const move = (i: number, by: number) => {
     const next = [...rows]
     ;[next[i], next[i + by]] = [next[i + by], next[i]]
     change(next)
   }
-  const add = () => change([...rows, { id: `fare-${Date.now()}`, from: '', to: '', tripType: '', prices: {} }])
+  const add = (kind: Row['kind']) => change([...rows, { id: `fare-${Date.now()}`, kind, from: '', to: '', tripType: '', prices: {} }])
   const remove = (i: number) => {
     if (window.confirm(`Remove "${journeyLabel(rows[i])}" from the fare table?`)) change(rows.filter((_, k) => k !== i))
   }
 
   const save = () => {
-    const empty = rows.findIndex(r => !r.from?.trim() && !r.to?.trim() && !r.tripType?.trim())
-    if (empty !== -1) return setMessage({ ok: false, text: `Journey ${empty + 1} needs a From, a To or a Trip type.` })
+    const empty = rows.findIndex(r => (r.kind === 'route' ? !r.from?.trim() && !r.to?.trim() : !r.tripType?.trim()))
+    if (empty !== -1) {
+      const needs = rows[empty].kind === 'route' ? 'a From or a To' : 'a trip type'
+      return setMessage({ ok: false, text: `Journey ${empty + 1} needs ${needs}.` })
+    }
     start(async () => {
       const res = await saveFares(rows)
       if (res.success) {
-        setRows(res.rows || [])
+        setRows((res.rows || []).map(withKind))
         setDirty(false)
         setMessage({ ok: true, text: 'Fare table saved.' })
       } else setMessage({ ok: false, text: res.error || 'Could not save the fare table.' })
@@ -48,7 +55,7 @@ export default function FareTableEditor({ vehicles, initialRows }: { vehicles: V
 
       {rows.length === 0 && (
         <p className="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600">
-          No journeys yet. The Travels page hides the fare table until you add one.
+          No journeys yet. Add a route or a trip type. The Travels page hides the fare table until you do.
         </p>
       )}
 
@@ -56,7 +63,10 @@ export default function FareTableEditor({ vehicles, initialRows }: { vehicles: V
         {rows.map((r, i) => (
           <li key={r.id} className="rounded-xl border border-gray-200 bg-white p-5">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h3 className="font-bold text-gray-900">{i + 1}. {journeyLabel(r)}</h3>
+              <h3 className="font-bold text-gray-900">
+                {i + 1}. {journeyLabel(r)}
+                <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 align-middle text-xs font-medium text-gray-600">{r.kind === 'route' ? 'Route' : 'Trip type'}</span>
+              </h3>
               <div className="flex gap-2">
                 <button type="button" className={iconButton} onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up"><ArrowUp size={16} aria-hidden /></button>
                 <button type="button" className={iconButton} onClick={() => move(i, 1)} disabled={i === rows.length - 1} aria-label="Move down"><ArrowDown size={16} aria-hidden /></button>
@@ -64,11 +74,14 @@ export default function FareTableEditor({ vehicles, initialRows }: { vehicles: V
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div><label className={label} htmlFor={`${r.id}-from`}>From (optional)</label><input id={`${r.id}-from`} className={input} value={r.from || ''} onChange={e => update(i, { from: e.target.value })} placeholder="e.g. Vizag" /></div>
-              <div><label className={label} htmlFor={`${r.id}-to`}>To (optional)</label><input id={`${r.id}-to`} className={input} value={r.to || ''} onChange={e => update(i, { to: e.target.value })} placeholder="e.g. Araku Valley" /></div>
-              <div><label className={label} htmlFor={`${r.id}-type`}>Trip type (optional)</label><input id={`${r.id}-type`} list="trip-types" className={input} value={r.tripType || ''} onChange={e => update(i, { tripType: e.target.value })} placeholder="e.g. Vizag Local" /></div>
-            </div>
+            {r.kind === 'route' ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div><label className={label} htmlFor={`${r.id}-from`}>From</label><input id={`${r.id}-from`} className={input} value={r.from || ''} onChange={e => update(i, { from: e.target.value })} placeholder="e.g. Vizag" /></div>
+                <div><label className={label} htmlFor={`${r.id}-to`}>To</label><input id={`${r.id}-to`} className={input} value={r.to || ''} onChange={e => update(i, { to: e.target.value })} placeholder="e.g. Araku Valley" /></div>
+              </div>
+            ) : (
+              <div><label className={label} htmlFor={`${r.id}-type`}>Trip type</label><input id={`${r.id}-type`} list="trip-types" className={input} value={r.tripType || ''} onChange={e => update(i, { tripType: e.target.value })} placeholder="e.g. Vizag Local" /></div>
+            )}
 
             <fieldset className="mt-4 border-t border-gray-100 pt-4">
               <legend className="sr-only">Fare for each vehicle</legend>
@@ -101,8 +114,11 @@ export default function FareTableEditor({ vehicles, initialRows }: { vehicles: V
       </ol>
 
       <div className="sticky bottom-6 z-20 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-lg">
-        <button type="button" onClick={add} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 font-bold text-gray-800 hover:bg-gray-50">
-          <Plus size={16} aria-hidden /> Add journey
+        <button type="button" onClick={() => add('route')} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 font-bold text-gray-800 hover:bg-gray-50">
+          <Plus size={16} aria-hidden /> Add route
+        </button>
+        <button type="button" onClick={() => add('trip')} className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 font-bold text-gray-800 hover:bg-gray-50">
+          <Plus size={16} aria-hidden /> Add trip type
         </button>
         <button type="button" onClick={save} disabled={pending || !dirty} className="inline-flex items-center gap-2 rounded-lg bg-charcoal px-5 py-2.5 font-bold text-white hover:bg-charcoal/90 disabled:opacity-50">
           {pending && <Loader2 size={16} className="animate-spin" aria-hidden />} Save fare table

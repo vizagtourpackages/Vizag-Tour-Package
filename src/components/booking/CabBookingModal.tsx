@@ -50,7 +50,12 @@ export default function CabBookingModal({ data, onClose }: { data: any; onClose:
 
   const tripOptions = Array.from(new Set([...TRIP_TYPES, ...(preset?.tripType ? [preset.tripType] : [])]))
   // the listed fare applies only while the journey is still the one picked from the table
-  const sameJourney = !!preset && form.pickup === (preset.from || '') && form.drop === (preset.to || '') && form.tripType === (preset.tripType || '')
+  // (a route is identified by From and To, a trip-type journey by its trip type)
+  const sameJourney =
+    !!preset &&
+    (preset.from || preset.to
+      ? form.pickup === (preset.from || '') && form.drop === (preset.to || '')
+      : form.tripType === (preset.tripType || ''))
   const fare: number | undefined = sameJourney ? preset.prices?.[String(vehicle?.id)] : undefined
 
   const submit = async (e: React.FormEvent) => {

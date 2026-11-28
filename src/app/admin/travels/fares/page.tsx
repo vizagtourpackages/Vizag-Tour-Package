@@ -19,7 +19,7 @@ export default async function FaresPage() {
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Fare Table</h2>
         <p className="mt-1 text-gray-500">
-          Fares shown on the Travels page. Add a journey, then enter a price for each vehicle that can do it.
+          Fares shown on the Travels page. Add a route (From and To) or a trip type such as Vizag Local, then enter a price for each vehicle.
         </p>
       </div>
       <TravelTabs active="fares" />

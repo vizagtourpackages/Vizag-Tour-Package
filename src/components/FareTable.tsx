@@ -18,14 +18,11 @@ export default function FareTable({ rows, vehicles }: { rows: FareRow[]; vehicle
 
   // only vehicles that have at least one price are worth choosing
   const priced = vehicles.filter((v) => rows.some((r) => r.prices[String(v.id)]));
-  const tripTypes = Array.from(new Set(rows.map((r) => r.tripType).filter(Boolean))) as string[];
 
   const [vehicleId, setVehicleId] = useState(() => String(priced[0]?.id ?? ""));
-  const [trip, setTrip] = useState("");
   if (!rows.length || !priced.length) return null;
 
   const vehicle = priced.find((v) => String(v.id) === vehicleId) || priced[0];
-  const shown = rows.filter((r) => !trip || r.tripType === trip);
 
   return (
     <section aria-labelledby="fares-heading" className="mx-auto max-w-[960px] px-4 pt-6 pb-16 sm:px-6">
@@ -50,41 +47,25 @@ export default function FareTable({ rows, vehicles }: { rows: FareRow[]; vehicle
         </div>
       </fieldset>
 
-      {tripTypes.length > 1 && (
-        <fieldset className="mt-5">
-          <legend className="mb-2.5 text-sm font-bold text-ocean">Trip type</legend>
-          <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
-            {["", ...tripTypes].map((t) => (
-              <button key={t || "all"} type="button" aria-pressed={trip === t} onClick={() => setTrip(t)} className={chip(trip === t)}>
-                {t || "All trips"}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-      )}
-
       <div className="mt-6 overflow-hidden rounded-2xl border border-ocean/12 bg-white">
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">Fares for {vehicle.model}</caption>
           <thead>
             <tr className="border-b border-ocean/12 bg-sand/60 text-sm text-ocean">
               <th scope="col" className="px-4 py-3 font-bold sm:px-6">Journey</th>
-              <th scope="col" className="hidden px-4 py-3 font-bold sm:table-cell">Trip type</th>
               <th scope="col" className="px-2 py-3 text-right font-bold sm:px-4">Fare</th>
               <th scope="col" className="px-4 py-3 sm:px-6"><span className="sr-only">Book</span></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ocean/10">
-            {shown.map((r) => {
+            {rows.map((r) => {
               const price = r.prices[String(vehicle.id)];
               const name = journeyLabel(r);
               return (
                 <tr key={r.id}>
                   <th scope="row" className="px-4 py-4 align-middle font-semibold text-ocean sm:px-6">
                     <span className="block text-pretty leading-snug">{name}</span>
-                    {r.tripType && name !== r.tripType && <span className="mt-0.5 block text-xs font-medium text-charcoal/65 sm:hidden">{r.tripType}</span>}
                   </th>
-                  <td className="hidden px-4 py-4 text-sm text-charcoal/75 sm:table-cell">{r.tripType || "Any"}</td>
                   <td className="whitespace-nowrap px-2 py-4 text-right tabular-nums sm:px-4">
                     {price ? <span className="font-heading text-[1.25rem] text-ocean">{rupees(price)}</span> : <span className="text-sm text-charcoal/65">On request</span>}
                   </td>

@@ -1,5 +1,6 @@
 /**
  * Travel fare table: one row per journey, with a price for each vehicle.
+ * A journey is either a route (from / to) or a trip type on its own (e.g. "Vizag Local").
  * Stored as JSON in `site_settings` and edited under Admin → Travels → Fare Table.
  */
 export interface FareRow {
@@ -27,11 +28,13 @@ export function cleanFares(input: unknown): FareRow[] {
         const n = Math.round(Number(value));
         if (n > 0) prices[vehicle] = n;
       }
+      const from = text(row?.from);
+      const to = text(row?.to);
       return {
         id: text(row?.id) || `fare-${i}`,
-        from: text(row?.from),
-        to: text(row?.to),
-        tripType: text(row?.tripType),
+        from,
+        to,
+        tripType: from || to ? "" : text(row?.tripType),
         prices,
       };
     })
